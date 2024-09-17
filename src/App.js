@@ -1,13 +1,20 @@
 // src/App.js
-import React from 'react';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
-  return (
-    <div>
-      <h1>Welcome to Budget Table</h1>
-      <p>Track your expenses, income, and savings efficiently.</p>
-    </div>
-  );
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<Layout />}>
+                    <Route index element={<Dashboard />} />
+                    {/* Future routes like Settings, Profile, etc. */}
+                </Route>
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
