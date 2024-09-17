@@ -25,6 +25,18 @@ module.exports = {
           'postcss-loader' // Processes CSS with PostCSS (for Tailwind)
         ],
       },
+      {
+        test: /\.(png|jpe?g|gif)$/i,  // New rule for image files
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[hash].[ext]',
+              outputPath: 'images', // Place images in 'images' folder inside 'dist'
+            },
+          },
+        ],
+      },
     ],
   },
   plugins: [
