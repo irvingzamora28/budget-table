@@ -1,12 +1,13 @@
-// src/components/TableYear.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai'; // Import React-Icons for the button
 
 const TableYear = ({ title, year, initialData, condensed = false }) => {
   const [data, setData] = useState(initialData);
   const [showModal, setShowModal] = useState(false);
   const [newConceptName, setNewConceptName] = useState('');
-
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const conceptRefs = useRef([]);
+  const tdRefs = useRef([]);
   // Months array for table header
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -48,51 +49,82 @@ const TableYear = ({ title, year, initialData, condensed = false }) => {
     };
   }, [showModal, newConceptName]); // Re-run the effect if modal visibility or concept name changes
 
+
+  useEffect(() => {
+    conceptRefs.current.forEach((el, index) => {
+      if (el && tdRefs.current[index]) {
+        const tdWidth = tdRefs.current[index].clientWidth;
+        const textWidth = el.scrollWidth;
+
+        if (index === hoveredIndex && textWidth > tdWidth) {
+          const animationDuration = textWidth / 50; // Adjust for desired speed
+          el.style.animation = `scrollText ${animationDuration}s linear infinite`;
+        } else {
+          el.style.animation = 'none';
+        }
+      }
+    });
+  }, [hoveredIndex]);
+
+  const paddingClass = condensed ? 'px-2' : 'px-4';
+
   return (
-    <section className={`bg-white shadow-md rounded-${condensed ? 'none' : 'lg'} p-${condensed ? '0' : '3'} my-${condensed ? '0' : '6'}`}>
-      <h2 className={`text-${condensed ? 'lg' : '2xl'} font-semibold mb-${condensed ? '1' : '3'}  ${condensed ? 'bg-orange-200' : ''} px-${condensed ? '2' : '4'}`}>{title}</h2>
-      <table className="min-w-full table-auto">
-        {/* Table Header */}
-        <thead className="bg-gray-50 text-gray-700">
-          <tr>
-            <th className={`px-${condensed ? '2' : '4'} py-${condensed ? '1' : '2'} text-left font-medium`}>{year}</th>
-            {months.map((month) => (
-              <th key={month} className={`px-${condensed ? '2' : '4'} py-${condensed ? '1' : '2'} text-right font-medium`}>{month}</th>
-            ))}
-          </tr>
-        </thead>
-        {/* Table Body */}
-        <tbody className="text-gray-600">
-          {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className={`border-t border-gray-100 hover:bg-gray-${condensed ? '200' : '50'}`}>
-              <td className={`px-${condensed ? '2' : '4'} py-${condensed ? '1' : '2'} font-semibold`}>{row.concept}</td>
+    <section className={`bg-white shadow-md ${condensed ? 'rounded-none p-0' : 'rounded-lg p-3'} ${condensed ? 'my-0' : 'my-6'}`}>
+      <h2 className={`${condensed ? 'text-lg' : 'text-2xl'} font-semibold ${condensed ? 'mb-0' : 'mb-3'} ${condensed ? 'bg-orange-200' : ''} ${paddingClass}`}>{title}</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-50 text-gray-700">
+            <tr>
+              <th className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-left font-medium`}>{year}</th>
               {months.map((month) => (
-                <td key={month} className={`px-${condensed ? '2' : '4'} py-${condensed ? '1' : '2'} text-right`}>
-                  <input
-                    type="text"
-                    value={row[month]}
-                    onChange={(e) => handleEdit(e, rowIndex, month)}
-                    className={`w-full bg-transparent text-right outline-none ${condensed ? 'text-sm' : ''}`}
-                  />
-                </td>
+                <th key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right font-medium`}>{month}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="text-gray-600">
+            {data.map((row, rowIndex) => (
+              <tr key={rowIndex} className={`border-t border-gray-100 hover:bg-gray-${condensed ? '200' : '50'}`}>
+                <td
+                  ref={el => tdRefs.current[rowIndex] = el}
+                  className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} font-semibold relative max-w-[200px] cursor-default`}
+                  onMouseEnter={() => setHoveredIndex(rowIndex)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  <div className="concept-text-container">
+                    <div
+                      ref={el => conceptRefs.current[rowIndex] = el}
+                      className="concept-text whitespace-nowrap inline-block px-2"
+                    >
+                      {row.concept}
+                    </div>
+                  </div>
+                </td>
+                {months.map((month) => (
+                  <td key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right`}>
+                    <input
+                      type="text"
+                      value={row[month]}
+                      onChange={(e) => handleEdit(e, rowIndex, month)}
+                      className={`w-full bg-transparent text-right outline-none ${condensed ? 'text-sm' : ''}`}
+                    />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {/* Add Concept Button */}
       {!condensed && (
         <button
           onClick={() => setShowModal(true)}
           className="mt-4 flex items-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
         >
-          <AiOutlinePlus className="mr-2" /> {/* Add Icon */}
+          <AiOutlinePlus className="mr-2" />
           Add Concept
         </button>
       )}
 
-      {/* Modal for Adding Concept Name */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
@@ -103,7 +135,7 @@ const TableYear = ({ title, year, initialData, condensed = false }) => {
               onChange={(e) => setNewConceptName(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md mb-4"
               placeholder="Enter concept name"
-              autoFocus // Automatically focus the input
+              autoFocus
             />
             <div className="flex justify-end">
               <button
@@ -123,6 +155,19 @@ const TableYear = ({ title, year, initialData, condensed = false }) => {
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes scrollText {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(calc(-100% + 200px)); }
+        }
+        .concept-text-container {
+          position: relative;
+          overflow: hidden;
+          width: 100%;
+          mask-image: linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent);
+        }
+      `}</style>
     </section>
   );
 };
