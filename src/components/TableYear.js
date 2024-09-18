@@ -52,7 +52,7 @@ const TableYear = ({ title, year, initialData, condensed = false }) => {
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
           <thead className="bg-gray-50 text-gray-700">
-            <tr>
+            <tr className={`border-t border-b border-x`}>
               <th className={`${paddingClassTitle} ${condensed ? 'py-1' : 'py-2'} px-4 text-left font-medium`}>{year}</th>
               {months.map((month) => (
                 <th key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right font-medium`}>{month}</th>
@@ -61,10 +61,10 @@ const TableYear = ({ title, year, initialData, condensed = false }) => {
           </thead>
           <tbody className="text-gray-600">
             {data.map((row, rowIndex) => (
-              <tr key={rowIndex} className={`border-t border-gray-100 hover:bg-gray-${condensed ? '200' : '50'}`}>
+              <tr key={rowIndex} className={`border-t border-b border-x border-gray-100 hover:bg-gray-${condensed ? '200' : '50'}`}>
                 <td
                   ref={el => tdRefs.current[rowIndex] = el}
-                  className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} font-semibold relative max-w-[200px] cursor-default`}
+                  className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} font-semibold relative max-w-[200px] cursor-default border-x`}
                   onMouseEnter={() => setHoveredIndex(rowIndex)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
@@ -78,7 +78,7 @@ const TableYear = ({ title, year, initialData, condensed = false }) => {
                   </div>
                 </td>
                 {months.map((month) => (
-                  <td key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right`}>
+                  <td key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right border-x`}>
                     <input
                       type="text"
                       value={row[month]}
