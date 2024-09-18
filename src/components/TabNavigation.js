@@ -1,7 +1,5 @@
 import React from 'react';
-import { FaHome, FaMoneyBill, FaWallet, FaPiggyBank, FaChartLine } from 'react-icons/fa'; // Import icons
 
-// Reusable TabNavigation component
 const TabNavigation = ({ tabs, activeTab, setActiveTab }) => {
   return (
     <div className="container mx-auto px-4">
