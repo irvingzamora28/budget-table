@@ -211,22 +211,8 @@ const Dashboard = () => {
             case "overview":
                 return (
                     <>
-                        {/* Card Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                            <CardStat
-                                title="Expenses"
-                                value="500"
-                                percentage={20}
-                                showProgressBar={true}
-                                topRightText="September"
-                            />
-                            <CardStat
-                                title="Savings"
-                                value="545"
-                                percentageChange={14}
-                                showProgressBar={false}
-                                topRightText="September"
-                            />
+                        <div className="text-2xl font-bold mb-4 text-center">
+                            Budget overview 2024
                         </div>
                         <div className="grid grid-cols-1">
                             {/* Condensed Overview (No Add buttons, more compact layout) */}
@@ -259,6 +245,23 @@ const Dashboard = () => {
                                 year="2024"
                                 initialData={investments}
                                 condensed={true}
+                            />
+                        </div>
+                        {/* Card Stats */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
+                            <CardStat
+                                title="Expenses"
+                                value="500"
+                                percentage={20}
+                                showProgressBar={true}
+                                topRightText="September"
+                            />
+                            <CardStat
+                                title="Savings"
+                                value="545"
+                                percentageChange={14}
+                                showProgressBar={false}
+                                topRightText="September"
                             />
                         </div>
                     </>
@@ -310,8 +313,11 @@ const Dashboard = () => {
     return (
         <div className="container mx-auto px-4 pb-16">
             {/* Tab Navigation */}
-            <TabNavigation tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
-
+            <TabNavigation
+                tabs={tabs}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+            />
 
             {/* Tab Content */}
             {renderContent()}
