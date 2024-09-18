@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import TableYear from "../components/TableYear";
 import CardStat from "../components/CardStat";
-
+import {
+    FaHome,
+    FaMoneyBill,
+    FaWallet,
+    FaPiggyBank,
+    FaChartLine,
+} from "react-icons/fa";
+import TabNavigation from "../components/TabNavigation";
 const Dashboard = () => {
     // Data for constant expenses (existing)
     const constantExpenses = [
@@ -188,98 +195,128 @@ const Dashboard = () => {
         },
     ];
 
-        const [activeTab, setActiveTab] = useState('overview'); // Manage active tab state
-      
-        const renderContent = () => {
-          switch (activeTab) {
-            case 'overview':
-              return (
-                <>
-                {/* Card Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                    <CardStat
-                        title="Expenses"
-                        value="500"
-                        percentage={20}
-                        showProgressBar={true}
-                        topRightText="September"
+    const [activeTab, setActiveTab] = useState("overview"); // State for the active tab
+
+    // Define the tabs you want to show, including their icons and labels
+    const tabs = [
+        { id: "overview", label: "Overview", icon: FaHome },
+        { id: "income", label: "Income", icon: FaMoneyBill },
+        { id: "expenses", label: "Expenses", icon: FaWallet },
+        { id: "savings", label: "Savings Accounts", icon: FaPiggyBank },
+        { id: "investments", label: "Investments", icon: FaChartLine },
+    ];
+
+    const renderContent = () => {
+        switch (activeTab) {
+            case "overview":
+                return (
+                    <>
+                        {/* Card Stats */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                            <CardStat
+                                title="Expenses"
+                                value="500"
+                                percentage={20}
+                                showProgressBar={true}
+                                topRightText="September"
+                            />
+                            <CardStat
+                                title="Savings"
+                                value="545"
+                                percentageChange={14}
+                                showProgressBar={false}
+                                topRightText="September"
+                            />
+                        </div>
+                        <div className="grid grid-cols-1">
+                            {/* Condensed Overview (No Add buttons, more compact layout) */}
+                            <TableYear
+                                title="Income"
+                                year="2024"
+                                initialData={income}
+                                condensed={true}
+                            />
+                            <TableYear
+                                title="Monthly Constant Expenses"
+                                year="2024"
+                                initialData={constantExpenses}
+                                condensed={true}
+                            />
+                            <TableYear
+                                title="No-Monthly Constant Expenses"
+                                year="2024"
+                                initialData={nonConstantExpenses}
+                                condensed={true}
+                            />
+                            <TableYear
+                                title="Savings Accounts"
+                                year="2024"
+                                initialData={savings}
+                                condensed={true}
+                            />
+                            <TableYear
+                                title="Investments"
+                                year="2024"
+                                initialData={investments}
+                                condensed={true}
+                            />
+                        </div>
+                    </>
+                );
+            case "income":
+                return (
+                    <TableYear
+                        title="Income"
+                        year="2024"
+                        initialData={income}
                     />
-                    <CardStat
-                        title="Savings"
-                        value="545"
-                        percentageChange={14}
-                        showProgressBar={false}
-                        topRightText="September"
+                );
+            case "expenses":
+                return (
+                    <>
+                        <TableYear
+                            title="Monthly Constant Expenses"
+                            year="2024"
+                            initialData={constantExpenses}
+                        />
+                        <TableYear
+                            title="No-Monthly Constant Expenses"
+                            year="2024"
+                            initialData={nonConstantExpenses}
+                        />
+                    </>
+                );
+            case "savings":
+                return (
+                    <TableYear
+                        title="Savings Accounts"
+                        year="2024"
+                        initialData={savings}
                     />
-                </div>
-            <div className="grid grid-cols-1">
-                  {/* Condensed Overview (No Add buttons, more compact layout) */}
-                  <TableYear title="Income" year="2024" initialData={income} condensed={true} />
-                  <TableYear title="Monthly Constant Expenses" year="2024" initialData={constantExpenses} condensed={true} />
-                  <TableYear title="No-Monthly Constant Expenses" year="2024" initialData={nonConstantExpenses} condensed={true} />
-                  <TableYear title="Savings Accounts" year="2024" initialData={savings} condensed={true} />
-                  <TableYear title="Investments" year="2024" initialData={investments} condensed={true} />
-                </div>
-                </>
-              );
-            case 'income':
-              return <TableYear title="Income" year="2024" initialData={income} />;
-            case 'expenses':
-              return (
-                <>
-                  <TableYear title="Monthly Constant Expenses" year="2024" initialData={constantExpenses} />
-                  <TableYear title="No-Monthly Constant Expenses" year="2024" initialData={nonConstantExpenses} />
-                </>
-              );
-            case 'savings':
-              return <TableYear title="Savings Accounts" year="2024" initialData={savings} />;
-            case 'investments':
-              return <TableYear title="Investments" year="2024" initialData={investments} />;
+                );
+            case "investments":
+                return (
+                    <TableYear
+                        title="Investments"
+                        year="2024"
+                        initialData={investments}
+                    />
+                );
             default:
-              return null;
-          }
-        };
-      
-        return (
-          <div className="container mx-auto px-4 pb-16">
+                return null;
+        }
+    };
+
+    return (
+        <div className="container mx-auto px-4 pb-16">
             {/* Tab Navigation */}
-            <div className="flex justify-around border-b mb-4">
-              <button
-                className={`px-4 py-2 ${activeTab === 'overview' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
-                onClick={() => setActiveTab('overview')}
-              >
-                Overview
-              </button>
-              <button
-                className={`px-4 py-2 ${activeTab === 'income' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
-                onClick={() => setActiveTab('income')}
-              >
-                Income
-              </button>
-              <button
-                className={`px-4 py-2 ${activeTab === 'expenses' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
-                onClick={() => setActiveTab('expenses')}
-              >
-                Expenses
-              </button>
-              <button
-                className={`px-4 py-2 ${activeTab === 'savings' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
-                onClick={() => setActiveTab('savings')}
-              >
-                Savings Accounts
-              </button>
-              <button
-                className={`px-4 py-2 ${activeTab === 'investments' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
-                onClick={() => setActiveTab('investments')}
-              >
-                Investments
-              </button>
-            </div>
-      
+            <TabNavigation tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
+
+
             {/* Tab Content */}
             {renderContent()}
-          </div>
-        );
-      };
-      
+        </div>
+    );
+};
+
 export default Dashboard;
