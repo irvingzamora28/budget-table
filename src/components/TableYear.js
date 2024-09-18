@@ -67,15 +67,16 @@ const TableYear = ({ title, year, initialData, condensed = false }) => {
   }, [hoveredIndex]);
 
   const paddingClass = condensed ? 'px-2' : 'px-4';
+  const paddingClassTitle = condensed ? 'px-4' : 'px-6';
 
   return (
     <section className={`bg-white shadow-md ${condensed ? 'rounded-none p-0' : 'rounded-lg p-3'} ${condensed ? 'my-0' : 'my-6'}`}>
-      <h2 className={`${condensed ? 'text-lg' : 'text-2xl'} font-semibold ${condensed ? 'mb-0' : 'mb-3'} ${condensed ? 'bg-orange-200' : ''} ${paddingClass}`}>{title}</h2>
+      <h2 className={`${condensed ? 'text-lg' : 'text-2xl'} font-semibold ${condensed ? 'mb-0' : 'mb-3'} ${condensed ? 'bg-orange-200' : ''} ${paddingClassTitle}`}>{title}</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
           <thead className="bg-gray-50 text-gray-700">
             <tr>
-              <th className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-left font-medium`}>{year}</th>
+              <th className={`${paddingClassTitle} ${condensed ? 'py-1' : 'py-2'} px-4 text-left font-medium`}>{year}</th>
               {months.map((month) => (
                 <th key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right font-medium`}>{month}</th>
               ))}
