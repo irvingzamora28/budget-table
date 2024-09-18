@@ -65,9 +65,9 @@ const TableYear = ({ title, year, initialData }) => {
         <tbody className="text-gray-600">
           {data.map((row, rowIndex) => (
             <tr key={rowIndex} className="border-t border-gray-100 hover:bg-gray-50">
-              <td className="px-4 py-3 font-semibold">{row.concept}</td>
+              <td className="px-4 py-1 font-semibold">{row.concept}</td>
               {months.map((month) => (
-                <td key={month} className="px-4 py-3 text-right">
+                <td key={month} className="px-4 py-1 text-right">
                   <input
                     type="text"
                     value={row[month]}
