@@ -196,7 +196,7 @@ const Dashboard = () => {
               return (
                 <>
                 {/* Card Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                     <CardStat
                         title="Expenses"
                         value="500"
@@ -212,7 +212,7 @@ const Dashboard = () => {
                         topRightText="September"
                     />
                 </div>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1">
                   {/* Condensed Overview (No Add buttons, more compact layout) */}
                   <TableYear title="Income" year="2024" initialData={income} condensed={true} />
                   <TableYear title="Monthly Constant Expenses" year="2024" initialData={constantExpenses} condensed={true} />

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai'; // Import React-Icons for the button
 
-const TableYear = ({ title, year, initialData }) => {
+const TableYear = ({ title, year, initialData, condensed = false }) => {
   const [data, setData] = useState(initialData);
   const [showModal, setShowModal] = useState(false);
   const [newConceptName, setNewConceptName] = useState('');
@@ -49,30 +49,30 @@ const TableYear = ({ title, year, initialData }) => {
   }, [showModal, newConceptName]); // Re-run the effect if modal visibility or concept name changes
 
   return (
-    <section className="bg-white shadow-md rounded-lg p-3 my-6">
-      <h2 className="text-2xl font-bold mb-3">{title}</h2>
+    <section className={`bg-white shadow-md rounded-${condensed ? 'none' : 'lg'} p-${condensed ? '0' : '3'} my-${condensed ? '0' : '6'}`}>
+      <h2 className={`text-${condensed ? 'lg' : '2xl'} font-semibold mb-${condensed ? '1' : '3'}  ${condensed ? 'bg-orange-200' : ''} px-${condensed ? '2' : '4'}`}>{title}</h2>
       <table className="min-w-full table-auto">
         {/* Table Header */}
         <thead className="bg-gray-50 text-gray-700">
           <tr>
-            <th className="px-4 py-2 text-left font-medium">{year}</th>
+            <th className={`px-${condensed ? '2' : '4'} py-${condensed ? '1' : '2'} text-left font-medium`}>{year}</th>
             {months.map((month) => (
-              <th key={month} className="px-4 py-2 text-right font-medium">{month}</th>
+              <th key={month} className={`px-${condensed ? '2' : '4'} py-${condensed ? '1' : '2'} text-right font-medium`}>{month}</th>
             ))}
           </tr>
         </thead>
         {/* Table Body */}
         <tbody className="text-gray-600">
           {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="border-t border-gray-100 hover:bg-gray-50">
-              <td className="px-4 py-1 font-semibold">{row.concept}</td>
+            <tr key={rowIndex} className={`border-t border-gray-100 hover:bg-gray-${condensed ? '200' : '50'}`}>
+              <td className={`px-${condensed ? '2' : '4'} py-${condensed ? '1' : '2'} font-semibold`}>{row.concept}</td>
               {months.map((month) => (
-                <td key={month} className="px-4 py-1 text-right">
+                <td key={month} className={`px-${condensed ? '2' : '4'} py-${condensed ? '1' : '2'} text-right`}>
                   <input
                     type="text"
                     value={row[month]}
                     onChange={(e) => handleEdit(e, rowIndex, month)}
-                    className="w-full bg-transparent text-right outline-none"
+                    className={`w-full bg-transparent text-right outline-none ${condensed ? 'text-sm' : ''}`}
                   />
                 </td>
               ))}
@@ -82,13 +82,15 @@ const TableYear = ({ title, year, initialData }) => {
       </table>
 
       {/* Add Concept Button */}
-      <button
-        onClick={() => setShowModal(true)}
-        className="mt-4 flex items-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-      >
-        <AiOutlinePlus className="mr-2" /> {/* Add Icon */}
-        Add Concept
-      </button>
+      {!condensed && (
+        <button
+          onClick={() => setShowModal(true)}
+          className="mt-4 flex items-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+        >
+          <AiOutlinePlus className="mr-2" /> {/* Add Icon */}
+          Add Concept
+        </button>
+      )}
 
       {/* Modal for Adding Concept Name */}
       {showModal && (
