@@ -63,4 +63,7 @@ module.exports = {
     compress: true,
     port: 3000,
   },
+  externals: {
+    sqlite3: 'commonjs sqlite3', // Exclude SQLite3 from the web bundle
+  },
 };
