@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TableYear from "../components/TableYear";
 import CardStat from "../components/CardStat";
 import {
@@ -10,6 +10,8 @@ import {
 } from "react-icons/fa";
 import TabNavigation from "../components/TabNavigation";
 import ExpenseDetailTable from "../components/ExpenseDetailTable";
+import { addUser, getUser, getUsers } from "../database/dbAccessLayer"; 
+
 const Dashboard = () => {
     // Data for constant expenses (existing)
     const constantExpenses = [
@@ -195,13 +197,26 @@ const Dashboard = () => {
             Dec: "",
         },
     ];
-
+    const [users, setUsers] = useState([]);
     const [activeTab, setActiveTab] = useState("overview"); // State for the active tab
     const [selectedMonth, setSelectedMonth] = useState(null);
 
     const handleMonthClick = (month) => {
         setSelectedMonth(month);
     };
+
+    useEffect(() => {
+        const addAndFetchUsers = async () => {
+            // Add a test user
+            await addUser({ username: "John Doe", email: "john@example.com", password: "password123" });
+
+            // Fetch all users
+            const fetchedUsers = await getUsers(); 
+            setUsers(fetchedUsers);
+        };
+
+        addAndFetchUsers();
+    }, []);
 
     // Define the tabs you want to show, including their icons and labels
     const tabs = [
@@ -221,6 +236,29 @@ const Dashboard = () => {
                             Budget overview 2024
                         </div>
                         <div className="flex flex-col lg:flex-row">
+
+                            {/* User Table */}
+                        <div className="mb-6">
+                            <h2 className="text-xl font-semibold mb-4">Users</h2>
+                            <table className="min-w-full bg-white">
+                                <thead>
+                                    <tr>
+                                        <th className="border px-4 py-2">ID</th>
+                                        <th className="border px-4 py-2">Username</th>
+                                        <th className="border px-4 py-2">Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.map((user) => (
+                                        <tr key={user.id}>
+                                            <td className="border px-4 py-2">{user.id}</td>
+                                            <td className="border px-4 py-2">{user.username}</td>
+                                            <td className="border px-4 py-2">{user.email}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                             {/* The two TableYear components will stack on top of each other on small screens */}
                             <div
                                 className={`w-full ${
