@@ -231,13 +231,13 @@ const Dashboard = () => {
                                     title="Income"
                                     year="2024"
                                     initialData={income}
+                                    onMonthClick={handleMonthClick}
                                     condensed={true}
                                 />
                                 <TableYear
                                     title="Monthly Constant Expenses"
                                     year="2024"
                                     initialData={constantExpenses}
-                                    onMonthClick={handleMonthClick}
                                     condensed={true}
                                     showHeader={false}
                                 />
@@ -245,7 +245,6 @@ const Dashboard = () => {
                                     title="No-Monthly Constant Expenses"
                                     year="2024"
                                     initialData={nonConstantExpenses}
-                                    onMonthClick={handleMonthClick}
                                     condensed={true}
                                     showHeader={false}
                                 />
