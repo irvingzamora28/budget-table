@@ -61,12 +61,16 @@ const Header = () => {
                                 onClick={closeMenu} // Close menu on clicking outside
                             >
                                 <ul className="py-2">
-                                    <li className="px-4 py-2 hover:bg-gray-100">
-                                        <Link to="/">Dashboard</Link>
-                                    </li>
-                                    <li className="px-4 py-2 hover:bg-gray-100">
-                                        <Link to="/settings">Settings</Link>
-                                    </li>
+                                    <Link to="/">
+                                        <li className="px-4 py-2 hover:bg-gray-100">
+                                            Dashboard
+                                        </li>
+                                    </Link>
+                                    <Link to="/settings">
+                                        <li className="px-4 py-2 hover:bg-gray-100">
+                                            Settings
+                                        </li>
+                                    </Link>
                                     <li className="px-4 py-2 hover:bg-gray-100">
                                         <button
                                             onClick={() => alert("Logging out")}
