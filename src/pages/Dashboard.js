@@ -220,39 +220,55 @@ const Dashboard = () => {
                         <div className="text-2xl font-bold mb-4 text-center">
                             Budget overview 2024
                         </div>
-                        <div className="grid grid-cols-1">
-                            {/* Condensed Overview (No Add buttons, more compact layout) */}
-                            <TableYear
-                                title="Income"
-                                year="2024"
-                                initialData={income}
-                                condensed={true}
-                            />
-                            <TableYear
-                                title="Monthly Constant Expenses"
-                                year="2024"
-                                initialData={constantExpenses}
-                                condensed={true}
-                            />
-                            <TableYear
-                                title="No-Monthly Constant Expenses"
-                                year="2024"
-                                initialData={nonConstantExpenses}
-                                condensed={true}
-                            />
-                            <TableYear
-                                title="Savings Accounts"
-                                year="2024"
-                                initialData={savings}
-                                condensed={true}
-                            />
-                            <TableYear
-                                title="Investments"
-                                year="2024"
-                                initialData={investments}
-                                condensed={true}
-                            />
+                        <div className="flex flex-col lg:flex-row">
+                            {/* The two TableYear components will stack on top of each other on small screens */}
+                            <div
+                                className={`w-full ${
+                                    selectedMonth ? "lg:w-[70%]" : ""
+                                } pr-0 lg:pr-4 order-2 lg:order-1`}
+                            >
+                                <TableYear
+                                    title="Income"
+                                    year="2024"
+                                    initialData={income}
+                                    condensed={true}
+                                />
+                                <TableYear
+                                    title="Monthly Constant Expenses"
+                                    year="2024"
+                                    initialData={constantExpenses}
+                                    onMonthClick={handleMonthClick}
+                                    condensed={true}
+                                />
+                                <TableYear
+                                    title="No-Monthly Constant Expenses"
+                                    year="2024"
+                                    initialData={nonConstantExpenses}
+                                    onMonthClick={handleMonthClick}
+                                    condensed={true}
+                                />
+                                <TableYear
+                                    title="Savings Accounts"
+                                    year="2024"
+                                    initialData={savings}
+                                    condensed={true}
+                                />
+                                <TableYear
+                                    title="Investments"
+                                    year="2024"
+                                    initialData={investments}
+                                    condensed={true}
+                                />
+                            </div>
+
+                            {/* ExpenseDetailTable will appear first on small screens and to the right on large screens */}
+                            {selectedMonth && (
+                                <div className="w-full lg:w-[30%] mt-4 lg:mt-0 order-1 lg:order-2">
+                                    <ExpenseDetailTable month={selectedMonth} condensed={true} />
+                                </div>
+                            )}
                         </div>
+                        
                         {/* Card Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
                             <CardStat
