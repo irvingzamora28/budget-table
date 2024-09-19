@@ -59,7 +59,9 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, 
 
   return (
     <section className={`bg-white shadow-md ${condensed ? 'rounded-none p-0' : 'rounded-lg p-3'} ${condensed ? 'my-0' : 'my-6'}`}>
-      <h2 className={`${condensed ? 'text-lg' : 'text-2xl'} text-slate-700 font-semibold ${condensed ? 'mb-0' : 'mb-3'} ${condensed ? 'bg-orange-200' : ''} ${paddingClassTitle}`}>{title}</h2>
+      {!condensed && (
+        <h2 className={`text-2xl text-slate-700 font-semibold mb-3 ${paddingClassTitle}`}>{title}</h2>
+      )}
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
           {showHeader && (
@@ -80,6 +82,13 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, 
             </thead>
           )}
           <tbody className="text-gray-600">
+          {condensed && (
+            <tr className="bg-orange-200 border-x border-y-orange-200">
+              <td colSpan={months.length + 2} className={`${paddingClassTitle} py-0 font-semibold text-slate-700`}>
+                {title}
+              </td>
+            </tr>
+          )}
             {data.map((row, rowIndex) => (
               <tr key={rowIndex} className={`border-t border-b border-x border-gray-100 hover:bg-gray-${condensed ? '200' : '50'}`}>
                 <td
