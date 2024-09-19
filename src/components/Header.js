@@ -21,11 +21,13 @@ const Header = () => {
             <nav className="container mx-auto flex justify-between items-center px-8">
                 {/* Logo and Title */}
                 <div className="flex items-center space-x-2">
-                    <img
-                        src={logo}
-                        alt="Budget Table Logo"
-                        className="h-8 w-full"
-                    />
+                    <Link to="/">
+                        <img
+                            src={logo}
+                            alt="Budget Table Logo"
+                            className="h-8 w-full"
+                        />
+                    </Link>
                 </div>
 
                 {/* Right Section with Icons and User Info */}
@@ -60,13 +62,17 @@ const Header = () => {
                             >
                                 <ul className="py-2">
                                     <li className="px-4 py-2 hover:bg-gray-100">
-                                        <Link to="/profile">Profile</Link>
+                                        <Link to="/">Dashboard</Link>
                                     </li>
                                     <li className="px-4 py-2 hover:bg-gray-100">
                                         <Link to="/settings">Settings</Link>
                                     </li>
                                     <li className="px-4 py-2 hover:bg-gray-100">
-                                        <button onClick={() => alert("Logging out")}>Logout</button>
+                                        <button
+                                            onClick={() => alert("Logging out")}
+                                        >
+                                            Logout
+                                        </button>
                                     </li>
                                 </ul>
                             </div>
