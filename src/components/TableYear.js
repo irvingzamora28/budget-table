@@ -19,6 +19,14 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
     setData(newData);
   };
 
+  // Calculate total for each row
+  const calculateTotal = (row) => {
+    return months.reduce((total, month) => {
+      const value = parseFloat(row[month]) || 0;
+      return total + value;
+    }, 0);
+  };
+
   // Function to append a new concept
   const handleAddConcept = () => {
     const newConcept = { concept: newConceptName, Jan: '', Feb: '', Mar: '', Apr: '', May: '', Jun: '', Jul: '', Aug: '', Sep: '', Oct: '', Nov: '', Dec: '' };
@@ -54,10 +62,10 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
 
   return (
     <section className={`bg-white shadow-md ${condensed ? 'rounded-none p-0' : 'rounded-lg p-3'} ${condensed ? 'my-0' : 'my-6'}`}>
-      <h2 className={`${condensed ? 'text-lg' : 'text-2xl'} font-semibold ${condensed ? 'mb-0' : 'mb-3'} ${condensed ? 'bg-orange-200' : ''} ${paddingClassTitle}`}>{title}</h2>
+      <h2 className={`${condensed ? 'text-lg' : 'text-2xl'} text-slate-700 font-semibold ${condensed ? 'mb-0' : 'mb-3'} ${condensed ? 'bg-orange-200' : ''} ${paddingClassTitle}`}>{title}</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
-        <thead className="bg-gray-50 text-gray-700">
+          <thead className="bg-gray-50 text-gray-700">
             <tr className={`border-t border-b border-x`}>
               <th className={`${paddingClassTitle} ${condensed ? 'py-1' : 'py-2'} px-4 text-left font-medium`}>{year}</th>
               {months.map((month) => (
@@ -69,6 +77,8 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
                   {month}
                 </th>
               ))}
+              {/* Add the Total column header */}
+              <th className={`${paddingClass} text-right font-medium`}>Total</th>
             </tr>
           </thead>
           <tbody className="text-gray-600">
@@ -99,6 +109,10 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
                     />
                   </td>
                 ))}
+                {/* Display the total for each row */}
+                <td className={`${paddingClass} text-right font-semibold`}>
+                  {calculateTotal(row)}
+                </td>
               </tr>
             ))}
           </tbody>
