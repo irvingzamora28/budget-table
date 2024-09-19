@@ -2,20 +2,39 @@ import React, { useState, useEffect, useRef } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import ConceptModal from './ConceptModal';
 
-const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, showHeader = true }) => {
+const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, showHeader = true, currency = '$' }) => {
   const [data, setData] = useState(initialData);
   const [showModal, setShowModal] = useState(false);
   const [newConceptName, setNewConceptName] = useState('');
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [editingCell, setEditingCell] = useState(null);
   const conceptRefs = useRef([]);
   const tdRefs = useRef([]);
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+  const formatNumber = (value) => {
+    const number = parseFloat(value);
+    if (isNaN(number)) return '';
+    return number.toLocaleString('en-US', {
+      style: 'currency',
+      currency: currency === '€' ? 'EUR' : 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
   const handleEdit = (e, rowIndex, month) => {
-    const newData = [...data];
-    newData[rowIndex][month] = e.target.value;
-    setData(newData);
+    const value = e.target.value.replace(/[^0-9.]/g, '');
+    if (/^\d*\.?\d*$/.test(value)) {
+      const newData = [...data];
+      newData[rowIndex][month] = value;
+      setData(newData);
+    }
+  };
+
+  const handleBlur = () => {
+    setEditingCell(null);
   };
 
   const calculateTotal = (row) => {
@@ -121,14 +140,16 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, 
                   <td key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right border-x`}>
                     <input
                       type="text"
-                      value={row[month]}
+                      value={editingCell === `${rowIndex}-${month}` ? row[month] : formatNumber(row[month])}
                       onChange={(e) => handleEdit(e, rowIndex, month)}
+                      onFocus={() => setEditingCell(`${rowIndex}-${month}`)}
+                      onBlur={handleBlur}
                       className={`w-full bg-transparent text-right outline-none ${condensed ? 'text-sm' : ''}`}
                     />
                   </td>
                 ))}
-                <td className={`${paddingClass} text-right font-semibold bg-green-200`}>
-                  {calculateTotal(row)}
+                <td className={`${paddingClass} text-right font-semibold`}>
+                  {formatNumber(calculateTotal(row))}
                 </td>
               </tr>
             ))}
@@ -136,11 +157,11 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, 
               <td className={`${paddingClassTitle} ${condensed ? 'py-1' : 'py-2'}`}>Total</td>
               {months.map((month) => (
                 <td key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right`}>
-                  {calculateColumnSum(month)}
+                  {formatNumber(calculateColumnSum(month))}
                 </td>
               ))}
               <td className={`${paddingClass} text-right`}>
-                {calculateGrandTotal()}
+                {formatNumber(calculateGrandTotal())}
               </td>
             </tr>
             <tr className="border-t border-b border-x border-gray-100 hover:bg-gray-50">
