@@ -39,6 +39,18 @@ module.exports = {
       },
     ],
   },
+  resolve: {
+    fallback: {
+      http: require.resolve('stream-http'),
+      path: require.resolve('path-browserify'),
+      fs: false,
+      os: false,
+      net: false,
+      tls: false,
+      util: require.resolve('util/'),
+      url: require.resolve('url/'),
+    },
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
