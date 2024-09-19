@@ -9,6 +9,7 @@ import {
     FaChartLine,
 } from "react-icons/fa";
 import TabNavigation from "../components/TabNavigation";
+import ExpenseDetailTable from "../components/ExpenseDetailTable";
 const Dashboard = () => {
     // Data for constant expenses (existing)
     const constantExpenses = [
@@ -196,6 +197,11 @@ const Dashboard = () => {
     ];
 
     const [activeTab, setActiveTab] = useState("overview"); // State for the active tab
+    const [selectedMonth, setSelectedMonth] = useState(null);
+
+    const handleMonthClick = (month) => {
+        setSelectedMonth(month);
+    };
 
     // Define the tabs you want to show, including their icons and labels
     const tabs = [
@@ -276,19 +282,36 @@ const Dashboard = () => {
                 );
             case "expenses":
                 return (
-                    <>
-                        <TableYear
-                            title="Monthly Constant Expenses"
-                            year="2024"
-                            initialData={constantExpenses}
-                        />
-                        <TableYear
-                            title="No-Monthly Constant Expenses"
-                            year="2024"
-                            initialData={nonConstantExpenses}
-                        />
-                    </>
+                    <div className="flex flex-col lg:flex-row">
+                        {/* The two TableYear components will stack on top of each other on small screens */}
+                        <div
+                            className={`w-full ${
+                                selectedMonth ? "lg:w-[70%]" : ""
+                            } pr-0 lg:pr-4 order-2 lg:order-1`}
+                        >
+                            <TableYear
+                                title="Monthly Constant Expenses"
+                                year="2024"
+                                initialData={constantExpenses}
+                                onMonthClick={handleMonthClick}
+                            />
+                            <TableYear
+                                title="Non-Monthly Constant Expenses"
+                                year="2024"
+                                initialData={nonConstantExpenses}
+                                onMonthClick={handleMonthClick}
+                            />
+                        </div>
+
+                        {/* ExpenseDetailTable will appear first on small screens and to the right on large screens */}
+                        {selectedMonth && (
+                            <div className="w-full lg:w-[30%] mt-4 lg:mt-0 order-1 lg:order-2">
+                                <ExpenseDetailTable month={selectedMonth} />
+                            </div>
+                        )}
+                    </div>
                 );
+
             case "savings":
                 return (
                     <TableYear

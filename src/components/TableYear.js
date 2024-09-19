@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai'; // Import React-Icons for the button
 import ConceptModal from './ConceptModal';
 
-const TableYear = ({ title, year, initialData, condensed = false }) => {
+const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }) => {
   const [data, setData] = useState(initialData);
   const [showModal, setShowModal] = useState(false);
   const [newConceptName, setNewConceptName] = useState('');
@@ -43,6 +43,12 @@ const TableYear = ({ title, year, initialData, condensed = false }) => {
     });
   }, [hoveredIndex]);
 
+  const handleMonthClick = (month) => {
+    if (onMonthClick) {
+      onMonthClick(month);
+    }
+  };
+
   const paddingClass = condensed ? 'px-2' : 'px-4';
   const paddingClassTitle = condensed ? 'px-4' : 'px-6';
 
@@ -51,11 +57,17 @@ const TableYear = ({ title, year, initialData, condensed = false }) => {
       <h2 className={`${condensed ? 'text-lg' : 'text-2xl'} font-semibold ${condensed ? 'mb-0' : 'mb-3'} ${condensed ? 'bg-orange-200' : ''} ${paddingClassTitle}`}>{title}</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
-          <thead className="bg-gray-50 text-gray-700">
+        <thead className="bg-gray-50 text-gray-700">
             <tr className={`border-t border-b border-x`}>
               <th className={`${paddingClassTitle} ${condensed ? 'py-1' : 'py-2'} px-4 text-left font-medium`}>{year}</th>
               {months.map((month) => (
-                <th key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right font-medium`}>{month}</th>
+                <th 
+                  key={month} 
+                  className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right font-medium cursor-pointer hover:bg-gray-100`}
+                  onClick={() => handleMonthClick(month)}
+                >
+                  {month}
+                </th>
               ))}
             </tr>
           </thead>
