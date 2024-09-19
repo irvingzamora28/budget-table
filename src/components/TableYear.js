@@ -25,6 +25,17 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, 
     }, 0);
   };
 
+  const calculateColumnSum = (month) => {
+    return data.reduce((sum, row) => {
+      const value = parseFloat(row[month]) || 0;
+      return sum + value;
+    }, 0);
+  };
+
+  const calculateGrandTotal = () => {
+    return data.reduce((total, row) => total + calculateTotal(row), 0);
+  };
+
   const handleAddConcept = () => {
     const newConcept = { concept: newConceptName, Jan: '', Feb: '', Mar: '', Apr: '', May: '', Jun: '', Jul: '', Aug: '', Sep: '', Oct: '', Nov: '', Dec: '' };
     setData([...data, newConcept]);
@@ -82,13 +93,13 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, 
             </thead>
           )}
           <tbody className="text-gray-600">
-          {condensed && (
-            <tr className="bg-orange-200 border-x border-y-orange-200">
-              <td colSpan={months.length + 2} className={`${paddingClassTitle} py-0 font-semibold text-slate-700`}>
-                {title}
-              </td>
-            </tr>
-          )}
+            {condensed && (
+              <tr className="bg-orange-200 border-x border-y-orange-200">
+                <td colSpan={months.length + 2} className={`${paddingClassTitle} py-0 font-semibold text-slate-700`}>
+                  {title}
+                </td>
+              </tr>
+            )}
             {data.map((row, rowIndex) => (
               <tr key={rowIndex} className={`border-t border-b border-x border-gray-100 hover:bg-gray-${condensed ? '200' : '50'}`}>
                 <td
@@ -100,7 +111,7 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, 
                   <div className="concept-text-container">
                     <div
                       ref={el => conceptRefs.current[rowIndex] = el}
-                      className="concept-text whitespace-nowrap inline-block px-2"
+                      className="whitespace-nowrap inline-block px-2"
                     >
                       {row.concept}
                     </div>
@@ -121,6 +132,17 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, 
                 </td>
               </tr>
             ))}
+            <tr className="bg-gray-100 font-semibold border-x border-y-gray-200">
+              <td className={`${paddingClassTitle} ${condensed ? 'py-1' : 'py-2'}`}>Total</td>
+              {months.map((month) => (
+                <td key={month} className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right`}>
+                  {calculateColumnSum(month)}
+                </td>
+              ))}
+              <td className={`${paddingClass} text-right`}>
+                {calculateGrandTotal()}
+              </td>
+            </tr>
             <tr className="border-t border-b border-x border-gray-100 hover:bg-gray-50">
               <td
                 className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} font-semibold relative cursor-pointer border-x`}
