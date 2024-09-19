@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AiOutlinePlus } from 'react-icons/ai'; // Import React-Icons for the button
+import { AiOutlinePlus } from 'react-icons/ai';
 import ConceptModal from './ConceptModal';
 
 const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }) => {
@@ -12,14 +12,12 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  // Function to handle value edits
   const handleEdit = (e, rowIndex, month) => {
     const newData = [...data];
     newData[rowIndex][month] = e.target.value;
     setData(newData);
   };
 
-  // Calculate total for each row
   const calculateTotal = (row) => {
     return months.reduce((total, month) => {
       const value = parseFloat(row[month]) || 0;
@@ -27,12 +25,11 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
     }, 0);
   };
 
-  // Function to append a new concept
   const handleAddConcept = () => {
     const newConcept = { concept: newConceptName, Jan: '', Feb: '', Mar: '', Apr: '', May: '', Jun: '', Jul: '', Aug: '', Sep: '', Oct: '', Nov: '', Dec: '' };
     setData([...data, newConcept]);
     setShowModal(false);
-    setNewConceptName(''); // Clear input field after adding
+    setNewConceptName('');
   };
 
   useEffect(() => {
@@ -42,7 +39,7 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
         const textWidth = el.scrollWidth;
 
         if (index === hoveredIndex && textWidth > tdWidth) {
-          const animationDuration = textWidth / 50; // Adjust for desired speed
+          const animationDuration = textWidth / 50;
           el.style.animation = `scrollText ${animationDuration}s linear infinite`;
         } else {
           el.style.animation = 'none';
@@ -77,7 +74,6 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
                   {month}
                 </th>
               ))}
-              {/* Add the Total column header */}
               <th className={`${paddingClass} text-right font-medium`}>Total</th>
             </tr>
           </thead>
@@ -109,28 +105,27 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
                     />
                   </td>
                 ))}
-                {/* Display the total for each row */}
                 <td className={`${paddingClass} text-right font-semibold`}>
                   {calculateTotal(row)}
                 </td>
               </tr>
             ))}
+            <tr className="border-t border-b border-x border-gray-100 hover:bg-gray-50">
+              <td
+                className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} font-semibold relative cursor-pointer border-x`}
+                onClick={() => setShowModal(true)}
+                colSpan={months.length + 2}
+              >
+                <div className="flex items-center justify-center text-blue-500 hover:text-blue-600">
+                  <AiOutlinePlus className="mr-2" />
+                  Add Concept
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
 
-      {/* Button to open modal */}
-      {!condensed && (
-        <button
-          onClick={() => setShowModal(true)}
-          className="mt-4 flex items-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-        >
-          <AiOutlinePlus className="mr-2" />
-          Add Concept
-        </button>
-      )}
-
-      {/* Use the reusable Modal component */}
       <ConceptModal
         showModal={showModal}
         setShowModal={setShowModal}
