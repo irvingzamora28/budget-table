@@ -116,7 +116,7 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, 
                     />
                   </td>
                 ))}
-                <td className={`${paddingClass} text-right font-semibold`}>
+                <td className={`${paddingClass} text-right font-semibold bg-green-200`}>
                   {calculateTotal(row)}
                 </td>
               </tr>
