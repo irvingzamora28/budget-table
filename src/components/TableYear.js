@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import ConceptModal from './ConceptModal';
 
-const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }) => {
+const TableYear = ({ title, year, initialData, condensed = false, onMonthClick, showHeader = true }) => {
   const [data, setData] = useState(initialData);
   const [showModal, setShowModal] = useState(false);
   const [newConceptName, setNewConceptName] = useState('');
@@ -62,21 +62,23 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
       <h2 className={`${condensed ? 'text-lg' : 'text-2xl'} text-slate-700 font-semibold ${condensed ? 'mb-0' : 'mb-3'} ${condensed ? 'bg-orange-200' : ''} ${paddingClassTitle}`}>{title}</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
-          <thead className="bg-gray-50 text-gray-700">
-            <tr className={`border-t border-b border-x`}>
-              <th className={`${paddingClassTitle} ${condensed ? 'py-1' : 'py-2'} px-4 text-left font-medium`}>{year}</th>
-              {months.map((month) => (
-                <th 
-                  key={month} 
-                  className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right font-medium cursor-pointer hover:bg-gray-100`}
-                  onClick={() => handleMonthClick(month)}
-                >
-                  {month}
-                </th>
-              ))}
-              <th className={`${paddingClass} text-right font-medium`}>Total</th>
-            </tr>
-          </thead>
+          {showHeader && (
+            <thead className="bg-gray-50 text-gray-700">
+              <tr className={`border-t border-b border-x`}>
+                <th className={`${paddingClassTitle} ${condensed ? 'py-1' : 'py-2'} px-4 text-left font-medium`}>{year}</th>
+                {months.map((month) => (
+                  <th 
+                    key={month} 
+                    className={`${paddingClass} ${condensed ? 'py-1' : 'py-2'} text-right font-medium cursor-pointer hover:bg-gray-100`}
+                    onClick={() => handleMonthClick(month)}
+                  >
+                    {month}
+                  </th>
+                ))}
+                <th className={`${paddingClass} text-right font-medium`}>Total</th>
+              </tr>
+            </thead>
+          )}
           <tbody className="text-gray-600">
             {data.map((row, rowIndex) => (
               <tr key={rowIndex} className={`border-t border-b border-x border-gray-100 hover:bg-gray-${condensed ? '200' : '50'}`}>
@@ -137,7 +139,7 @@ const TableYear = ({ title, year, initialData, condensed = false, onMonthClick }
       <style>{`
         @keyframes scrollText {
           0% { transform: translateX(0); }
-          100% { transform: translateX(calc(-100% + 200px)); }
+          100% { transform: translateX(calc(-100% - 200px)); }
         }
         .concept-text-container {
           position: relative;
