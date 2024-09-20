@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const createTables = require('./src/database/desktop/dbSetup'); // Ensure SQLite tables are created
+const createTables = require('./src/database/desktop/dbSQLiteSetup'); // Ensure SQLite tables are created
 const dbAccess = require('./src/database/dbAccessLayer');   // Unified database access layer
 
 function createWindow() {
