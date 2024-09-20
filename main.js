@@ -1,3 +1,4 @@
+// main.js
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const createTables = require('./src/database/desktop/dbSQLiteSetup'); // Ensure SQLite tables are created
@@ -31,7 +32,7 @@ app.whenReady().then(() => {
 // Handle IPC requests between the renderer and main processes
 ipcMain.handle('add-user', async (event, user) => {
   try {
-    const result = await dbAccess.addUser(user); // Add a user using SQLite
+    const result = await dbAccess.userRepo.add(user); // Add a user using SQLite
     return result; // Send back result to renderer process
   } catch (error) {
     console.error('Error adding user:', error);
@@ -41,7 +42,7 @@ ipcMain.handle('add-user', async (event, user) => {
 
 ipcMain.handle('get-user', async (event, userId) => {
   try {
-    const user = await dbAccess.getUser(userId); // Fetch user details using SQLite
+    const user = await dbAccess.userRepo.getById(userId); // Fetch user details using SQLite
     return user; // Send user data to renderer process
   } catch (error) {
     console.error('Error fetching user:', error);

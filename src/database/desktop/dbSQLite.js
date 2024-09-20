@@ -1,152 +1,85 @@
-const sqlite3 = require('sqlite3').verbose();
-const { get } = require('http');
-const path = require('path');
-const dbPath = path.join(__dirname, 'budget_table.db');
+// src/database/desktop/dbSQLite.js
+const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
+const dbPath = path.join(__dirname, "budget_table.db");
 
-// Create or open the SQLite database
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Error opening database:', err);
-  } else {
-    console.log('SQLite Database opened successfully');
-  }
-});
+class SQLiteDatabase {
+    constructor() {
+        this.db = new sqlite3.Database(dbPath, (err) => {
+            if (err) {
+                console.error("Error opening database:", err);
+            } else {
+                console.log("SQLite Database opened successfully");
+            }
+        });
+    }
 
-// Users
-const addUser = (user) => {
-  return new Promise((resolve, reject) => {
-    db.run(
-      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-      [user.username, user.email, user.password],
-      function (err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID });
-      }
-    );
-  });
-};
+    async add(tableName, item) {
+        const keys = Object.keys(item);
+        const values = Object.values(item);
+        const sql = `INSERT INTO ${tableName} (${keys.join(
+            ", "
+        )}) VALUES (${keys.map(() => "?").join(", ")})`;
+        return new Promise((resolve, reject) => {
+            this.db.run(sql, values, function (err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
+            });
+        });
+    }
 
-const getUser = (userId) => {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM users WHERE id = ?', [userId], (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
-};
+    async getById(tableName, id) {
+        const sql = `SELECT * FROM ${tableName} WHERE id = ?`;
+        return new Promise((resolve, reject) => {
+            this.db.get(sql, [id], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    }
 
-const getUsers = () => {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM users', (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
-};
+    async getAll(tableName, filter = {}) {
+        let sql = `SELECT * FROM ${tableName}`;
+        const values = [];
+        if (Object.keys(filter).length > 0) {
+            const whereClauses = Object.keys(filter).map((key) => {
+                values.push(filter[key]);
+                return `${key} = ?`;
+            });
+            sql += ` WHERE ${whereClauses.join(" AND ")}`;
+        }
+        return new Promise((resolve, reject) => {
+            this.db.all(sql, values, (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    }
 
-// Categories
-const addCategory = (category) => {
-  return new Promise((resolve, reject) => {
-    db.run(
-      'INSERT INTO categories (name, user_id) VALUES (?, ?)',
-      [category.name, category.user_id],
-      function (err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID });
-      }
-    );
-  });
-};
+    async update(tableName, id, item) {
+        const keys = Object.keys(item);
+        const values = Object.values(item);
+        const sql = `UPDATE ${tableName} SET ${keys
+            .map((key) => `${key} = ?`)
+            .join(", ")} WHERE id = ?`;
+        return new Promise((resolve, reject) => {
+            this.db.run(sql, [...values, id], function (err) {
+                if (err) reject(err);
+                else resolve({ id: this.changes });
+            });
+        });
+    }
 
-const getCategories = () => {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM categories', (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
-};
+    async delete(tableName, id) {
+        const sql = `DELETE FROM ${tableName} WHERE id = ?`;
+        return new Promise((resolve, reject) => {
+            this.db.run(sql, [id], function (err) {
+                if (err) reject(err);
+                else resolve({ id: this.changes });
+            });
+        });
+    }
+}
 
-// Similar functions for concepts, income, expenses
-const addConcept = (concept) => {
-  return new Promise((resolve, reject) => {
-    db.run(
-      'INSERT INTO concepts (name, user_id, category_id) VALUES (?, ?, ?)',
-      [concept.name, concept.user_id, concept.category_id],
-      function (err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID });
-      }
-    );
-  });
-};
-
-const getConcepts = () => {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM concepts', (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
-};
-
-const addIncome = (income) => {
-  return new Promise((resolve, reject) => {
-    db.run(
-      'INSERT INTO income (amount, concept_id) VALUES (?, ?)',
-      [income.amount, income.concept_id],
-      function (err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID });
-      }
-    );
-  });
-};
-
-const getIncome = () => {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM income', (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
-};
-
-const addExpense = (expense) => {
-  return new Promise((resolve, reject) => {
-    db.run(
-      'INSERT INTO expenses (amount, concept_id) VALUES (?, ?)',
-      [expense.amount, expense.concept_id],
-      function (err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID });
-      }
-    );
-  });
-};
-
-
-const getExpenses = () => {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM expenses', (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
-};
-
-
-module.exports = {
-    db,
-  addUser,
-  getUser,
-  getUsers,
-  addCategory,
-  getCategories,
-  addConcept,
-  getConcepts,
-  addIncome,
-  getIncome,
-  addExpense,
-  getExpenses,
-};
+const sqliteDB = new SQLiteDatabase();
+module.exports = sqliteDB;

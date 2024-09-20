@@ -1,3 +1,4 @@
+// src/database/desktop/dbSQLiteSetup.js
 const db = require("./dbSQLite");
 
 const createTables = async () => {
@@ -109,6 +110,93 @@ const createTables = async () => {
                         investment_name TEXT NOT NULL,
                         amount REAL NOT NULL,
                         date TEXT NOT NULL,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                    );
+                `);
+
+                // Loans Table
+                db.run(`
+                  CREATE TABLE IF NOT EXISTS loans (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        budget_id INTEGER NOT NULL,
+                        loan_name TEXT NOT NULL,
+                        amount REAL NOT NULL,
+                        interest_rate REAL NOT NULL,
+                        start_date TEXT NOT NULL,
+                        end_date TEXT NOT NULL,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                    );
+                `);
+
+                // Goals Table
+                db.run(`
+                  CREATE TABLE IF NOT EXISTS goals (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        budget_id INTEGER NOT NULL,
+                        goal_name TEXT NOT NULL,
+                        target_amount REAL NOT NULL,
+                        current_amount REAL NOT NULL,
+                        start_date TEXT NOT NULL,
+                        end_date TEXT NOT NULL,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                    );
+                `);
+
+                // Assets Table
+                db.run(`
+                  CREATE TABLE IF NOT EXISTS assets (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        budget_id INTEGER NOT NULL,
+                        asset_name TEXT NOT NULL,
+                        amount REAL NOT NULL,
+                        date TEXT NOT NULL,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                    );
+                `);
+
+                // Liabilities Table
+                db.run(`
+                  CREATE TABLE IF NOT EXISTS liabilities (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        budget_id INTEGER NOT NULL,
+                        liability_name TEXT NOT NULL,
+                        amount REAL NOT NULL,
+                        date TEXT NOT NULL,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                    );
+                `);
+
+                // Reports Table
+                db.run(`
+                  CREATE TABLE IF NOT EXISTS reports (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        budget_id INTEGER NOT NULL,
+                        report_name TEXT NOT NULL,
+                        report_type TEXT NOT NULL,
+                        report_date TEXT NOT NULL,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                    );
+                `);
+
+                // Settings Table
+                db.run(`
+                  CREATE TABLE IF NOT EXISTS settings (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        budget_id INTEGER NOT NULL,
+                        setting_name TEXT NOT NULL,
+                        setting_value TEXT NOT NULL,
                         FOREIGN KEY(user_id) REFERENCES users(id),
                         FOREIGN KEY(budget_id) REFERENCES budgets(id)
                     );

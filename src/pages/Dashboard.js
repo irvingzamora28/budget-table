@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import TabNavigation from "../components/TabNavigation";
 import ExpenseDetailTable from "../components/ExpenseDetailTable";
-import { addUser, getUser, getUsers } from "../database/dbAccessLayer"; 
+import { userRepo } from "../database/dbAccessLayer"; 
 
 const Dashboard = () => {
     // Data for constant expenses (existing)
@@ -208,10 +208,10 @@ const Dashboard = () => {
     useEffect(() => {
         const addAndFetchUsers = async () => {
             // Add a test user
-            await addUser({ username: "John Doe", email: "john@example.com", password: "password123" });
+            await userRepo.add({ username: "John Doe", email: "john@example.com", password: "password123" });
 
             // Fetch all users
-            const fetchedUsers = await getUsers(); 
+            const fetchedUsers = await userRepo.getAll(); 
             setUsers(fetchedUsers);
         };
 
