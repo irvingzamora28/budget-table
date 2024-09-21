@@ -1,35 +1,45 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/images/logo_budget_table_removebg.png"; // Assuming you have a logo
+import bcrypt from "bcryptjs";
+import { userRepo } from "../database/dbAccessLayer";
 
-const SignIn = ({ onSignIn }) => {
+const SignIn = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const navigate = useNavigate(); // Use navigate for redirection
+    const navigate = useNavigate();
 
-    const handleSignIn = (e) => {
+    const handleSignIn = async (e) => {
         e.preventDefault();
-        if (email && password) {
-            onSignIn(email, password); // Placeholder for sign-in logic
-            navigate("/dashboard"); // Redirect to dashboard after successful sign-in
-        } else {
-            setError("Please enter both email and password");
+
+        try {
+            const user = await userRepo.getByEmail(email);
+            if (user) {
+                // Check if the password matches the hashed password in the database
+                const isMatch = await bcrypt.compare(password, user.password);
+                if (isMatch) {
+                    // Set up session or token here (to implement later)
+                    navigate("/dashboard");
+                } else {
+                    setError("Invalid email or password");
+                }
+            } else {
+                setError("User not found");
+            }
+        } catch (error) {
+            setError("An error occurred during login. Please try again.");
+            console.error("Login error:", error);
         }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
-                {/* Logo on top */}
                 <div className="flex justify-center mb-4">
-                    <img src={logo} alt="Budget Table Logo" className="h-16" />
+                    <img src="/path/to/logo.png" alt="Logo" className="h-16" />
                 </div>
-
                 <h2 className="text-2xl font-bold text-center mb-6">Sign In</h2>
-
                 {error && <p className="text-red-500 mb-4">{error}</p>}
-
                 <form onSubmit={handleSignIn} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700">
@@ -40,7 +50,6 @@ const SignIn = ({ onSignIn }) => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full p-2 border rounded-md"
-                            placeholder="Enter your email"
                             required
                         />
                     </div>
@@ -53,7 +62,6 @@ const SignIn = ({ onSignIn }) => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full p-2 border rounded-md"
-                            placeholder="Enter your password"
                             required
                         />
                     </div>

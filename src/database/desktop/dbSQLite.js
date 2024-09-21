@@ -38,6 +38,25 @@ class SQLiteDatabase {
         });
     }
 
+    async get(tableName, filter = {}) {
+        let sql = `SELECT * FROM ${tableName}`;
+        const values = [];
+        if (Object.keys(filter).length > 0) {
+            const whereClauses = Object.keys(filter).map((key) => {
+                values.push(filter[key]);
+                return `${key} = ?`;
+            });
+            sql += ` WHERE ${whereClauses.join(" AND ")}`;
+        }
+        sql += ` LIMIT 1`;
+        return new Promise((resolve, reject) => {
+            this.db.get(sql, values, (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    }
+
     async getAll(tableName, filter = {}) {
         let sql = `SELECT * FROM ${tableName}`;
         const values = [];

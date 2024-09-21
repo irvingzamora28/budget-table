@@ -43,6 +43,9 @@ module.exports = {
     fallback: {
       http: require.resolve('stream-http'),
       path: require.resolve('path-browserify'),
+      crypto: require.resolve('crypto-browserify'),
+      stream: require.resolve('stream-browserify'),
+      vm: require.resolve('vm-browserify'),
       fs: false,
       os: false,
       net: false,

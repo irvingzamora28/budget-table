@@ -13,6 +13,10 @@ class UserRepository {
     async getById(id) {
       return await this.db.getById(this.tableName, id);
     }
+
+    async getByEmail(email) {
+      return await this.db.get(this.tableName, { email });
+    }
   
     async getAll() {
       return await this.db.getAll(this.tableName);

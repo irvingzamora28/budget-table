@@ -114,6 +114,23 @@ class IndexedDBDatabase {
         return db.get(storeName, id);
     }
 
+    async get(storeName, query = {}) {
+        const db = await this.dbPromise;
+        const tx = db.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        let results = await store.getAll();
+    
+        // Filter results based on query
+        if (Object.keys(query).length > 0) {
+            results = results.filter((item) =>
+                Object.entries(query).every(
+                    ([key, value]) => item[key] === value
+                )
+            );
+        }
+        return results.length > 0 ? results[0] : null;
+    }
+
     async getAll(storeName, query = {}) {
         const db = await this.dbPromise;
         const tx = db.transaction(storeName, "readonly");
