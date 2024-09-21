@@ -60,6 +60,7 @@ module.exports = {
     }),
   ],
   devServer: {
+    historyApiFallback: true, // Fallback to index.html for all routes
     static: {
       directory: path.join(__dirname, 'public'),
     },
