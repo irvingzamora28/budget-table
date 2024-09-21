@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
+import logo from "../assets/images/logo_budget_table_removebg.png";
 import { userRepo } from "../database/dbAccessLayer";
 
 const SignIn = () => {
@@ -36,7 +37,7 @@ const SignIn = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
                 <div className="flex justify-center mb-4">
-                    <img src="/path/to/logo.png" alt="Logo" className="h-16" />
+                    <img src={logo} alt="Budget Table Logo" className="h-16" />
                 </div>
                 <h2 className="text-2xl font-bold text-center mb-6">Sign In</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
