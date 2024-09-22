@@ -2,25 +2,62 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
-import Settings from "./pages/Settings"; // Import the Settings page
+import Settings from "./pages/Settings";
 import SignIn from "./pages/SignIn";
 import Register from "./pages/Register";
+import { AuthProvider } from "./context/AuthContext";
+import PublicRoute from "./components/route/PublicRoute";
+import PrivateRoute from "./components/route/PrivateRoute";
 
 function App() {
     return (
-        <Router>
-            <Routes>
-                    {/* No Layout for SignIn and Register pages */}
-                <Route path="/" element={<SignIn />} />
-                <Route path="/register" element={<Register />} />
+        <AuthProvider>
+            <Router>
+                <Routes>
+                    {/* Public Routes with redirection for authenticated users */}
+                    <Route
+                        path="/"
+                        element={
+                            <PublicRoute>
+                                <SignIn />
+                            </PublicRoute>
+                        }
+                    />
+                    <Route
+                        path="/register"
+                        element={
+                            <PublicRoute>
+                                <Register />
+                            </PublicRoute>
+                        }
+                    />
 
-                {/* Dashboard uses the Layout wrapper */}
-                <Route path="/dashboard" element={<Layout />}>
-                    <Route index element={<Dashboard />} />
-                    <Route path="settings" element={<Settings />} />
-                </Route>
-            </Routes>
-        </Router>
+                    {/* Private Routes */}
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <PrivateRoute>
+                                <Layout />
+                            </PrivateRoute>
+                        }
+                    >
+                        <Route index element={<Dashboard />} />
+                    </Route>
+
+                    {/* Settings Route Directly */}
+                    <Route
+                        path="/settings"
+                        element={
+                            <PrivateRoute>
+                                <Layout />
+                            </PrivateRoute>
+                        }
+                    >
+                        <Route index element={<Settings />} />
+                    </Route>
+                </Routes>
+            </Router>
+        </AuthProvider>
     );
 }
 

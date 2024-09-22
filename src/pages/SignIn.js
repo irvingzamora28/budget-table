@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
 import logo from "../assets/images/logo_budget_table_removebg.png";
+import { useAuth } from "../context/AuthContext";
 import { userRepo } from "../database/dbAccessLayer";
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSignIn = async (e) => {
@@ -19,6 +21,7 @@ const SignIn = () => {
                 // Check if the password matches the hashed password in the database
                 const isMatch = await bcrypt.compare(password, user.password);
                 if (isMatch) {
+                    login(user);
                     // Set up session or token here (to implement later)
                     navigate("/dashboard");
                 } else {

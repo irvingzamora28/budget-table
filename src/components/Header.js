@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa"; // Importing an icon from react-icons
 import logo from "../assets/images/logo_budget_table_removebg.png";
+import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
+    const { logout } = useAuth();
     const [showMenu, setShowMenu] = useState(false);
 
     // Function to toggle the menu
@@ -73,7 +75,7 @@ const Header = () => {
                                     </Link>
                                     <li className="px-4 py-2 hover:bg-gray-100">
                                         <button
-                                            onClick={() => alert("Logging out")}
+                                            onClick={logout}
                                         >
                                             Logout
                                         </button>
