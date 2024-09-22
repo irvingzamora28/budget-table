@@ -1,21 +1,40 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa"; // Importing an icon from react-icons
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaUserCircle } from "react-icons/fa";
 import logo from "../assets/images/logo_budget_table_removebg.png";
 import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
     const { logout } = useAuth();
     const [showMenu, setShowMenu] = useState(false);
+    const dropdownRef = useRef(null);
+    const navigate = useNavigate();
 
-    // Function to toggle the menu
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowMenu(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const toggleMenu = () => {
         setShowMenu((prev) => !prev);
     };
 
-    // Function to close the menu when clicking outside
-    const closeMenu = () => {
+    const handleMenuItemClick = (path) => {
         setShowMenu(false);
+        navigate(path);
+    };
+
+    const handleLogout = () => {
+        setShowMenu(false);
+        logout();
     };
 
     return (
@@ -42,7 +61,7 @@ const Header = () => {
                     </button>
 
                     {/* User info with dropdown */}
-                    <div className="relative flex items-center space-x-2">
+                    <div className="relative flex items-center space-x-2" ref={dropdownRef}>
                         {/* User Name and Role */}
                         <div>
                             <span className="block font-bold">John Doe</span>
@@ -58,26 +77,17 @@ const Header = () => {
 
                         {/* Dropdown Menu */}
                         {showMenu && (
-                            <div
-                                className="absolute top-12 right-0 bg-white shadow-md rounded-lg w-40 z-10"
-                                onClick={closeMenu} // Close menu on clicking outside
-                            >
+                            <div className="absolute top-12 right-0 bg-white shadow-md rounded-lg w-40 z-10">
                                 <ul className="py-2">
-                                    <Link to="/">
-                                        <li className="px-4 py-2 hover:bg-gray-100">
-                                            Dashboard
-                                        </li>
-                                    </Link>
-                                    <Link to="/settings">
-                                        <li className="px-4 py-2 hover:bg-gray-100">
-                                            Settings
-                                        </li>
-                                    </Link>
-                                    <button onClick={logout} className="w-full text-left">
-                                        <li className="px-4 py-2 hover:bg-gray-100">
-                                            Logout
-                                        </li>
-                                    </button>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleMenuItemClick("/")}>
+                                        Dashboard
+                                    </li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleMenuItemClick("/settings")}>
+                                        Settings
+                                    </li>
+                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>
+                                        Logout
+                                    </li>
                                 </ul>
                             </div>
                         )}
