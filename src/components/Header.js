@@ -73,13 +73,11 @@ const Header = () => {
                                             Settings
                                         </li>
                                     </Link>
-                                    <li className="px-4 py-2 hover:bg-gray-100">
-                                        <button
-                                            onClick={logout}
-                                        >
+                                    <button onClick={logout} className="w-full text-left">
+                                        <li className="px-4 py-2 hover:bg-gray-100">
                                             Logout
-                                        </button>
-                                    </li>
+                                        </li>
+                                    </button>
                                 </ul>
                             </div>
                         )}
