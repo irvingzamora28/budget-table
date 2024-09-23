@@ -25,7 +25,8 @@ const ItemTable = ({ items, onUpdate, onDelete }) => {
                                             key={key}
                                             className="text-left py-3 px-6 font-medium"
                                         >
-                                            {key}
+                                            {key.charAt(0).toUpperCase() +
+                                                key.slice(1)}
                                         </th>
                                     );
                                 }
