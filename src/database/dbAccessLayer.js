@@ -1,6 +1,6 @@
 // src/database/dbAccessLayer.js
 const UserRepository = require('./repositories/userRepository');
-// Import other repositories as needed
+const TagRepository = require('./repositories/tagRepository');
 
 let db;
 if (typeof window !== 'undefined' && window.indexedDB) {
@@ -12,9 +12,9 @@ if (typeof window !== 'undefined' && window.indexedDB) {
 }
 
 const userRepo = new UserRepository(db);
-// Initialize other repositories
+const tagRepo = new TagRepository(db);
 
 module.exports = {
     userRepo: userRepo,
-  // Export other repositories
+    tagRepo: tagRepo,
 };
