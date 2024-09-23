@@ -25,4 +25,12 @@ class TagRepository {
     async delete(id) {
         return await this.db.delete(this.tableName, id);
     }
+
+    // Method to get item by any field and value
+    async getAllByField(field, value) {
+        const query = { [field]: value };
+        return await this.db.getAll(this.tableName, query);
+    }
 }
+
+module.exports = TagRepository;
