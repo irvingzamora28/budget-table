@@ -3,7 +3,7 @@ import { openDB } from "idb";
 
 class IndexedDBDatabase {
     constructor() {
-        this.dbPromise = openDB("budget-table", 1, {
+        this.dbPromise = openDB("budget-table", 2, {
             upgrade(db) {
                 // Create object stores if not exists
                 if (!db.objectStoreNames.contains("users")) {

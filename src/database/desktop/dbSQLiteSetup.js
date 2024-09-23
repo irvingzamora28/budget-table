@@ -194,11 +194,10 @@ const createTables = async () => {
                     CREATE TABLE IF NOT EXISTS tags (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER NOT NULL,
-                        budget_id INTEGER NOT NULL,
-                        tag_name TEXT NOT NULL,
+                        name TEXT NOT NULL,
+                        description TEXT NOT NULL,
                         color TEXT NOT NULL,
-                        FOREIGN KEY(user_id) REFERENCES users(id),
-                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                        FOREIGN KEY(user_id) REFERENCES users(id)
                     );
                 `);
 
