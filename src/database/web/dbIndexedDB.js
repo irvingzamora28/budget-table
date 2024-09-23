@@ -60,6 +60,12 @@ class IndexedDBDatabase {
                         autoIncrement: true,
                     });
                 }
+                if (!db.objectStoreNames.contains("goals")) {
+                    db.createObjectStore("goals", {
+                        keyPath: "id",
+                        autoIncrement: true,
+                    });
+                }
                 if (!db.objectStoreNames.contains("assets")) {
                     db.createObjectStore("assets", {
                         keyPath: "id",
@@ -78,8 +84,8 @@ class IndexedDBDatabase {
                         autoIncrement: true,
                     });
                 }
-                if (!db.objectStoreNames.contains("goals")) {
-                    db.createObjectStore("goals", {
+                if (!db.objectStoreNames.contains("tags")) {
+                    db.createObjectStore("tags", {
                         keyPath: "id",
                         autoIncrement: true,
                     });

@@ -189,6 +189,19 @@ const createTables = async () => {
                     );
                 `);
 
+                // Tags Table
+                db.run(`
+                    CREATE TABLE IF NOT EXISTS tags (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        budget_id INTEGER NOT NULL,
+                        tag_name TEXT NOT NULL,
+                        color TEXT NOT NULL,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                    );
+                `);
+
                 // Settings Table
                 db.run(`
                   CREATE TABLE IF NOT EXISTS settings (
