@@ -8,7 +8,6 @@ import {
     FaAngleDoubleRight,
 } from "react-icons/fa";
 
-// Sample statuses, for example purposes.
 const statuses = {
     ACTIVE: "ACTIVE",
     INACTIVE: "INACTIVE",
@@ -21,7 +20,6 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
-    // Search functionality to filter items based on the search query
     useEffect(() => {
         const filtered = items.filter((item) =>
             item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -29,7 +27,6 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
         setFilteredItems(filtered);
     }, [searchQuery, items]);
 
-    // Pagination logic
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
@@ -51,168 +48,165 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
     };
 
     return (
-        <div className="p-6 bg-white rounded-lg shadow">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-semibold">{title}</h2>
-                <div className="flex items-center space-x-2">
+        <div className="p-4 md:p-6 bg-white rounded-lg shadow">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
+                <h2 className="text-xl md:text-2xl font-semibold">{title}</h2>
+                <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-2 w-full md:w-auto">
                     <input
                         type="text"
-                        className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full md:w-auto border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Search..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <div className="relative">
-                        <select
-                            className="block w-full px-4 py-2 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
-                            onChange={(e) =>
-                                setItemsPerPage(parseInt(e.target.value))
-                            }
-                            value={itemsPerPage}
-                        >
-                            <option value={5}>Show 5</option>
-                            <option value={10}>Show 10</option>
-                            <option value={20}>Show 20</option>
-                        </select>
-                        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                            <svg
-                                className="w-4 h-4 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
+                    <div className="flex space-x-2 w-full md:w-auto">
+                        <div className="relative w-full md:w-auto">
+                            <select
+                                className="block w-full md:w-auto px-4 py-2 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8"
+                                onChange={(e) =>
+                                    setItemsPerPage(parseInt(e.target.value))
+                                }
+                                value={itemsPerPage}
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M19 9l-7 7-7-7"
-                                />
-                            </svg>
+                                <option value={5}>Show 5</option>
+                                <option value={10}>Show 10</option>
+                                <option value={20}>Show 20</option>
+                            </select>
+                            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                <svg
+                                    className="w-4 h-4 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </div>
                         </div>
+                        <button
+                            onClick={onCreate}
+                            className="flex items-center w-full md:w-auto justify-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            Create New <FaPlus className="ml-2" />
+                        </button>
                     </div>
-                    {/* Create Button */}
-                    <button
-                        onClick={onCreate}
-                        className="flex ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        Create New <FaPlus className="ml-2 self-center"  />
-                    </button>
                 </div>
             </div>
 
-            <table className="min-w-full table-auto">
-                <thead>
-                    <tr className="bg-gray-50 text-gray-600">
-                        <th className="text-left py-3 px-6 font-medium">
-                            Name
-                        </th>
-                        {/* Render other dynamic headers if properties exist */}
-                        {filteredItems.length > 0 &&
-                            Object.keys(filteredItems[0]).map((key) => {
-                                if (
-                                    key !== "name" &&
-                                    key !== "id" &&
-                                    key !== "status" &&
-                                    key !== "image"
-                                ) {
-                                    return (
-                                        <th
-                                            key={key}
-                                            className="text-left py-3 px-6 font-medium capitalize"
-                                        >
-                                            {key}
-                                        </th>
-                                    );
-                                }
-                                return null;
-                            })}
-                        {/* Status Header */}
-                        {filteredItems.some((item) => item.status) && (
+            {/* Table wrapper to allow scrolling on smaller devices */}
+            <div className="overflow-x-auto">
+                <table className="min-w-full table-auto">
+                    <thead>
+                        <tr className="bg-gray-50 text-gray-600">
                             <th className="text-left py-3 px-6 font-medium">
-                                Status
+                                Name
                             </th>
-                        )}
-                        <th className="text-left py-3 px-6 font-medium">
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentItems.map((item) => (
-                        <tr
-                            key={item.id}
-                            className="border-b hover:bg-gray-100"
-                        >
-                            {/* Name */}
-                            <td className="py-4 px-6 flex items-center">
-                                {item.image && (
-                                    <img
-                                        className="w-10 h-10 rounded-full mr-3"
-                                        src={item.image}
-                                        alt={item.name}
-                                    />
-                                )}
-                                <div>{item.name}</div>
-                            </td>
-
-                            {/* Dynamic Properties */}
-                            {Object.keys(item).map((key) => {
-                                if (
-                                    key !== "name" &&
-                                    key !== "id" &&
-                                    key !== "status" &&
-                                    key !== "image"
-                                ) {
-                                    return (
-                                        <td key={key} className="py-4 px-6">
-                                            {item[key]}
-                                        </td>
-                                    );
-                                }
-                                return null;
-                            })}
-
-                            {/* Status */}
-                            {item.status && (
-                                <td className="py-4 px-6">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                            item.status === statuses.ACTIVE
-                                                ? "bg-green-100 text-green-700"
-                                                : item.status ===
-                                                  statuses.INACTIVE
-                                                ? "bg-yellow-100 text-yellow-700"
-                                                : "bg-red-100 text-red-700"
-                                        }`}
-                                    >
-                                        {item.status}
-                                    </span>
-                                </td>
+                            {filteredItems.length > 0 &&
+                                Object.keys(filteredItems[0]).map((key) => {
+                                    if (
+                                        key !== "name" &&
+                                        key !== "id" &&
+                                        key !== "status" &&
+                                        key !== "image"
+                                    ) {
+                                        return (
+                                            <th
+                                                key={key}
+                                                className="text-left py-3 px-6 font-medium capitalize"
+                                            >
+                                                {key}
+                                            </th>
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            {filteredItems.some((item) => item.status) && (
+                                <th className="text-left py-3 px-6 font-medium">
+                                    Status
+                                </th>
                             )}
-
-                            {/* Actions */}
-                            <td className="py-4 px-6 text-left">
-                                <button
-                                    className="text-blue-500 hover:underline mr-4"
-                                    onClick={() => onUpdate(item.id)}
-                                >
-                                    <FaEdit />
-                                </button>
-                                <button
-                                    className="text-red-500 hover:underline"
-                                    onClick={() => handleDelete(item.id)}
-                                >
-                                    <FaTrash />
-                                </button>
-                            </td>
+                            <th className="text-left py-3 px-6 font-medium">
+                                Actions
+                            </th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {currentItems.map((item) => (
+                            <tr
+                                key={item.id}
+                                className="border-b hover:bg-gray-100"
+                            >
+                                <td className="py-4 px-6 flex items-center">
+                                    {item.image && (
+                                        <img
+                                            className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-3"
+                                            src={item.image}
+                                            alt={item.name}
+                                        />
+                                    )}
+                                    <div>{item.name}</div>
+                                </td>
 
-            {/* Pagination */}
-            <div className="flex justify-between items-center mt-4">
+                                {Object.keys(item).map((key) => {
+                                    if (
+                                        key !== "name" &&
+                                        key !== "id" &&
+                                        key !== "status" &&
+                                        key !== "image"
+                                    ) {
+                                        return (
+                                            <td key={key} className="py-4 px-6">
+                                                {item[key]}
+                                            </td>
+                                        );
+                                    }
+                                    return null;
+                                })}
+
+                                {item.status && (
+                                    <td className="py-4 px-6">
+                                        <span
+                                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                                item.status === statuses.ACTIVE
+                                                    ? "bg-green-100 text-green-700"
+                                                    : item.status ===
+                                                      statuses.INACTIVE
+                                                    ? "bg-yellow-100 text-yellow-700"
+                                                    : "bg-red-100 text-red-700"
+                                            }`}
+                                        >
+                                            {item.status}
+                                        </span>
+                                    </td>
+                                )}
+
+                                <td className="py-4 px-6 text-left">
+                                    <button
+                                        className="text-blue-500 hover:underline mr-4"
+                                        onClick={() => onUpdate(item.id)}
+                                    >
+                                        <FaEdit />
+                                    </button>
+                                    <button
+                                        className="text-red-500 hover:underline"
+                                        onClick={() => handleDelete(item.id)}
+                                    >
+                                        <FaTrash />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-between items-center mt-4 space-y-4 md:space-y-0">
                 <span className="text-gray-600">
                     Page {currentPage} of {totalPages}
                 </span>
