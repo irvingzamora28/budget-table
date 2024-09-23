@@ -71,7 +71,7 @@ const ItemTable = ({ items, onUpdate, onDelete }) => {
                             </td>
                             <td className="py-4 px-6">
                                 <Actions
-                                    itemId={item.id}
+                                    item={item}
                                     onUpdate={onUpdate}
                                     onDelete={onDelete}
                                 />

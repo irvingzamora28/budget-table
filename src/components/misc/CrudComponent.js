@@ -2,12 +2,19 @@ import React, { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import ItemTable from "./ItemTable";
 import PaginationControls from "./PaginationControls";
+import ModalForm from "./ModalForm";
+import ModalConfirmDelete from "./ModalConfirmDelete";
 
 const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredItems, setFilteredItems] = useState(items);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [isCreateEditModalOpen, setIsCreateEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [modalFields, setModalFields] = useState([]);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [itemToDelete, setItemToDelete] = useState(null);
 
     useEffect(() => {
         const filtered = items.filter((item) =>
@@ -23,6 +30,66 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
 
     const handlePageChange = (page) => setCurrentPage(page);
 
+    const openCreateModal = () => {
+        setModalFields([
+            { name: "name", label: "Tag Name", type: "text" },
+            { name: "description", label: "Description", type: "textarea" },
+            {
+                name: "status",
+                label: "Status",
+                type: "select",
+                options: [
+                    { value: "ACTIVE", label: "Active" },
+                    { value: "INACTIVE", label: "Inactive" },
+                    { value: "OFFLINE", label: "Offline" },
+                ],
+            },
+        ]);
+        setCurrentItem(null);
+        setIsCreateEditModalOpen(true);
+    };
+
+    const openEditModal = (item) => {
+        setModalFields([
+            { name: "name", label: "Tag Name", type: "text" },
+            { name: "description", label: "Description", type: "textarea" },
+            {
+                name: "status",
+                label: "Status",
+                type: "select",
+                options: [
+                    { value: "ACTIVE", label: "Active" },
+                    { value: "INACTIVE", label: "Inactive" },
+                    { value: "OFFLINE", label: "Offline" },
+                ],
+            },
+        ]);
+        setCurrentItem(item);
+        setIsCreateEditModalOpen(true);
+    };
+
+    const openDeleteModal = (item) => {
+        setItemToDelete(item);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleDelete = () => {
+        if (itemToDelete) {
+            onDelete(itemToDelete.id);
+            setIsDeleteModalOpen(false);
+            setItemToDelete(null);
+        }
+    };
+
+    const handleSave = (formData) => {
+        if (currentItem) {
+            onUpdate(currentItem.id, formData);
+        } else {
+            onCreate(formData);
+        }
+        setIsCreateEditModalOpen(false);
+    };
+
     return (
         <div className="p-4 md:p-6 bg-white rounded-lg shadow">
             <div className="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
@@ -34,13 +101,13 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
                     onItemsPerPageChange={(e) =>
                         setItemsPerPage(parseInt(e.target.value))
                     }
-                    onCreate={onCreate}
+                    onCreate={openCreateModal}
                 />
             </div>
             <ItemTable
                 items={currentItems}
-                onUpdate={onUpdate}
-                onDelete={onDelete}
+                onUpdate={openEditModal}
+                onDelete={openDeleteModal}
             />
             <div className="flex justify-between items-center mt-4">
                 <span>
@@ -52,6 +119,21 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
                     onPageChange={handlePageChange}
                 />
             </div>
+
+            <ModalForm
+                fields={modalFields}
+                isOpen={isCreateEditModalOpen}
+                onClose={() => setIsCreateEditModalOpen(false)}
+                onSave={handleSave}
+                initialData={currentItem}
+            />
+
+            <ModalConfirmDelete
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                itemName={itemToDelete ? itemToDelete.name : ""}
+            />
         </div>
     );
 };
