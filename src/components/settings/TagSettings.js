@@ -1,36 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CrudComponent from "../misc/CrudComponent";
+import { tagRepo } from "../../database/dbAccessLayer"; // Import tagRepo from your data access layer
 
 const TagSettings = () => {
-    // Initial items for the CRUD table
-    const initialItems = [
-        { id: 1, name: "Tag name 1", lastname: "Lastname", description: "Description for Tag 1", status: "ACTIVE" },
-        { id: 2, name: "Tag 2", lastname: "Lastname", description: "Description different for Tag 2", status: "INACTIVE" },
-        { id: 3, name: "Tag 3", lastname: "Lastname", description: "Description for Tag 3", status: "OFFLINE" },
-        { id: 4, name: "Tag 4", lastname: "Lastname", description: "Description for Tag 4", status: "ACTIVE" },
-        { id: 5, name: "Tag 5", lastname: "Lastname", description: "Description for Tag 5", status: "INACTIVE" },
-        { id: 6, name: "Tag 6", lastname: "Lastname", description: "Description for Tag 6", status: "OFFLINE" },
-    ];
+    const [items, setItems] = useState([]);
 
-    const [items, setItems] = useState(initialItems);
+    // Fetch all tags on component mount
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const allTags = await tagRepo.getAll();
+                setItems(allTags); // Set the tags retrieved from the repository
+            } catch (error) {
+                console.error("Failed to fetch tags:", error);
+            }
+        };
+
+        fetchTags(); // Invoke the function to fetch tags
+    }, []); // Empty dependency array to run on mount
 
     // Create function to add a new item
-    const onCreate = (newItem) => {
-        setItems([...items, { ...newItem, id: items.length + 1 }]);
+    const onCreate = async (newItem) => {
+        try {
+            console.log("Creating tag:", newItem);
+
+            const addedTag = await tagRepo.add(newItem); // Add the new tag to the database
+            setItems((prevItems) => [...prevItems, addedTag]); // Update state with new tag
+        } catch (error) {
+            console.error("Failed to create tag:", error);
+        }
     };
 
     // Update function to modify an existing item
-    const onUpdate = (id, updatedData) => {
-        const updatedItems = items.map((item) =>
-            item.id === id ? { ...item, ...updatedData } : item
-        );
-        setItems(updatedItems);
+    const onUpdate = async (id, updatedData) => {
+        try {
+            await tagRepo.update(id, updatedData); // Update the tag in the database
+            setItems((prevItems) =>
+                prevItems.map((item) =>
+                    item.id === id ? { ...item, ...updatedData } : item
+                )
+            );
+        } catch (error) {
+            console.error("Failed to update tag:", error);
+        }
     };
-    
+
     // Delete function to remove an item
-    const onDelete = (id) => {
-        const updatedItems = items.filter((item) => item.id !== id);
-        setItems(updatedItems);
+    const onDelete = async (id) => {
+        try {
+            await tagRepo.delete(id); // Delete the tag from the database
+            setItems((prevItems) => prevItems.filter((item) => item.id !== id)); // Update state to remove the tag
+        } catch (error) {
+            console.error("Failed to delete tag:", error);
+        }
     };
 
     return (
@@ -38,7 +60,7 @@ const TagSettings = () => {
             <h2 className="text-2xl font-bold mb-4">Tag Settings</h2>
             <CrudComponent
                 title="Tag Settings"
-                items={items}
+                items={items} // Pass the fetched items to CrudComponent
                 onCreate={onCreate}
                 onUpdate={onUpdate}
                 onDelete={onDelete}
