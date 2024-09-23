@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight, FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa';
+import {
+    FaChevronLeft,
+    FaChevronRight,
+    FaAngleDoubleLeft,
+    FaAngleDoubleRight,
+} from "react-icons/fa";
 
 // Sample statuses, for example purposes.
 const statuses = {
@@ -97,12 +102,38 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
             <table className="min-w-full table-auto">
                 <thead>
                     <tr className="bg-gray-50 text-gray-600">
-                        <th className="text-left py-3 px-6 font-medium">Name</th>
                         <th className="text-left py-3 px-6 font-medium">
-                            Description
+                            Name
                         </th>
-                        <th className="text-left py-3 px-6 font-medium">Status</th>
-                        <th className="text-left py-3 px-6 font-medium">Actions</th>
+                        {/* Render other dynamic headers if properties exist */}
+                        {filteredItems.length > 0 &&
+                            Object.keys(filteredItems[0]).map((key) => {
+                                if (
+                                    key !== "name" &&
+                                    key !== "id" &&
+                                    key !== "status" &&
+                                    key !== "image"
+                                ) {
+                                    return (
+                                        <th
+                                            key={key}
+                                            className="text-left py-3 px-6 font-medium capitalize"
+                                        >
+                                            {key}
+                                        </th>
+                                    );
+                                }
+                                return null;
+                            })}
+                        {/* Status Header */}
+                        {filteredItems.some((item) => item.status) && (
+                            <th className="text-left py-3 px-6 font-medium">
+                                Status
+                            </th>
+                        )}
+                        <th className="text-left py-3 px-6 font-medium">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -111,29 +142,55 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
                             key={item.id}
                             className="border-b hover:bg-gray-100"
                         >
+                            {/* Name */}
                             <td className="py-4 px-6 flex items-center">
-                                <img
-                                    className="w-10 h-10 rounded-full mr-3"
-                                    src="https://via.placeholder.com/150"
-                                    alt={item.name}
-                                />
+                                {item.image && (
+                                    <img
+                                        className="w-10 h-10 rounded-full mr-3"
+                                        src={item.image}
+                                        alt={item.name}
+                                    />
+                                )}
                                 <div>{item.name}</div>
                             </td>
-                            <td className="py-4 px-6">{item.description}</td>
-                            <td className="py-4 px-6">
-                                <span
-                                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                        item.status === statuses.ACTIVE
-                                            ? "bg-green-100 text-green-700"
-                                            : item.status === statuses.INACTIVE
-                                            ? "bg-yellow-100 text-yellow-700"
-                                            : "bg-red-100 text-red-700"
-                                    }`}
-                                >
-                                    {item.status}
-                                </span>
-                            </td>
-                            <td className="py-4 px-6 text-right">
+
+                            {/* Dynamic Properties */}
+                            {Object.keys(item).map((key) => {
+                                if (
+                                    key !== "name" &&
+                                    key !== "id" &&
+                                    key !== "status" &&
+                                    key !== "image"
+                                ) {
+                                    return (
+                                        <td key={key} className="py-4 px-6">
+                                            {item[key]}
+                                        </td>
+                                    );
+                                }
+                                return null;
+                            })}
+
+                            {/* Status */}
+                            {item.status && (
+                                <td className="py-4 px-6">
+                                    <span
+                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                            item.status === statuses.ACTIVE
+                                                ? "bg-green-100 text-green-700"
+                                                : item.status ===
+                                                  statuses.INACTIVE
+                                                ? "bg-yellow-100 text-yellow-700"
+                                                : "bg-red-100 text-red-700"
+                                        }`}
+                                    >
+                                        {item.status}
+                                    </span>
+                                </td>
+                            )}
+
+                            {/* Actions */}
+                            <td className="py-4 px-6 text-left">
                                 <button
                                     className="text-blue-600 hover:underline mr-4"
                                     onClick={() => onUpdate(item.id)}
