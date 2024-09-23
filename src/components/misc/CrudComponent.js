@@ -84,6 +84,13 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
                             </svg>
                         </div>
                     </div>
+                    {/* Create Button */}
+                    <button
+                        onClick={onCreate}
+                        className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        Create New
+                    </button>
                 </div>
             </div>
 
