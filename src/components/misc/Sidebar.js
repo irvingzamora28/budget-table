@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import MenuItem from "./MenuItem";
 
 const Sidebar = ({
@@ -12,6 +12,18 @@ const Sidebar = ({
     menuOpen,
     setMenuOpen,
 }) => {
+    const [maxHeight, setMaxHeight] = useState("0px");
+    const sidebarRef = useRef(null);
+
+    // Dynamically calculate the height for the sidebar in mobile view
+    useEffect(() => {
+        if (menuOpen) {
+            setMaxHeight(`${sidebarRef.current.scrollHeight + 20}px`);
+        } else {
+            setMaxHeight("0px");
+        }
+    }, [menuOpen, menuItems, expandedMenuIds]); // Recalculate when submenus open
+
     return (
         <div className="flex flex-col md:flex-row">
             {/* Mobile Menu Button */}
@@ -45,10 +57,20 @@ const Sidebar = ({
                     </svg>
                 </button>
             </div>
+
+            {/* Sidebar */}
             <div
-                className={`bg-white shadow-md rounded-b-lg md:rounded-l-lg md:rounded-r-none p-4 md:w-64 md:block ${
-                    menuOpen ? "block" : "hidden"
+                ref={sidebarRef}
+                className={`bg-white shadow-md rounded-b-lg md:rounded-l-lg md:rounded-r-none p-4 md:w-64 md:block transition-all duration-300 ease-in-out md:min-h-screen ${
+                    menuOpen ? "p-4" : "p-0" // Remove padding when closed
                 }`}
+                style={{
+                    maxHeight: menuOpen ? maxHeight : "0px", // Dynamic height for mobile dropdown
+                    overflow: "hidden", // Hide overflowing content during transition
+                    marginBottom: menuOpen ? "1rem" : "0", // Remove margin when closed
+                    paddingBottom: menuOpen ? "1rem" : "0", // Remove padding when closed
+                    paddingTop: menuOpen ? "1rem" : "0", // Remove padding when closed
+                }}
             >
                 <h2 className="text-xl font-bold mb-4 hidden md:block">
                     Settings
