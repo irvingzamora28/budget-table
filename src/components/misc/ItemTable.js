@@ -32,9 +32,11 @@ const ItemTable = ({ items, onUpdate, onDelete }) => {
                                 }
                                 return null;
                             })}
-                        <th className="text-left py-3 px-6 font-medium">
-                            Status
-                        </th>
+                        {items.length > 0 && items[0].status && (
+                            <th className="text-left py-3 px-6 font-medium">
+                                Status
+                            </th>
+                        )}
                         <th className="text-left py-3 px-6 font-medium">
                             Actions
                         </th>
@@ -67,9 +69,11 @@ const ItemTable = ({ items, onUpdate, onDelete }) => {
                                         </td>
                                     )
                             )}
-                            <td className="py-4 px-6">
-                                <StatusBadge status={item.status} />
-                            </td>
+                            {items.length > 0 && items[0].status && (
+                                <td className="py-4 px-6">
+                                    <StatusBadge status={item.status} />
+                                </td>
+                            )}
                             <td className="py-4 px-6">
                                 <Actions
                                     item={item}
