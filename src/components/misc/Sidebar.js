@@ -61,15 +61,13 @@ const Sidebar = ({
             {/* Sidebar */}
             <div
                 ref={sidebarRef}
-                className={`bg-white shadow-md rounded-b-lg md:rounded-l-lg md:rounded-r-none p-4 md:w-64 md:block transition-all duration-300 ease-in-out md:min-h-screen ${
-                    menuOpen ? "p-4" : "p-0" // Remove padding when closed
+                className={`bg-white shadow-md rounded-b-lg md:rounded-l-lg md:rounded-r-none md:w-64 md:block transition-all duration-300 ease-in-out md:min-h-screen ${
+                    menuOpen ? "p-4" : "p-0 md:p-4" // Remove padding when closed
                 }`}
                 style={{
                     maxHeight: menuOpen ? maxHeight : "0px", // Dynamic height for mobile dropdown
                     overflow: "hidden", // Hide overflowing content during transition
                     marginBottom: menuOpen ? "1rem" : "0", // Remove margin when closed
-                    paddingBottom: menuOpen ? "1rem" : "0", // Remove padding when closed
-                    paddingTop: menuOpen ? "1rem" : "0", // Remove padding when closed
                 }}
             >
                 <h2 className="text-xl font-bold mb-4 hidden md:block">
