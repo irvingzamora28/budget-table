@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+
 import {
     FaChevronLeft,
     FaChevronRight,
@@ -92,9 +94,9 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
                     {/* Create Button */}
                     <button
                         onClick={onCreate}
-                        className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                        Create New
+                        Create New <FaPlus className="ml-2 self-center"  />
                     </button>
                 </div>
             </div>
@@ -192,16 +194,16 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
                             {/* Actions */}
                             <td className="py-4 px-6 text-left">
                                 <button
-                                    className="text-blue-600 hover:underline mr-4"
+                                    className="text-blue-500 hover:underline mr-4"
                                     onClick={() => onUpdate(item.id)}
                                 >
-                                    Edit
+                                    <FaEdit />
                                 </button>
                                 <button
-                                    className="text-red-600 hover:underline"
+                                    className="text-red-500 hover:underline"
                                     onClick={() => handleDelete(item.id)}
                                 >
-                                    Delete
+                                    <FaTrash />
                                 </button>
                             </td>
                         </tr>
