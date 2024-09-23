@@ -16,6 +16,31 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
     const [currentItem, setCurrentItem] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
 
+    // Define the structure of fields to feed to ModalForm
+    const fieldStructure = [
+        { name: "name", label: "Tag Name", type: "text" },
+        { name: "lastname", label: "Last Name", type: "text" },
+        { name: "description", label: "Description", type: "textarea" },
+        {
+            name: "status",
+            label: "Status",
+            type: "select",
+            options: [
+                { value: "ACTIVE", label: "Active" },
+                { value: "INACTIVE", label: "Inactive" },
+                { value: "OFFLINE", label: "Offline" },
+            ],
+        },
+        { name: "color", label: "Color", type: "color" },
+        { name: "icon", label: "Icon", type: "text" },
+        { name: "image", label: "Image", type: "file" },
+    ];
+
+    // Compare the item fields with the predefined fieldStructure
+    const matchFields = (item) => {
+        return fieldStructure.filter((field) => field.name in item);
+    };
+
     useEffect(() => {
         const filtered = items.filter((item) =>
             item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -31,39 +56,17 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
     const handlePageChange = (page) => setCurrentPage(page);
 
     const openCreateModal = () => {
-        setModalFields([
-            { name: "name", label: "Tag Name", type: "text" },
-            { name: "description", label: "Description", type: "textarea" },
-            {
-                name: "status",
-                label: "Status",
-                type: "select",
-                options: [
-                    { value: "ACTIVE", label: "Active" },
-                    { value: "INACTIVE", label: "Inactive" },
-                    { value: "OFFLINE", label: "Offline" },
-                ],
-            },
-        ]);
+        const sampleItem = items[0] || {}; // Take the first item or an empty object
+        const fields = matchFields(sampleItem);
+        setModalFields(fields);
         setCurrentItem(null);
         setIsCreateEditModalOpen(true);
     };
 
     const openEditModal = (item) => {
-        setModalFields([
-            { name: "name", label: "Tag Name", type: "text" },
-            { name: "description", label: "Description", type: "textarea" },
-            {
-                name: "status",
-                label: "Status",
-                type: "select",
-                options: [
-                    { value: "ACTIVE", label: "Active" },
-                    { value: "INACTIVE", label: "Inactive" },
-                    { value: "OFFLINE", label: "Offline" },
-                ],
-            },
-        ]);
+        const sampleItem = items[0] || {}; // Take the first item or an empty object
+        const fields = matchFields(sampleItem);
+        setModalFields(fields);
         setCurrentItem(item);
         setIsCreateEditModalOpen(true);
     };

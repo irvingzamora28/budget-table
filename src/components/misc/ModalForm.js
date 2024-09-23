@@ -97,6 +97,23 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
                                     <span>{field.label}</span>
                                 </div>
                             )}
+                            {field.type === "color" && (
+                                <input
+                                    type="color"
+                                    name={field.name}
+                                    value={formData[field.name] || "#000000"}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 h-12 p-2 rounded"
+                                />
+                            )}
+                            {field.type === "file" && (
+                                <input
+                                    type="file"
+                                    name={field.name}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 p-2 rounded"
+                                />
+                            )}
                         </div>
                     ))}
                     <div className="flex justify-end space-x-4">
