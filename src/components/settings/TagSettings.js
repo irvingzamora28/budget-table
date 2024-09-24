@@ -25,7 +25,8 @@ const TagSettings = () => {
         try {
             console.log("Creating tag:", newItem);
 
-            const addedTag = await tagRepo.add(newItem); // Add the new tag to the database
+            const addedId = await tagRepo.add(newItem);
+            const addedTag = { ...newItem, id: addedId.id };
             setItems((prevItems) => [...prevItems, addedTag]); // Update state with new tag
         } catch (error) {
             console.error("Failed to create tag:", error);
