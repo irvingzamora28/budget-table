@@ -17,7 +17,6 @@ const ItemTable = ({ items, onUpdate, onDelete }) => {
                                 if (
                                     key !== "name" &&
                                     key !== "id" &&
-                                    key !== "status" &&
                                     key !== "image"
                                 ) {
                                     return (
@@ -32,11 +31,6 @@ const ItemTable = ({ items, onUpdate, onDelete }) => {
                                 }
                                 return null;
                             })}
-                        {items.length > 0 && items[0].status && (
-                            <th className="text-left py-3 px-6 font-medium">
-                                Status
-                            </th>
-                        )}
                         <th className="text-left py-3 px-6 font-medium">
                             Actions
                         </th>
