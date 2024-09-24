@@ -3,6 +3,7 @@ const sampleSchema = [
     {name: "description", label: "Description", type: "textarea", defaultValue: ""},
     {name: "color", label: "Color", type: "color", defaultValue: "#000000"},
     {name: "isActive", label: "Is Active", type: "checkbox", defaultValue: false},
+    {name: "gender", label: "Gender", type: "radio", options: [{label: "Male", value: "male"}, {label: "Female", value: "female"}]},
     {name: "date", label: "Date", type: "date", defaultValue: ""},
     {name: "time", label: "Time", type: "time", defaultValue: ""},
     {name: "datetime", label: "Date and Time", type: "datetime-local", defaultValue: ""},
