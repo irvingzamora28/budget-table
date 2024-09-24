@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CrudComponent from "../misc/CrudComponent";
 import { tagRepo } from "../../database/dbAccessLayer"; // Import tagRepo from your data access layer
+import tagSchema from "../../schemas/tagSchema";
 
 const TagSettings = () => {
     const [items, setItems] = useState([]);
@@ -61,6 +62,7 @@ const TagSettings = () => {
             <CrudComponent
                 title="Tag Settings"
                 items={items} // Pass the fetched items to CrudComponent
+                fieldStructure={tagSchema} // Pass the schema from the schemas folder
                 onCreate={onCreate}
                 onUpdate={onUpdate}
                 onDelete={onDelete}

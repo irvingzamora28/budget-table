@@ -5,7 +5,14 @@ import PaginationControls from "./PaginationControls";
 import ModalForm from "./ModalForm";
 import ModalConfirmDelete from "./ModalConfirmDelete";
 
-const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
+const CrudComponent = ({
+    title,
+    items,
+    fieldStructure,
+    onCreate,
+    onUpdate,
+    onDelete,
+}) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredItems, setFilteredItems] = useState(items);
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,30 +23,9 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
     const [currentItem, setCurrentItem] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
 
-    // Define the structure of fields to feed to ModalForm
-    const fieldStructure = [
-        { name: "name", label: "Tag Name", type: "text" },
-        { name: "lastname", label: "Last Name", type: "text" },
-        { name: "description", label: "Description", type: "textarea" },
-        {
-            name: "status",
-            label: "Status",
-            type: "select",
-            options: [
-                { value: "ACTIVE", label: "Active" },
-                { value: "INACTIVE", label: "Inactive" },
-                { value: "OFFLINE", label: "Offline" },
-            ],
-        },
-        { name: "color", label: "Color", type: "color" },
-        { name: "icon", label: "Icon", type: "text" },
-        { name: "image", label: "Image", type: "file" },
-    ];
-
-    // Compare the item fields with the predefined fieldStructure
-    const matchFields = (item) => {
-        return fieldStructure.filter((field) => field.name in item);
-    };
+    useEffect(() => {
+        setModalFields(fieldStructure);
+    }, [currentItem, fieldStructure]);
 
     useEffect(() => {
         const filtered = items.filter((item) =>
@@ -56,17 +42,13 @@ const CrudComponent = ({ title, items, onCreate, onUpdate, onDelete }) => {
     const handlePageChange = (page) => setCurrentPage(page);
 
     const openCreateModal = () => {
-        const sampleItem = items[0] || {}; // Take the first item or an empty object
-        const fields = matchFields(sampleItem);
-        setModalFields(fields);
+        console.log(modalFields);
+
         setCurrentItem(null);
         setIsCreateEditModalOpen(true);
     };
 
     const openEditModal = (item) => {
-        const sampleItem = items[0] || {}; // Take the first item or an empty object
-        const fields = matchFields(sampleItem);
-        setModalFields(fields);
         setCurrentItem(item);
         setIsCreateEditModalOpen(true);
     };
