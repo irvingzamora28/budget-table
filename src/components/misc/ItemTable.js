@@ -3,10 +3,6 @@ import StatusBadge from "./StatusBadge";
 import Actions from "./Actions";
 
 const ItemTable = ({ items, onUpdate, onDelete }) => {
-
-    useEffect(() => {
-        console.log("ItemTable items:", items);
-    }, [items]);
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full table-auto">

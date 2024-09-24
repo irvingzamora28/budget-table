@@ -33,6 +33,10 @@ const CrudComponent = ({
         );
         setFilteredItems(filtered);
     }, [searchQuery, items]);
+    
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
