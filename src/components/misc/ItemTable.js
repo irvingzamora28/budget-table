@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import StatusBadge from "./StatusBadge";
 import Actions from "./Actions";
 
 const ItemTable = ({ items, onUpdate, onDelete }) => {
+
+    useEffect(() => {
+        console.log("ItemTable items:", items);
+    }, [items]);
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full table-auto">
@@ -57,15 +61,26 @@ const ItemTable = ({ items, onUpdate, onDelete }) => {
                                     key !== "name" &&
                                     key !== "id" &&
                                     key !== "status" &&
+                                    key !== "color" &&
                                     key !== "image" && (
                                         <td key={key} className="py-4 px-6">
                                             {item[key]}
                                         </td>
                                     )
                             )}
-                            {items.length > 0 && items[0].status && (
+                            {items.length > 0 && item.status && (
                                 <td className="py-4 px-6">
                                     <StatusBadge status={item.status} />
+                                </td>
+                            )}
+                            {items.length > 0 && item.color && (
+                                <td className="py-4 px-6">
+                                    <div
+                                        className="w-4 h-4 rounded-full"
+                                        style={{
+                                            backgroundColor: item.color,
+                                        }}
+                                    ></div>
                                 </td>
                             )}
                             <td className="py-4 px-6">
