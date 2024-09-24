@@ -14,6 +14,8 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
                     // If it's a select field, set the default value to the first option
                     if (field.type === "select") {
                         initialForm[field.name] = field.options[0].value; // Set first option as default
+                    } if (field.type === "color") {
+                        initialForm[field.name] = "#000000"; // Set default color to black
                     } else {
                         initialForm[field.name] =
                             field.type === "radio" ? false : "";
