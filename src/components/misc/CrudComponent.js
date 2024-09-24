@@ -19,13 +19,8 @@ const CrudComponent = ({
     const [itemsPerPage, setItemsPerPage] = useState(5);
     const [isCreateEditModalOpen, setIsCreateEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [modalFields, setModalFields] = useState([]);
     const [currentItem, setCurrentItem] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
-
-    useEffect(() => {
-        setModalFields(fieldStructure);
-    }, [currentItem, fieldStructure]);
 
     useEffect(() => {
         const filtered = items.filter((item) =>
@@ -46,8 +41,6 @@ const CrudComponent = ({
     const handlePageChange = (page) => setCurrentPage(page);
 
     const openCreateModal = () => {
-        console.log(modalFields);
-
         setCurrentItem(null);
         setIsCreateEditModalOpen(true);
     };
@@ -110,7 +103,7 @@ const CrudComponent = ({
             </div>
 
             <ModalForm
-                fields={modalFields}
+                fields={fieldStructure}
                 isOpen={isCreateEditModalOpen}
                 onClose={() => setIsCreateEditModalOpen(false)}
                 onSave={handleSave}
