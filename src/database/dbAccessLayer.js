@@ -2,6 +2,7 @@
 const UserRepository = require('./repositories/userRepository');
 const TagRepository = require('./repositories/tagRepository');
 const ConceptRepository = require('./repositories/conceptRepository');
+const CategoryRepository = require('./repositories/categoryRepository');
 
 let db;
 if (typeof window !== 'undefined' && window.indexedDB) {
@@ -15,9 +16,10 @@ if (typeof window !== 'undefined' && window.indexedDB) {
 const userRepo = new UserRepository(db);
 const tagRepo = new TagRepository(db);
 const conceptRepo = new ConceptRepository(db);
-
+const categoryRepo = new CategoryRepository(db);
 module.exports = {
     userRepo: userRepo,
     tagRepo: tagRepo,
-    conceptRepo: conceptRepo
+    conceptRepo: conceptRepo,
+    categoryRepo: categoryRepo,
 };
