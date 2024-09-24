@@ -7,7 +7,7 @@ const tagSchema = [
         defaultValue: "",
         validation: {
             required: true,
-            minLength: 9,
+            minLength: 2,
             maxLength: 50
         }
     },

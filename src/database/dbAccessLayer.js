@@ -1,6 +1,7 @@
 // src/database/dbAccessLayer.js
 const UserRepository = require('./repositories/userRepository');
 const TagRepository = require('./repositories/tagRepository');
+const ConceptRepository = require('./repositories/conceptRepository');
 
 let db;
 if (typeof window !== 'undefined' && window.indexedDB) {
@@ -13,8 +14,10 @@ if (typeof window !== 'undefined' && window.indexedDB) {
 
 const userRepo = new UserRepository(db);
 const tagRepo = new TagRepository(db);
+const conceptRepo = new ConceptRepository(db);
 
 module.exports = {
     userRepo: userRepo,
     tagRepo: tagRepo,
+    conceptRepo: conceptRepo
 };
