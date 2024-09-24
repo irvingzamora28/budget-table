@@ -2,35 +2,36 @@ import React, { useState, useEffect } from "react";
 
 const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
     const [formData, setFormData] = useState({});
+    const isEditMode = initialData && Object.keys(initialData).length > 0;
 
-    // Ensure formData is populated with initialData if provided (edit mode)
     useEffect(() => {
         if (isOpen) {
-            if (initialData) {
-                setFormData(initialData); // Initialize with existing data if editing
-            } else {
-                const initialForm = {};
+            if (isEditMode) {
+                // Editing mode: use initialData, fall back to default values
+                const newFormData = {};
                 fields.forEach((field) => {
-                    // If it's a select field, set the default value to the first option
-                    if (field.type === "select") {
-                        initialForm[field.name] = field.options[0].value; // Set first option as default
-                    } if (field.type === "color") {
-                        initialForm[field.name] = "#000000"; // Set default color to black
-                    } else {
-                        initialForm[field.name] =
-                            field.type === "radio" ? false : "";
-                    }
+                    newFormData[field.name] =
+                        initialData[field.name] !== undefined
+                            ? initialData[field.name]
+                            : field.defaultValue;
                 });
-                setFormData(initialForm);
+                setFormData(newFormData);
+            } else {
+                // Creation mode: use default values from schema
+                const newFormData = {};
+                fields.forEach((field) => {
+                    newFormData[field.name] = field.defaultValue;
+                });
+                setFormData(newFormData);
             }
         }
-    }, [initialData, fields, isOpen]);
+    }, [isOpen, fields, initialData, isEditMode]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData({
             ...formData,
-            [name]: type === "radio" ? checked : value,
+            [name]: type === "checkbox" ? checked : value,
         });
     };
 
@@ -45,7 +46,7 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded-md w-full max-w-md">
                 <h3 className="text-lg font-semibold mb-4">
-                    {initialData ? "Edit Item" : "Create Item"}
+                    {isEditMode ? "Edit Item" : "Create Item"}
                 </h3>
                 <form onSubmit={handleSubmit}>
                     {fields.map((field) => (
