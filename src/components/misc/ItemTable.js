@@ -13,7 +13,7 @@ const ItemTable = ({ items, onUpdate, onDelete }) => {
                         </th>
                         {/* Dynamically render additional columns */}
                         {items.length > 0 &&
-                            Object.keys(items[0]).map((key) => {
+                            Object.keys(items[items.length-1]).map((key) => {
                                 if (
                                     key !== "name" &&
                                     key !== "id" &&
