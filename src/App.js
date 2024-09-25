@@ -12,7 +12,7 @@ import PrivateRoute from "./components/route/PrivateRoute";
 function App() {
     return (
         <AuthProvider>
-            <Router basename="/budget-table">
+            <Router>
                 <Routes>
                     {/* Public Routes with redirection for authenticated users */}
                     <Route
