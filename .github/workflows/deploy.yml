@@ -24,6 +24,11 @@ jobs:
             - name: Build the app
               run: yarn build
 
+            - name: Set up Git user
+              run: |
+                  git config user.name "Irving Zamora"
+                  git config user.email "irvingzamora28@gmail.com"
+
             - name: Deploy to GitHub Pages
               run: yarn deploy
               env:
