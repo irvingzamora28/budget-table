@@ -84,6 +84,7 @@ const Sidebar = ({
                             setActiveSubSection={setActiveSubSection}
                             expandedMenuIds={expandedMenuIds}
                             setExpandedMenuIds={setExpandedMenuIds}
+                            setMenuOpen={setMenuOpen} // Pass the setMenuOpen function
                         />
                     ))}
                 </ul>

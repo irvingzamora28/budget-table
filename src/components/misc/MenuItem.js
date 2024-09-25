@@ -8,6 +8,7 @@ const MenuItem = ({
     setActiveSubSection,
     expandedMenuIds,
     setExpandedMenuIds,
+    setMenuOpen,
 }) => {
     const isExpanded = expandedMenuIds.includes(item.id);
 
@@ -23,6 +24,7 @@ const MenuItem = ({
         } else {
             setActiveSection(item.id);
             setActiveSubSection(null);
+            setMenuOpen(false); // Close the menu when an item is selected
         }
     };
 
@@ -68,6 +70,7 @@ const MenuItem = ({
                             onClick={() => {
                                 setActiveSection(item.id);
                                 setActiveSubSection(subItem.id);
+                                setMenuOpen(false); // Close the menu when a sub-item is selected
                             }}
                         >
                             {subItem.label}
