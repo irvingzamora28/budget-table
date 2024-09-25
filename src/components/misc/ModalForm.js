@@ -109,7 +109,7 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-md w-full max-w-md">
+            <div className="bg-white p-6 m-4 rounded-md w-full max-w-md">
                 <h3 className="text-lg font-semibold mb-4">
                     {isEditMode ? "Edit Item" : "Create Item"}
                 </h3>
