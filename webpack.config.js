@@ -5,8 +5,9 @@ module.exports = {
   mode: 'development',
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
+    publicPath: '/budget-table/',
   },
   module: {
     rules: [

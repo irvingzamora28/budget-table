@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "main.js",
   "license": "MIT",
+  "homepage": "https://irvingzamora28.github.io/budget-table",
   "scripts": {
     "start": "concurrently \"yarn start:web\" \"yarn start:electron\"",
     "start:web": "webpack serve --config webpack.config.js",
