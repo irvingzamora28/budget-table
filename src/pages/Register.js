@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
 import logo from "../assets/images/logo_budget_table_removebg.png";
 import { userRepo } from "../database/dbAccessLayer";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
     const [username, setUsername] = useState("");
@@ -10,6 +11,7 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -22,12 +24,12 @@ const Register = () => {
                 const hashedPassword = await bcrypt.hash(password, 10);
 
                 // Add the user to the database
-                await userRepo.add({
+                const userId = await userRepo.add({
                     username,
                     email,
                     password: hashedPassword,
                 });
-
+                login({id: userId.id, username, email, password: hashedPassword });
                 navigate("/dashboard"); // Redirect to dashboard after successful registration
             } catch (error) {
                 setError(

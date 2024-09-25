@@ -20,7 +20,9 @@ const AuthProvider = ({ children }) => {
     const login = (userData) => {
         // Set user data and persist it
         setUser(userData);
-        storage.setItem("user", JSON.stringify(userData));
+        // Remove the password before storing
+        const { password, ...userWithoutPassword } = userData;
+        storage.setItem("user", JSON.stringify(userWithoutPassword));
     };
 
     const logout = () => {
