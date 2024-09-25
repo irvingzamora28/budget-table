@@ -3,20 +3,20 @@ name: Deploy React App to GitHub Pages
 on:
     push:
         branches:
-            - main # Run this workflow on pushes to the 'main' branch
+            - main # Trigger deployment on push to 'main' branch
 
 jobs:
     build:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout code
+            - name: Checkout the repository
               uses: actions/checkout@v2
 
             - name: Set up Node.js
               uses: actions/setup-node@v2
               with:
-                  node-version: "16"
+                  node-version: "18.x"
 
             - name: Install dependencies
               run: yarn install
