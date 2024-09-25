@@ -9,6 +9,7 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/budget-table/',
   },
+  devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',  // Disable source maps in production
   module: {
     rules: [
       {

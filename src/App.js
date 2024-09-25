@@ -9,10 +9,13 @@ import { AuthProvider } from "./context/AuthContext";
 import PublicRoute from "./components/route/PublicRoute";
 import PrivateRoute from "./components/route/PrivateRoute";
 
+// Determine basename dynamically based on the environment
+const basename = process.env.NODE_ENV === "production" ? "/budget-table" : "/";
+
 function App() {
     return (
         <AuthProvider>
-            <Router>
+            <Router basename={basename}>
                 <Routes>
                     {/* Public Routes with redirection for authenticated users */}
                     <Route
