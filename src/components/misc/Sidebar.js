@@ -1,3 +1,4 @@
+// Sidebar.js
 import React, { useRef, useEffect, useState } from "react";
 import MenuItem from "./MenuItem";
 
@@ -25,7 +26,7 @@ const Sidebar = ({
     }, [menuOpen, menuItems, expandedMenuIds]); // Recalculate when submenus open
 
     return (
-        <div className="flex flex-col md:flex-row">
+        <div className="relative flex flex-col md:flex-row">
             {/* Mobile Menu Button */}
             <div className="md:hidden bg-white p-4 flex justify-between items-center shadow-md">
                 <h2 className="text-xl font-bold">Settings</h2>
@@ -62,7 +63,7 @@ const Sidebar = ({
             <div
                 ref={sidebarRef}
                 className={`bg-white shadow-md rounded-b-lg md:rounded-l-lg md:rounded-r-none md:w-64 md:block transition-all duration-300 ease-in-out md:min-h-screen ${
-                    menuOpen ? "p-4" : "p-0 md:p-4" // Remove padding when closed
+                    menuOpen ? "absolute top-12 left-0 z-10 w-full p-4" : "hidden p-0 md:p-4" // Adjusted styles for overlay
                 }`}
                 style={{
                     maxHeight: menuOpen ? maxHeight : "0px", // Dynamic height for mobile dropdown
