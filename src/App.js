@@ -15,7 +15,7 @@ const basename = process.env.NODE_ENV === "production" ? "/budget-table" : "/";
 function App() {
     return (
         <AuthProvider>
-            <Router basename={basename}>
+            <Router basename={"/budget-table"}>
                 <Routes>
                     {/* Public Routes with redirection for authenticated users */}
                     <Route
