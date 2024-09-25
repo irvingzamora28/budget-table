@@ -40,7 +40,7 @@ const Register = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
+            <div className="bg-white shadow-md rounded-lg p-8 m-4 max-w-md w-full">
                 <div className="flex justify-center mb-4">
                     <img src={logo} alt="Budget Table Logo" className="h-16" />
                 </div>
