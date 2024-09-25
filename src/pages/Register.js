@@ -56,6 +56,8 @@ const Register = () => {
                         <input
                             type="text"
                             value={username}
+                            autoFocus={true}
+                            placeholder="Enter your username"
                             onChange={(e) => setUsername(e.target.value)}
                             className="w-full p-2 border rounded-md"
                             required
@@ -68,6 +70,7 @@ const Register = () => {
                         <input
                             type="email"
                             value={email}
+                            placeholder="Enter your email"
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full p-2 border rounded-md"
                             required
@@ -80,6 +83,7 @@ const Register = () => {
                         <input
                             type="password"
                             value={password}
+                            placeholder="Enter your password"
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full p-2 border rounded-md"
                             required
@@ -92,6 +96,7 @@ const Register = () => {
                         <input
                             type="password"
                             value={confirmPassword}
+                            placeholder="Confirm your password"
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             className="w-full p-2 border rounded-md"
                             required
