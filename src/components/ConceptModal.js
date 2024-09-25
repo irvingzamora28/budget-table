@@ -28,7 +28,7 @@ const ConceptModal = ({ showModal, setShowModal, newConceptName, setNewConceptNa
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-1/3 z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 md:w-1/3 z-50">
         <h3 className="text-xl font-semibold mb-4">Add New Concept</h3>
         <input
           type="text"
