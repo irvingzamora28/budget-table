@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import TabNavigation from "../components/TabNavigation";
 import ExpenseDetailTable from "../components/ExpenseDetailTable";
+import UnifiedTableYear from "../components/UnifiedTableYear";
 
 const Dashboard = () => {
     // Data for constant expenses (existing)
@@ -200,6 +201,14 @@ const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("overview"); // State for the active tab
     const [selectedMonth, setSelectedMonth] = useState(null);
 
+    const sections = [
+        { title: "Income", data: income },
+        { title: "Monthly Constant Expenses", data: constantExpenses },
+        { title: "Non-Monthly Constant Expenses", data: nonConstantExpenses },
+        { title: "Savings Accounts", data: savings },
+        { title: "Investments", data: investments },
+    ];
+
     const handleMonthClick = (month) => {
         setSelectedMonth(month);
     };
@@ -223,46 +232,12 @@ const Dashboard = () => {
                         </div>
                         <div className="flex flex-col lg:flex-row">
 
-                            {/* The two TableYear components will stack on top of each other on small screens */}
-                            <div
-                                className={`w-full ${
-                                    selectedMonth ? "lg:w-[70%]" : ""
-                                } pr-0 lg:pr-4 order-2 lg:order-1`}
-                            >
-                                <TableYear
-                                    title="Income"
+                            <div className={`w-full ${selectedMonth ? "lg:w-[70%]" : ""} pr-0 lg:pr-4 order-2 lg:order-1`}>
+                                <UnifiedTableYear
+                                    sections={sections}
                                     year="2024"
-                                    initialData={income}
                                     onMonthClick={handleMonthClick}
                                     condensed={true}
-                                />
-                                <TableYear
-                                    title="Monthly Constant Expenses"
-                                    year="2024"
-                                    initialData={constantExpenses}
-                                    condensed={true}
-                                    showHeader={false}
-                                />
-                                <TableYear
-                                    title="No-Monthly Constant Expenses"
-                                    year="2024"
-                                    initialData={nonConstantExpenses}
-                                    condensed={true}
-                                    showHeader={false}
-                                />
-                                <TableYear
-                                    title="Savings Accounts"
-                                    year="2024"
-                                    initialData={savings}
-                                    condensed={true}
-                                    showHeader={false}
-                                />
-                                <TableYear
-                                    title="Investments"
-                                    year="2024"
-                                    initialData={investments}
-                                    condensed={true}
-                                    showHeader={false}
                                 />
                             </div>
 
