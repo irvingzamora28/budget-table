@@ -1,5 +1,6 @@
+// App.js
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
@@ -9,13 +10,10 @@ import { AuthProvider } from "./context/AuthContext";
 import PublicRoute from "./components/route/PublicRoute";
 import PrivateRoute from "./components/route/PrivateRoute";
 
-// Determine basename dynamically based on the environment 1
-const basename = process.env.NODE_ENV === "production" ? "/budget-table" : "/";
-
 function App() {
     return (
         <AuthProvider>
-            <Router basename={basename}>
+            <Router>
                 <Routes>
                     {/* Public Routes with redirection for authenticated users */}
                     <Route
