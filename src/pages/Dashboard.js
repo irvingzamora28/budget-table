@@ -16,7 +16,7 @@ const Dashboard = () => {
     // Data for constant expenses (existing)
     const constantExpenses = [
         {
-            concept: "Rent",
+            concept: "Rent very long concept overflow",
             Jan: 1000,
             Feb: 1000,
             Mar: 1000,
