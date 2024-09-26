@@ -8,7 +8,7 @@
     "start": "concurrently \"yarn start:web\" \"yarn start:electron\"",
     "start:web": "webpack serve --config webpack.config.js",
     "start:electron": "wait-on http://localhost:3000 && electron --trace-warnings .",
-    "build": "webpack --config webpack.config.js",
+    "build": "NODE_ENV=production webpack --config webpack.config.js",
     "predeploy": "yarn build",
     "deploy": "gh-pages -d dist -r https://x-access-token:${GITHUB_TOKEN}@github.com/irvingzamora28/budget-table.git"
   },
