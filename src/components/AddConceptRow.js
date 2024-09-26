@@ -13,7 +13,7 @@ const AddConceptRow = ({
         <tr className="border-t border-b border-x border-gray-100 hover:bg-gray-50">
             <td
                 className={`${paddingClass} ${
-                    condensed ? "py-1" : "py-2"
+                    condensed ? "py-0" : "py-2"
                 } font-semibold relative cursor-pointer border-x`}
                 onClick={() => onAddConcept(sectionIndex)}
                 colSpan={months.length + 2}

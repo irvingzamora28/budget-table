@@ -58,7 +58,7 @@ const ConceptRow = ({
                 {/* Concept Name */}
                 <td
                     className={`${paddingClass} ${
-                        condensed ? "py-1" : "py-2"
+                        condensed ? "py-0" : "py-2"
                     } font-semibold relative max-w-[200px] cursor-pointer border-x`}
                     onClick={() =>
                         conceptData.subconcepts &&
@@ -108,7 +108,7 @@ const ConceptRow = ({
                         <td
                             key={cellKey}
                             className={`${paddingClass} ${
-                                condensed ? "py-1" : "py-2"
+                                condensed ? "py-0" : "py-2"
                             } text-right border-x ${
                                 exceeds ? "bg-red-100" : ""
                             }`}

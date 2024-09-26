@@ -28,7 +28,7 @@ const SectionTotalRow = ({
         <tr className="bg-gray-100 font-semibold border-x border-y-gray-200">
             <td
                 className={`${paddingClassTitle} ${
-                    condensed ? "py-1" : "py-2"
+                    condensed ? "py-0" : "py-2"
                 }`}
             >
                 Total
@@ -37,7 +37,7 @@ const SectionTotalRow = ({
                 <td
                     key={`${sectionIndex}-total-${month}`}
                     className={`${paddingClass} ${
-                        condensed ? "py-1" : "py-2"
+                        condensed ? "py-0" : "py-2"
                     } text-right`}
                 >
                     {calculateColumnSum(month).toLocaleString("en-US", {

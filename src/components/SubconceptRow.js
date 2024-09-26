@@ -34,7 +34,7 @@ const SubconceptRow = ({
             {/* Subconcept Name */}
             <td
                 className={`${paddingClass} ${
-                    condensed ? "py-1" : "py-2"
+                    condensed ? "py-0" : "py-2"
                 } relative max-w-[200px] border-x`}
             >
                 <div className="pl-6">{subData.concept}</div>
@@ -62,7 +62,7 @@ const SubconceptRow = ({
                     <td
                         key={cellKey}
                         className={`${paddingClass} ${
-                            condensed ? "py-1" : "py-2"
+                            condensed ? "py-0" : "py-2"
                         } text-right border-x`}
                     >
                         <input
