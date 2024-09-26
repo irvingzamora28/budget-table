@@ -8,7 +8,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/budget-table/',
+    // publicPath: '/budget-table/',
   },
   devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',  // Disable source maps in production
   module: {
