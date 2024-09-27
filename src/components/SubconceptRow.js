@@ -54,7 +54,9 @@ const SubconceptRow = ({
                 ref={tdRef}
                 className={`${paddingClass} ${
                     condensed ? "py-0" : "py-2"
-                } relative max-w-[200px] border-x`}
+                } max-w-[200px] border-x sticky left-0 bg-white hover:bg-gray-${
+                    condensed ? "200" : "50"
+                }`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >

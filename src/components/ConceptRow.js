@@ -77,7 +77,9 @@ const ConceptRow = ({
                     ref={tdRef}
                     className={`${paddingClass} ${
                         condensed ? "py-0" : "py-2"
-                    } font-semibold relative max-w-[200px] cursor-pointer border-x`}
+                    } font-semibold max-w-[200px] cursor-pointer border-x sticky left-0 bg-white hover:bg-gray-${
+                    condensed ? "200" : "50"
+                }`}
                     onClick={() =>
                         hasSubconcepts
                             ? toggleConceptExpansion(sectionIndex, rowIndex)
@@ -107,9 +109,9 @@ const ConceptRow = ({
 
                         {/* Icon Container: occupies 20% */}
                         <div
-                            className={`icon-container py-4 px-2 bg-gray-${ condensed ? "200" : "50"} ${
-                                isHovered ? "visible" : "invisible"
-                            }`}
+                            className={`icon-container py-4 px-2 bg-gray-${
+                                condensed ? "200" : "50"
+                            } ${isHovered ? "visible" : "invisible"}`}
                             style={{ flexBasis: "20%", textAlign: "right" }}
                             onClick={(e) => {
                                 e.stopPropagation(); // Prevent triggering row click

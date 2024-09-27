@@ -29,10 +29,11 @@ const SectionTotalRow = ({
             <td
                 className={`${paddingClassTitle} ${
                     condensed ? "py-0" : "py-2"
-                }`}
+                } sticky left-0 bg-gray-100`}
             >
                 Total
             </td>
+
             {months.map((month) => (
                 <td
                     key={`${sectionIndex}-total-${month}`}

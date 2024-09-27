@@ -26,11 +26,14 @@ const Section = ({
             {/* Section Title */}
             <tr className="bg-orange-200 border-x border-y-orange-200">
                 <td
-                    colSpan={months.length + 2}
-                    className={`${paddingClassTitle} py-0 font-semibold text-slate-700`}
+                    // colSpan={months.length + 2}
+                    className={`${paddingClassTitle} py-0 font-semibold text-slate-700 sticky left-0 text-nowrap`}
                 >
-                    {sectionData.title}
+                    {sectionData.title} sdf
                 </td>
+                {/* Render one column for each month using months.length columns */}
+                {[...Array(months.length+1)].map((_, i) => <td key={i}></td>)}
+
             </tr>
 
             {/* Concepts */}
