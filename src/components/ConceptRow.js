@@ -217,7 +217,7 @@ const ConceptRow = ({
                 ))}
 
             {/* CSS Styles */}
-            <style jsx>{`
+            <style>{`
                 .concept-text-container {
                     position: relative;
                     overflow: hidden;
