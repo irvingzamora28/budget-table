@@ -18,7 +18,7 @@ const TableHeader = ({
                 <th
                     className={`${paddingClassTitle} ${
                         condensed ? "py-1" : "py-2"
-                    } px-4 text-left font-medium sticky left-0 bg-white`}
+                    } px-4 text-left font-medium max-w-40 sticky left-0 bg-white`}
                 >
                     {year}
                 </th>

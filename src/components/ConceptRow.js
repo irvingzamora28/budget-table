@@ -55,8 +55,8 @@ const ConceptRow = ({
             conceptRef.current.style.overflow = "hidden";
 
 
-            // If the text overflows, start the animation
-            if (isHovered && textWidth > maxWidth) {
+            // If the text overflows the 80% (which is the part of the text in the cell (Icon is the other 20%)), start the animation
+            if (isHovered && textWidth > (maxWidth*0.8)) {
                 const animationDuration = textWidth / 50;
                 conceptRef.current.style.animation = `scrollText ${animationDuration}s linear infinite`;
             } else {
@@ -102,7 +102,7 @@ const ConceptRow = ({
                     ref={tdRef}
                     className={`${paddingClass} ${
                         condensed ? "py-0" : "py-2"
-                    } font-semibold max-w-[200px] cursor-pointer border-x sticky left-0 bg-white hover:bg-gray-${
+                    } font-semibold max-w-40 sm:max-w-[200px] cursor-pointer border-x sticky left-0 bg-white hover:bg-gray-${
                         condensed ? "200" : "50"
                     }`}
                     onClick={() =>
