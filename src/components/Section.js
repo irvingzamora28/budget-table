@@ -29,7 +29,7 @@ const Section = ({
                     // colSpan={months.length + 2}
                     className={`${paddingClassTitle} py-0 font-semibold text-slate-700 sticky left-0 text-nowrap`}
                 >
-                    {sectionData.title} sdf
+                    {sectionData.title}
                 </td>
                 {/* Render one column for each month using months.length columns */}
                 {[...Array(months.length+1)].map((_, i) => <td key={i}></td>)}
