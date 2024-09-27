@@ -1,4 +1,3 @@
-// ConceptRow.js
 import React, { useState, useEffect, useRef } from "react";
 import { FaChevronDown, FaChevronRight, FaPencilAlt } from "react-icons/fa";
 import SubconceptRow from "./SubconceptRow";
@@ -29,17 +28,43 @@ const ConceptRow = ({
 
     useEffect(() => {
         if (conceptRef.current && tdRef.current) {
-            const tdWidth = tdRef.current.clientWidth;
+            // Get parent containers
+            const mainTextContainer =
+                conceptRef.current.parentElement.parentElement;
+
+            // Get the computed max-width of the main container
+            const computedStyle = window.getComputedStyle(mainTextContainer);
+            const maxWidth = parseFloat(
+                computedStyle.getPropertyValue("max-width")
+            );
+
+            // Temporarily remove flex-basis constraint to calculate full text width
+            const previousFlexBasis = conceptRef.current.style.flexBasis;
+            const previousWidth = conceptRef.current.style.width;
+
+            conceptRef.current.style.flexBasis = "auto";
+            conceptRef.current.style.width = "auto";
+            conceptRef.current.style.overflow = "visible";
+
+            // Get the widths
             const textWidth = conceptRef.current.scrollWidth;
 
-            if (isHovered && textWidth > tdWidth) {
+            // Restore the original flex-basis and width
+            conceptRef.current.style.flexBasis = previousFlexBasis;
+            conceptRef.current.style.width = previousWidth;
+            conceptRef.current.style.overflow = "hidden";
+
+
+            // If the text overflows, start the animation
+            if (isHovered && textWidth > maxWidth) {
                 const animationDuration = textWidth / 50;
                 conceptRef.current.style.animation = `scrollText ${animationDuration}s linear infinite`;
             } else {
+               
                 conceptRef.current.style.animation = "none";
             }
         }
-    }, [isHovered]);
+    }, [isHovered, conceptData.concept]);
 
     // Function to calculate total for the concept
     const calculateTotal = () => {
@@ -78,8 +103,8 @@ const ConceptRow = ({
                     className={`${paddingClass} ${
                         condensed ? "py-0" : "py-2"
                     } font-semibold max-w-[200px] cursor-pointer border-x sticky left-0 bg-white hover:bg-gray-${
-                    condensed ? "200" : "50"
-                }`}
+                        condensed ? "200" : "50"
+                    }`}
                     onClick={() =>
                         hasSubconcepts
                             ? toggleConceptExpansion(sectionIndex, rowIndex)
