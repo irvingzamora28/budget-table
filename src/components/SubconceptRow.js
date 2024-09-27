@@ -1,5 +1,4 @@
-// SubconceptRow.js
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const SubconceptRow = ({
     subData,
@@ -17,6 +16,25 @@ const SubconceptRow = ({
 }) => {
     const key = `${sectionIndex}-${rowIndex}-sub-${subIndex}`;
 
+    // State and refs for scrolling text
+    const [isHovered, setIsHovered] = useState(false);
+    const conceptRef = useRef(null);
+    const tdRef = useRef(null);
+
+    useEffect(() => {
+        if (conceptRef.current && tdRef.current) {
+            const tdWidth = tdRef.current.clientWidth;
+            const textWidth = conceptRef.current.scrollWidth;
+
+            if (isHovered && textWidth > tdWidth) {
+                const animationDuration = textWidth / 50;
+                conceptRef.current.style.animation = `scrollText ${animationDuration}s linear infinite`;
+            } else {
+                conceptRef.current.style.animation = "none";
+            }
+        }
+    }, [isHovered]);
+
     // Function to calculate total
     const calculateTotal = () => {
         return months.reduce((total, month) => {
@@ -33,11 +51,21 @@ const SubconceptRow = ({
         >
             {/* Subconcept Name */}
             <td
+                ref={tdRef}
                 className={`${paddingClass} ${
                     condensed ? "py-0" : "py-2"
                 } relative max-w-[200px] border-x`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
-                <div className="pl-6">{subData.concept}</div>
+                <div className="concept-text-container">
+                    <div
+                        ref={conceptRef}
+                        className="pl-6 whitespace-nowrap inline-block px-2"
+                    >
+                        {subData.concept}
+                    </div>
+                </div>
             </td>
 
             {/* Month Cells */}

@@ -1,5 +1,4 @@
-// ConceptRow.js
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import SubconceptRow from "./SubconceptRow";
 
@@ -20,6 +19,25 @@ const ConceptRow = ({
 }) => {
     const key = `${sectionIndex}-${rowIndex}`;
     const isExpanded = expandedConcepts[key];
+
+    // State and refs for scrolling text
+    const [isHovered, setIsHovered] = useState(false);
+    const conceptRef = useRef(null);
+    const tdRef = useRef(null);
+
+    useEffect(() => {
+        if (conceptRef.current && tdRef.current) {
+            const tdWidth = tdRef.current.clientWidth;
+            const textWidth = conceptRef.current.scrollWidth;
+
+            if (isHovered && textWidth > tdWidth) {
+                const animationDuration = textWidth / 50;
+                conceptRef.current.style.animation = `scrollText ${animationDuration}s linear infinite`;
+            } else {
+                conceptRef.current.style.animation = "none";
+            }
+        }
+    }, [isHovered]);
 
     // Function to calculate total for the concept (excluding subconcepts)
     const calculateTotal = () => {
@@ -57,6 +75,7 @@ const ConceptRow = ({
             >
                 {/* Concept Name */}
                 <td
+                    ref={tdRef}
                     className={`${paddingClass} ${
                         condensed ? "py-0" : "py-2"
                     } font-semibold relative max-w-[200px] cursor-pointer border-x`}
@@ -66,19 +85,26 @@ const ConceptRow = ({
                             ? toggleConceptExpansion(sectionIndex, rowIndex)
                             : null
                     }
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
                 >
-                    <div className="flex items-center">
-                        {conceptData.subconcepts &&
-                            conceptData.subconcepts.length > 0 && (
-                                <span className="mr-2">
-                                    {isExpanded ? (
-                                        <FaChevronDown />
-                                    ) : (
-                                        <FaChevronRight />
-                                    )}
-                                </span>
-                            )}
-                        {conceptData.concept}
+                    <div className="concept-text-container">
+                        <div
+                            ref={conceptRef}
+                            className="flex items-center whitespace-nowrap px-2"
+                        >
+                            {conceptData.subconcepts &&
+                                conceptData.subconcepts.length > 0 && (
+                                    <span className="mr-2">
+                                        {isExpanded ? (
+                                            <FaChevronDown />
+                                        ) : (
+                                            <FaChevronRight />
+                                        )}
+                                    </span>
+                                )}
+                            {conceptData.concept}
+                        </div>
                     </div>
                 </td>
 
