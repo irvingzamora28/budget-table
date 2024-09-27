@@ -107,7 +107,7 @@ const ConceptRow = ({
 
                         {/* Icon Container: occupies 20% */}
                         <div
-                            className={`icon-container py-4 px-2 bg-gray-200 ${
+                            className={`icon-container py-4 px-2 bg-gray-${ condensed ? "200" : "50"} ${
                                 isHovered ? "visible" : "invisible"
                             }`}
                             style={{ flexBasis: "20%", textAlign: "right" }}
