@@ -16,6 +16,7 @@ const Section = ({
     onBlur,
     editingCell,
     onAddConcept,
+    onEditConcept,
     expandedConcepts,
     toggleConceptExpansion,
     currency,
@@ -46,6 +47,7 @@ const Section = ({
                     onFocus={onFocus}
                     onBlur={onBlur}
                     editingCell={editingCell}
+                    onEditConcept={onEditConcept}
                     expandedConcepts={expandedConcepts}
                     toggleConceptExpansion={toggleConceptExpansion}
                     currency={currency}

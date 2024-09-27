@@ -17,6 +17,8 @@ const UnifiedTableYear = ({
     const [activeSection, setActiveSection] = useState(null);
     const [editingCell, setEditingCell] = useState(null);
     const [expandedConcepts, setExpandedConcepts] = useState({});
+    const [modalData, setModalData] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
 
     const months = [
         "Jan",
@@ -64,7 +66,7 @@ const UnifiedTableYear = ({
 
                 // Update the concept's value with the recalculated total
                 newData[sectionIndex].data[rowIndex][month] =
-                    updatedTotalForMonth.toFixed(2);
+                    updatedTotalForMonth ? updatedTotalForMonth.toFixed(2) : "";
             } else {
                 // Check if the concept has subconcepts
                 const hasSubconcepts =
@@ -93,31 +95,111 @@ const UnifiedTableYear = ({
         setEditingCell(null);
     };
 
-    const handleAddConcept = (sectionIndex) => {
+    const handleAddConcept = (sectionIndex, rowIndex = null) => {
         setActiveSection(sectionIndex);
+        if (rowIndex !== null) {
+            // Editing existing concept
+            const existingConceptData = data[sectionIndex].data[rowIndex];
+            setModalData({ ...existingConceptData, sectionIndex, rowIndex });
+            setIsEditing(true);
+        } else {
+            // Adding new concept
+            setModalData(null);
+            setIsEditing(false);
+        }
         setShowModal(true);
     };
 
-    const handleAddConceptData = ({ conceptName, subconcepts }) => {
+    const handleAddConceptData = ({
+        conceptName,
+        subconcepts,
+        isEditing,
+        existingConceptData,
+    }) => {
         // Construct the new concept with empty month data
         const emptyMonthData = months.reduce(
             (acc, month) => ({ ...acc, [month]: "" }),
             {}
         );
 
-        const newConcept = {
-            concept: conceptName,
-            ...emptyMonthData,
-            subconcepts: subconcepts.map((subName) => ({
-                concept: subName,
-                ...emptyMonthData,
-            })),
-        };
-
         const newData = [...data];
-        newData[activeSection].data.push(newConcept);
+
+        if (isEditing && existingConceptData) {
+            // Update existing concept
+            const { sectionIndex, rowIndex } = existingConceptData;
+            const concept = newData[sectionIndex].data[rowIndex];
+            concept.concept = conceptName;
+
+            // Determine if the concept had subconcepts before
+            const hadSubconceptsBefore =
+                concept.subconcepts && concept.subconcepts.length > 0;
+
+            // Determine if the concept has subconcepts now
+            const hasSubconceptsNow = subconcepts.length > 0;
+
+            if (hasSubconceptsNow) {
+                // Update subconcepts
+                const existingSubconcepts = concept.subconcepts || [];
+                concept.subconcepts = subconcepts.map((subName, index) => {
+                    // Try to find existing subconcept
+                    const existingSub = existingSubconcepts[index];
+                    return {
+                        concept: subName,
+                        // Preserve existing month data if available
+                        ...(existingSub || emptyMonthData),
+                    };
+                });
+
+                // **Recalculate the concept's amounts based on new subconcepts**
+                months.forEach((month) => {
+                    const totalForMonth = concept.subconcepts.reduce(
+                        (total, sub) => total + (parseFloat(sub[month]) || 0),
+                        0
+                    );
+                    concept[month] = totalForMonth
+                        ? totalForMonth.toFixed(2)
+                        : "";
+                });
+
+                // **Reset concept's amounts if subconcepts were added to a concept without subconcepts**
+                if (!hadSubconceptsBefore) {
+                    months.forEach((month) => {
+                        concept[month] = "";
+                    });
+                }
+            } else {
+                // Remove subconcepts if none are provided
+                concept.subconcepts = [];
+
+                // **Reset concept's amounts if all subconcepts were removed**
+                if (hadSubconceptsBefore) {
+                    months.forEach((month) => {
+                        concept[month] = "";
+                    });
+                }
+                // Else, do not reset amounts since there were no subconcepts before and none now
+            }
+        } else {
+            // Add new concept
+            const newConcept = {
+                concept: conceptName,
+                ...emptyMonthData,
+                subconcepts: subconcepts.map((subName) => ({
+                    concept: subName,
+                    ...emptyMonthData,
+                })),
+            };
+            newData[activeSection].data.push(newConcept);
+        }
+
         setData(newData);
         setShowModal(false);
+        setModalData(null);
+        setIsEditing(false);
+    };
+
+    const onEditConcept = (sectionIndex, rowIndex) => {
+        handleAddConcept(sectionIndex, rowIndex);
     };
 
     const toggleConceptExpansion = (sectionIndex, rowIndex) => {
@@ -160,6 +242,7 @@ const UnifiedTableYear = ({
                                 onBlur={handleBlur}
                                 editingCell={editingCell}
                                 onAddConcept={handleAddConcept}
+                                onEditConcept={onEditConcept}
                                 expandedConcepts={expandedConcepts}
                                 toggleConceptExpansion={toggleConceptExpansion}
                                 handleAddConcept={handleAddConceptData}
@@ -174,8 +257,16 @@ const UnifiedTableYear = ({
             {showModal && (
                 <ConceptModal
                     showModal={showModal}
-                    setShowModal={setShowModal}
+                    setShowModal={(value) => {
+                        setShowModal(value);
+                        if (!value) {
+                            setIsEditing(false);
+                            setModalData(null);
+                        }
+                    }}
                     handleAddConcept={handleAddConceptData}
+                    existingConceptData={modalData}
+                    isEditing={isEditing}
                 />
             )}
         </section>

@@ -1,6 +1,6 @@
 // ConceptRow.js
 import React, { useState, useEffect, useRef } from "react";
-import { FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { FaChevronDown, FaChevronRight, FaPencilAlt } from "react-icons/fa";
 import SubconceptRow from "./SubconceptRow";
 
 const ConceptRow = ({
@@ -17,6 +17,7 @@ const ConceptRow = ({
     expandedConcepts,
     toggleConceptExpansion,
     currency,
+    onEditConcept,
 }) => {
     const key = `${sectionIndex}-${rowIndex}`;
     const isExpanded = expandedConcepts[key];
@@ -59,6 +60,10 @@ const ConceptRow = ({
         return 0;
     };
 
+    // Determine if the concept has subconcepts
+    const hasSubconcepts =
+        conceptData.subconcepts && conceptData.subconcepts.length > 0;
+
     return (
         <>
             {/* Concept Row */}
@@ -74,31 +79,44 @@ const ConceptRow = ({
                         condensed ? "py-0" : "py-2"
                     } font-semibold relative max-w-[200px] cursor-pointer border-x`}
                     onClick={() =>
-                        conceptData.subconcepts &&
-                        conceptData.subconcepts.length > 0
+                        hasSubconcepts
                             ? toggleConceptExpansion(sectionIndex, rowIndex)
                             : null
                     }
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                 >
-                    <div className="concept-text-container">
+                    <div className="concept-text-container flex items-center">
                         <div
                             ref={conceptRef}
-                            className="flex items-center whitespace-nowrap px-2"
+                            className="flex items-center whitespace-nowrap"
                         >
-                            {conceptData.subconcepts &&
-                                conceptData.subconcepts.length > 0 && (
-                                    <span className="mr-2">
-                                        {isExpanded ? (
-                                            <FaChevronDown />
-                                        ) : (
-                                            <FaChevronRight />
-                                        )}
-                                    </span>
-                                )}
+                            {hasSubconcepts && (
+                                <span className="mr-2">
+                                    {isExpanded ? (
+                                        <FaChevronDown />
+                                    ) : (
+                                        <FaChevronRight />
+                                    )}
+                                </span>
+                            )}
                             {conceptData.concept}
                         </div>
+                        {/* Edit Icon */}
+                        <span
+                            className={`ml-auto flex-shrink-0 ${
+                                isHovered ? "visible" : "invisible"
+                            }`}
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent triggering row click
+                                onEditConcept(sectionIndex, rowIndex); // Invoke the function
+                            }}
+                        >
+                            <FaPencilAlt
+                                className="ml-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                                title="Edit Concept"
+                            />
+                        </span>
                     </div>
                 </td>
 
@@ -106,9 +124,6 @@ const ConceptRow = ({
                 {months.map((month) => {
                     const cellKey = `${key}-${month}`;
                     let conceptValue = parseFloat(conceptData[month]) || 0;
-                    const hasSubconcepts =
-                        conceptData.subconcepts &&
-                        conceptData.subconcepts.length > 0;
 
                     if (hasSubconcepts) {
                         // Calculate the sum of subconcepts
@@ -177,7 +192,7 @@ const ConceptRow = ({
 
             {/* Subconcept Rows */}
             {isExpanded &&
-                conceptData.subconcepts &&
+                hasSubconcepts &&
                 conceptData.subconcepts.map((sub, subIndex) => (
                     <SubconceptRow
                         key={`${key}-sub-${subIndex}`}
@@ -193,8 +208,32 @@ const ConceptRow = ({
                         onBlur={onBlur}
                         editingCell={editingCell}
                         currency={currency}
+                        onEditSubconcept={onEditConcept} // You can handle subconcept editing similarly
                     />
                 ))}
+
+            {/* CSS Styles */}
+            <style jsx>{`
+                .concept-text-container {
+                    position: relative;
+                    overflow: hidden;
+                    width: 100%;
+                    mask-image: linear-gradient(
+                        to right,
+                        transparent,
+                        black 8px,
+                        black calc(100% - 8px),
+                        transparent
+                    );
+                }
+
+                .concept-text-container .ml-auto {
+                    position: absolute;
+                    right: 8px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+            `}</style>
         </>
     );
 };

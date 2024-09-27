@@ -1,7 +1,14 @@
+// ConceptModal.js
 import React, { useEffect, useState, useRef } from "react";
-import { FaPlus, FaTrash } from "react-icons/fa"; // Importing icons
+import { FaPlus, FaTrash } from "react-icons/fa";
 
-const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
+const ConceptModal = ({
+    showModal,
+    setShowModal,
+    handleAddConcept,
+    existingConceptData = null,
+    isEditing = false,
+}) => {
     const [newConceptName, setNewConceptName] = useState("");
     const [subconceptName, setSubconceptName] = useState("");
     const [subconcepts, setSubconcepts] = useState([]);
@@ -9,6 +16,23 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
     // Refs for the input fields
     const subconceptInputRef = useRef(null);
     const conceptInputRef = useRef(null);
+
+    // Initialize state when editing an existing concept
+    useEffect(() => {
+        if (isEditing && existingConceptData) {
+            setNewConceptName(existingConceptData.concept);
+            setSubconcepts(
+                existingConceptData.subconcepts
+                    ? existingConceptData.subconcepts.map((sub) => sub.concept)
+                    : []
+            );
+        } else {
+            // Reset state when adding a new concept
+            setNewConceptName("");
+            setSubconceptName("");
+            setSubconcepts([]);
+        }
+    }, [isEditing, existingConceptData, showModal]);
 
     // Handle key presses (Escape) inside the modal
     const handleKeyDown = (e) => {
@@ -31,8 +55,6 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
         };
     }, [showModal]);
 
-    if (!showModal) return null; // Don't render if the modal is not shown
-
     const handleAddSubconcept = () => {
         if (subconceptName.trim()) {
             setSubconcepts([...subconcepts, subconceptName.trim()]);
@@ -45,11 +67,13 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
         setSubconcepts(subconcepts.filter((_, i) => i !== index));
     };
 
-    const handleAddConceptWithSubconcepts = () => {
+    const handleAddOrUpdateConcept = () => {
         if (newConceptName.trim()) {
             handleAddConcept({
                 conceptName: newConceptName.trim(),
                 subconcepts,
+                isEditing,
+                existingConceptData,
             });
             // Reset the modal state
             setNewConceptName("");
@@ -68,7 +92,9 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
                 className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 md:w-1/3 z-50"
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
             >
-                <h3 className="text-xl font-semibold mb-4">Add New Concept</h3>
+                <h3 className="text-xl font-semibold mb-4">
+                    {isEditing ? "Edit Concept" : "Add New Concept"}
+                </h3>
                 <input
                     type="text"
                     value={newConceptName}
@@ -152,11 +178,11 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
 
                 <div className="flex justify-end">
                     <button
-                        onClick={handleAddConceptWithSubconcepts}
+                        onClick={handleAddOrUpdateConcept}
                         className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mr-2"
                         disabled={!newConceptName.trim()}
                     >
-                        Add Concept
+                        {isEditing ? "Save Changes" : "Add Concept"}
                     </button>
                     <button
                         onClick={() => setShowModal(false)}
