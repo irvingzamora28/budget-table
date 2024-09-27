@@ -1,3 +1,4 @@
+// ConceptRow.js
 import React, { useState, useEffect, useRef } from "react";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import SubconceptRow from "./SubconceptRow";
@@ -39,7 +40,7 @@ const ConceptRow = ({
         }
     }, [isHovered]);
 
-    // Function to calculate total for the concept (excluding subconcepts)
+    // Function to calculate total for the concept
     const calculateTotal = () => {
         return months.reduce((total, month) => {
             const value = parseFloat(conceptData[month]) || 0;
@@ -47,7 +48,7 @@ const ConceptRow = ({
         }, 0);
     };
 
-    // Calculate total of subconcepts for validation
+    // Calculate total of subconcepts for each month
     const calculateSubconceptsTotalForMonth = (month) => {
         if (conceptData.subconcepts && conceptData.subconcepts.length > 0) {
             return conceptData.subconcepts.reduce((sum, sub) => {
@@ -57,13 +58,6 @@ const ConceptRow = ({
         }
         return 0;
     };
-
-    // Check if any subconcept totals exceed the concept's amount
-    const monthExceeds = months.some((month) => {
-        const conceptValue = parseFloat(conceptData[month]) || 0;
-        const subconceptsTotal = calculateSubconceptsTotalForMonth(month);
-        return subconceptsTotal > conceptValue;
-    });
 
     return (
         <>
@@ -111,10 +105,15 @@ const ConceptRow = ({
                 {/* Month Cells */}
                 {months.map((month) => {
                     const cellKey = `${key}-${month}`;
-                    const conceptValue = parseFloat(conceptData[month]) || 0;
-                    const subconceptsTotal =
-                        calculateSubconceptsTotalForMonth(month);
-                    const exceeds = subconceptsTotal > conceptValue;
+                    let conceptValue = parseFloat(conceptData[month]) || 0;
+                    const hasSubconcepts =
+                        conceptData.subconcepts &&
+                        conceptData.subconcepts.length > 0;
+
+                    if (hasSubconcepts) {
+                        // Calculate the sum of subconcepts
+                        conceptValue = calculateSubconceptsTotalForMonth(month);
+                    }
 
                     const isEditing = editingCell === cellKey;
 
@@ -136,26 +135,29 @@ const ConceptRow = ({
                             className={`${paddingClass} ${
                                 condensed ? "py-0" : "py-2"
                             } text-right border-x ${
-                                exceeds ? "bg-red-100" : ""
-                            }`}
-                            title={
-                                exceeds
-                                    ? "Subconcepts total exceeds concept amount"
+                                hasSubconcepts
+                                    ? "font-semibold text-blue-600"
                                     : ""
-                            }
+                            }`}
                         >
-                            <input
-                                type="text"
-                                value={displayValue}
-                                onChange={(e) =>
-                                    onEdit(e, sectionIndex, rowIndex, month)
-                                }
-                                onFocus={() => onFocus(cellKey)}
-                                onBlur={onBlur}
-                                className={`w-full bg-transparent text-right outline-none ${
-                                    condensed ? "text-sm" : ""
-                                }`}
-                            />
+                            {hasSubconcepts ? (
+                                // Display calculated value without input
+                                displayValue
+                            ) : (
+                                // Render input field for concepts without subconcepts
+                                <input
+                                    type="text"
+                                    value={displayValue}
+                                    onChange={(e) =>
+                                        onEdit(e, sectionIndex, rowIndex, month)
+                                    }
+                                    onFocus={() => onFocus(cellKey)}
+                                    onBlur={onBlur}
+                                    className={`w-full bg-transparent text-right outline-none ${
+                                        condensed ? "text-sm" : ""
+                                    }`}
+                                />
+                            )}
                         </td>
                     );
                 })}

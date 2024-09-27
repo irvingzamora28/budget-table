@@ -49,11 +49,35 @@ const UnifiedTableYear = ({
         if (/^\d*\.?\d*$/.test(value)) {
             const newData = [...data];
             if (isSubconcept) {
+                // Update the subconcept value
                 newData[sectionIndex].data[rowIndex].subconcepts[
                     subconceptIndex
                 ][month] = value;
+
+                // Recalculate the concept's total for the month by summing the subconcepts
+                const updatedTotalForMonth = newData[sectionIndex].data[
+                    rowIndex
+                ].subconcepts.reduce(
+                    (total, sub) => total + (parseFloat(sub[month]) || 0),
+                    0
+                );
+
+                // Update the concept's value with the recalculated total
+                newData[sectionIndex].data[rowIndex][month] =
+                    updatedTotalForMonth.toFixed(2);
             } else {
-                newData[sectionIndex].data[rowIndex][month] = value;
+                // Check if the concept has subconcepts
+                const hasSubconcepts =
+                    newData[sectionIndex].data[rowIndex].subconcepts &&
+                    newData[sectionIndex].data[rowIndex].subconcepts.length > 0;
+
+                if (!hasSubconcepts) {
+                    // Update the concept value directly
+                    newData[sectionIndex].data[rowIndex][month] = value;
+                } else {
+                    // Prevent editing if concept has subconcepts
+                    return;
+                }
             }
             setData(newData);
         }
