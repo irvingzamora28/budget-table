@@ -55,6 +55,8 @@ const ConceptModal = ({
         };
     }, [showModal]);
 
+    if (!showModal) return null; // Don't render if the modal is not shown
+
     const handleAddSubconcept = () => {
         if (subconceptName.trim()) {
             setSubconcepts([...subconcepts, subconceptName.trim()]);
