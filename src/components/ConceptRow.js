@@ -87,9 +87,11 @@ const ConceptRow = ({
                     onMouseLeave={() => setIsHovered(false)}
                 >
                     <div className="concept-text-container flex items-center">
+                        {/* Text Container: occupies 80% */}
                         <div
                             ref={conceptRef}
-                            className="flex items-center whitespace-nowrap"
+                            className="concept-text pl-2 flex items-center whitespace-nowrap"
+                            style={{ flexBasis: "80%", overflow: "hidden" }}
                         >
                             {hasSubconcepts && (
                                 <span className="mr-2">
@@ -102,11 +104,13 @@ const ConceptRow = ({
                             )}
                             {conceptData.concept}
                         </div>
-                        {/* Edit Icon */}
-                        <span
-                            className={`ml-auto flex-shrink-0 ${
+
+                        {/* Icon Container: occupies 20% */}
+                        <div
+                            className={`icon-container py-4 px-2 bg-gray-200 ${
                                 isHovered ? "visible" : "invisible"
                             }`}
+                            style={{ flexBasis: "20%", textAlign: "right" }}
                             onClick={(e) => {
                                 e.stopPropagation(); // Prevent triggering row click
                                 onEditConcept(sectionIndex, rowIndex); // Invoke the function
@@ -116,7 +120,7 @@ const ConceptRow = ({
                                 className="ml-2 text-gray-500 hover:text-gray-700 cursor-pointer"
                                 title="Edit Concept"
                             />
-                        </span>
+                        </div>
                     </div>
                 </td>
 
@@ -227,11 +231,35 @@ const ConceptRow = ({
                     );
                 }
 
-                .concept-text-container .ml-auto {
+                .concept-text {
+                    white-space: nowrap;
+                    transition: transform 0.3s ease;
+                    will-change: transform;
+                }
+
+                .concept-text-container:hover .concept-text {
+                    animation: scrollText 8s linear infinite;
+                    overflow: visible !important;
+                }
+
+                .icon-container {
+                    flex-shrink: 0;
                     position: absolute;
-                    right: 8px;
-                    top: 50%;
-                    transform: translateY(-50%);
+                    right: 0;
+                    mask-image: linear-gradient(
+                        to right,
+                        transparent 0px,
+                        black 8px
+                    );
+                }
+
+                @keyframes scrollText {
+                    0% {
+                        transform: translateX(0);
+                    }
+                    100% {
+                        transform: translateX(calc(-100%));
+                    }
                 }
             `}</style>
         </>
