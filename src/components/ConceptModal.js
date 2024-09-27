@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa"; // Importing icons
 
 const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
@@ -6,11 +6,13 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
     const [subconceptName, setSubconceptName] = useState("");
     const [subconcepts, setSubconcepts] = useState([]);
 
-    // Handle key presses (Enter and Esc) inside the modal
+    // Refs for the input fields
+    const subconceptInputRef = useRef(null);
+    const conceptInputRef = useRef(null);
+
+    // Handle key presses (Escape) inside the modal
     const handleKeyDown = (e) => {
-        if (e.key === "Enter" && newConceptName.trim()) {
-            handleAddConceptWithSubconcepts(); // Add concept if Enter is pressed
-        } else if (e.key === "Escape") {
+        if (e.key === "Escape") {
             setShowModal(false); // Close modal if Esc is pressed
         }
     };
@@ -27,7 +29,7 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [showModal, newConceptName]);
+    }, [showModal]);
 
     if (!showModal) return null; // Don't render if the modal is not shown
 
@@ -35,6 +37,7 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
         if (subconceptName.trim()) {
             setSubconcepts([...subconcepts, subconceptName.trim()]);
             setSubconceptName("");
+            subconceptInputRef.current.focus(); // Focus back to the input field
         }
     };
 
@@ -57,8 +60,14 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 md:w-1/3 z-50">
+        <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10"
+            onClick={() => setShowModal(false)} // Close modal when clicking outside
+        >
+            <div
+                className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 md:w-1/3 z-50"
+                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+            >
                 <h3 className="text-xl font-semibold mb-4">Add New Concept</h3>
                 <input
                     type="text"
@@ -67,6 +76,15 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
                     className="w-full p-2 border border-gray-300 rounded-md mb-4"
                     placeholder="Enter concept name"
                     autoFocus
+                    ref={conceptInputRef}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            // Move focus to the subconcept input
+                            subconceptInputRef.current.focus();
+                        } else if (e.key === "Escape") {
+                            setShowModal(false);
+                        }
+                    }}
                 />
 
                 {/* Subconcepts Section */}
@@ -81,6 +99,15 @@ const ConceptModal = ({ showModal, setShowModal, handleAddConcept }) => {
                             onChange={(e) => setSubconceptName(e.target.value)}
                             className="w-full p-2 border border-gray-300 rounded-md"
                             placeholder="Enter subconcept name"
+                            ref={subconceptInputRef} // Attach ref here
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault(); // Prevent form submission
+                                    handleAddSubconcept();
+                                } else if (e.key === "Escape") {
+                                    setShowModal(false);
+                                }
+                            }}
                         />
                         <button
                             onClick={handleAddSubconcept}
