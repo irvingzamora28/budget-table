@@ -16,6 +16,7 @@ const Dashboard = () => {
     // Data for constant expenses (existing)
     const constantExpenses = [
         {
+            id: 1,
             concept: "Rent very long concept overflow",
             Jan: 1000,
             Feb: 1000,
@@ -31,6 +32,7 @@ const Dashboard = () => {
             Dec: "",
         },
         {
+            id: 2,
             concept: "Electricity",
             Jan: 150,
             Feb: 130,
@@ -46,6 +48,7 @@ const Dashboard = () => {
             Dec: "",
         },
         {
+            id: 3,
             concept: "Water",
             Jan: 50,
             Feb: 55,
@@ -65,6 +68,7 @@ const Dashboard = () => {
     // Data for income
     const income = [
         {
+            id: 4,
             concept: "Salary",
             Jan: 3000,
             Feb: 3000,
@@ -80,6 +84,7 @@ const Dashboard = () => {
             Dec: "",
         },
         {
+            id: 5,
             concept: "Freelancing",
             Jan: 500,
             Feb: 600,
@@ -99,6 +104,7 @@ const Dashboard = () => {
     // Data for non-constant expenses
     const nonConstantExpenses = [
         {
+            id: 6,
             concept: "Car Repair",
             Jan: "",
             Feb: 300,
@@ -114,6 +120,7 @@ const Dashboard = () => {
             Dec: "",
         },
         {
+            id: 7,
             concept: "Medical Bills",
             Jan: "",
             Feb: "",
@@ -133,6 +140,7 @@ const Dashboard = () => {
     // Data for savings
     const savings = [
         {
+            id: 8,
             concept: "Emergency Fund",
             Jan: 500,
             Feb: 600,
@@ -148,6 +156,7 @@ const Dashboard = () => {
             Dec: "",
         },
         {
+            id: 9,
             concept: "Vacation Fund",
             Jan: 100,
             Feb: 150,
@@ -167,6 +176,7 @@ const Dashboard = () => {
     // Data for investments
     const investments = [
         {
+            id: 10,
             concept: "Stocks",
             Jan: 1000,
             Feb: 1200,
@@ -182,6 +192,7 @@ const Dashboard = () => {
             Dec: "",
         },
         {
+            id: 11,
             concept: "Real Estate",
             Jan: "",
             Feb: "",
@@ -197,7 +208,6 @@ const Dashboard = () => {
             Dec: "",
         },
     ];
-    const [users, setUsers] = useState([]);
     const [activeTab, setActiveTab] = useState("overview"); // State for the active tab
     const [selectedMonth, setSelectedMonth] = useState(null);
 
