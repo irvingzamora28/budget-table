@@ -223,6 +223,10 @@ const Dashboard = () => {
         setSelectedMonth(month);
     };
 
+    const handleCloseExpenseDetailTable = () => {
+        setSelectedMonth(null);
+    };
+
     // Define the tabs you want to show, including their icons and labels
     const tabs = [
         { id: "overview", label: "Overview", icon: FaHome },
@@ -254,7 +258,7 @@ const Dashboard = () => {
                             {/* ExpenseDetailTable will appear first on small screens and to the right on large screens */}
                             {selectedMonth && (
                                 <div className="w-full lg:w-[30%] mt-4 lg:mt-0 order-1 lg:order-2">
-                                    <ExpenseDetailTable month={selectedMonth} condensed={true} />
+                                    <ExpenseDetailTable month={selectedMonth} onCloseExpenseDetailTable={handleCloseExpenseDetailTable} condensed={true} />
                                 </div>
                             )}
                         </div>
