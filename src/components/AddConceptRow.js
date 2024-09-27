@@ -11,12 +11,13 @@ const AddConceptRow = ({
 }) => {
     return (
         <tr className="border-t border-b border-x border-gray-100 hover:bg-gray-50">
+            <td className="sticky left-0 bg-white hover:bg-gray-50 z-10"></td>
             <td
                 className={`${paddingClass} ${
                     condensed ? "py-0" : "py-2"
                 } font-semibold relative cursor-pointer border-x`}
                 onClick={() => onAddConcept(sectionIndex)}
-                colSpan={months.length + 2}
+                colSpan={months.length + 1}
             >
                 <div className="flex items-center justify-center text-blue-500 hover:text-blue-600">
                     <AiOutlinePlus className="mr-2" />
