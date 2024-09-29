@@ -1,4 +1,3 @@
-// src/schemas/conceptSchema.js
 const conceptSchema = [
     {
         name: "name",
@@ -19,6 +18,28 @@ const conceptSchema = [
         validation: {
             maxLength: 200,
         },
+    },
+    {
+        name: "subconcepts",
+        label: "Subconcepts",
+        type: "array",
+        defaultValue: [],
+        validation: {
+            minLength: 0,
+        },
+        schema: [
+            {
+                name: "name",
+                label: "Subconcept Name",
+                type: "text",
+                defaultValue: "",
+                validation: {
+                    required: true,
+                    minLength: 2,
+                    maxLength: 50,
+                },
+            },
+        ],
     },
 ];
 
