@@ -4,10 +4,31 @@ class ConceptRepository {
     constructor(db) {
         this.db = db;
         this.tableName = "concepts";
+        this.tableNameSubconcept = "subconcepts";
     }
 
     async add(concept) {
-        return await this.db.add(this.tableName, concept);
+        // Extract subconcepts from concept
+        const { subconcepts, ...conceptData } = concept;
+
+        // Store the concept first and get its id
+        const { id: conceptId } = await this.db.add(
+            this.tableName,
+            conceptData
+        );
+
+        // If there are subconcepts, store each with the concept_id link
+        if (subconcepts && subconcepts.length > 0) {
+            for (const subconcept of subconcepts) {
+                // Directly insert into subconcepts table
+                await this.db.add(this.tableNameSubconcept, {
+                    ...subconcept,
+                    concept_id: conceptId, // Link subconcept to concept
+                });
+            }
+        }
+
+        return { id: conceptId };
     }
 
     async getById(id) {
@@ -26,7 +47,7 @@ class ConceptRepository {
         return await this.db.delete(this.tableName, id);
     }
 
-    // Method to get item by any field and value
+    // Method to get items by any field and value
     async getAllByField(field, value) {
         const query = { [field]: value };
         return await this.db.getAll(this.tableName, query);

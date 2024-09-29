@@ -3,7 +3,7 @@ import { openDB } from "idb";
 
 class IndexedDBDatabase {
     constructor() {
-        this.dbPromise = openDB("budget-table", 2, {
+        this.dbPromise = openDB("budget-table", 3, {
             upgrade(db) {
                 // Create object stores if not exists
                 if (!db.objectStoreNames.contains("users")) {
@@ -20,6 +20,12 @@ class IndexedDBDatabase {
                 }
                 if (!db.objectStoreNames.contains("concepts")) {
                     db.createObjectStore("concepts", {
+                        keyPath: "id",
+                        autoIncrement: true,
+                    });
+                }
+                if (!db.objectStoreNames.contains("subconcepts")) {
+                    db.createObjectStore("subconcepts", {
                         keyPath: "id",
                         autoIncrement: true,
                     });

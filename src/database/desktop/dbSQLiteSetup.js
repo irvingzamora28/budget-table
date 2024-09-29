@@ -40,6 +40,18 @@ const createTables = async () => {
                     );
                 `);
 
+                // Subconcepts Table
+                db.run(`
+                    CREATE TABLE IF NOT EXISTS subconcepts (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        user_id INTEGER,
+                        concept_id INTEGER,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        FOREIGN KEY(concept_id) REFERENCES concepts(id)
+                    );
+                `);
+
                 // Budgets Table
                 db.run(`
                     CREATE TABLE IF NOT EXISTS budgets (
