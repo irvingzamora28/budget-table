@@ -39,6 +39,18 @@ class ConceptRepository {
         return await this.db.getAll(this.tableName);
     }
 
+    // Get all concepts with their subconcepts
+    async getAllWithSubconcepts() {
+        const concepts = await this.db.getAll(this.tableName);
+        for (const concept of concepts) {
+            const subconcepts = await this.db.getAll(this.tableNameSubconcept, {
+                concept_id: concept.id,
+            });
+            concept.subconcepts = subconcepts;
+        }
+        return concepts;
+    }
+
     async update(id, concept) {
         return await this.db.update(this.tableName, id, concept);
     }
