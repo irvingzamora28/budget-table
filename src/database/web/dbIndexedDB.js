@@ -131,7 +131,7 @@ class IndexedDBDatabase {
         const tx = db.transaction(storeName, "readonly");
         const store = tx.objectStore(storeName);
         let results = await store.getAll();
-    
+
         // Filter results based on query
         if (Object.keys(query).length > 0) {
             results = results.filter((item) =>
@@ -177,6 +177,24 @@ class IndexedDBDatabase {
         await store.delete(id);
         await tx.done;
         return { id };
+    }
+
+    // Delete by query
+    async deleteByQuery(storeName, query) {
+        const db = await this.dbPromise;
+        const tx = db.transaction(storeName, "readwrite");
+        const store = tx.objectStore(storeName);
+        const results = await store.getAll();
+        const idsToDelete = results
+            .filter((item) => {
+                return Object.entries(query).every(
+                    ([key, value]) => item[key] === value
+                );
+            })
+            .map((item) => item.id);
+        await Promise.all(idsToDelete.map((id) => store.delete(id)));
+        await tx.done;
+        return { ids: idsToDelete };
     }
 }
 

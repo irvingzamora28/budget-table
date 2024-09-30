@@ -51,8 +51,21 @@ class ConceptRepository {
         return concepts;
     }
 
+    // Update a concept and its subconcepts, take into account the subconcepts being added or removed
     async update(id, concept) {
-        return await this.db.update(this.tableName, id, concept);
+        const { subconcepts, ...conceptData } = concept;
+        await this.db.update(this.tableName, id, conceptData);
+        if (subconcepts && subconcepts.length > 0) {
+            // Remove existing subconcepts
+            await this.db.deleteByQuery(this.tableNameSubconcept, { concept_id: id });
+            // Add new subconcepts
+            for (const subconcept of subconcepts) {
+                await this.db.add(this.tableNameSubconcept, {
+                    ...subconcept,
+                    concept_id: id,
+                });
+            }
+        }
     }
 
     async delete(id) {
