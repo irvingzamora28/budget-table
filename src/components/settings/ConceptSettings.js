@@ -10,7 +10,7 @@ const ConceptSettings = () => {
     useEffect(() => {
         const fetchConcepts = async () => {
             try {
-                const allConcepts = await conceptRepo.getAll();
+                const allConcepts = await conceptRepo.getAllWithSubconcepts();
                 setItems(allConcepts); // Set the concepts retrieved from the repository
             } catch (error) {
                 console.error("Failed to fetch concepts:", error);
