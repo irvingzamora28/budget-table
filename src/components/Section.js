@@ -32,8 +32,9 @@ const Section = ({
                     {sectionData.title}
                 </td>
                 {/* Render one column for each month using months.length columns */}
-                {[...Array(months.length+1)].map((_, i) => <td key={i}></td>)}
-
+                {[...Array(months.length + 1)].map((_, i) => (
+                    <td key={i}></td>
+                ))}
             </tr>
 
             {/* Concepts */}
@@ -70,6 +71,7 @@ const Section = ({
 
             {/* Add Concept Row */}
             <AddConceptRow
+                itemId={sectionData.id}
                 sectionIndex={sectionIndex}
                 months={months}
                 condensed={condensed}

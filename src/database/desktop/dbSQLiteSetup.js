@@ -74,12 +74,17 @@ const createTables = async () => {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER NOT NULL,
                         budget_id INTEGER NOT NULL,
-                        concept_id INTEGER NOT NULL,
+                        category_id INTEGER NOT NULL,
+                        concept_id INTEGER NULL,
+                        subconcept_id INTEGER NULL,
                         amount REAL NOT NULL,
                         date TEXT NOT NULL,
                         FOREIGN KEY(user_id) REFERENCES users(id),
                         FOREIGN KEY(budget_id) REFERENCES budgets(id),
-                        FOREIGN KEY(concept_id) REFERENCES concepts(id)
+                        FOREIGN KEY(category_id) REFERENCES categories(id),
+                        FOREIGN KEY(concept_id) REFERENCES concepts(id),
+                        FOREIGN KEY(subconcept_id) REFERENCES subconcepts(id)
+
                     );
                 `);
 
@@ -89,13 +94,17 @@ const createTables = async () => {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER NOT NULL,
                         budget_id INTEGER NOT NULL,
-                        concept_id INTEGER NOT NULL,
+                        category_id INTEGER NOT NULL,
+                        concept_id INTEGER NULL,
+                        subconcept_id INTEGER NULL,
                         amount REAL NOT NULL,
                         date TEXT NOT NULL,
                         is_constant BOOLEAN NOT NULL DEFAULT 0,
                         FOREIGN KEY(user_id) REFERENCES users(id),
                         FOREIGN KEY(budget_id) REFERENCES budgets(id),
-                        FOREIGN KEY(concept_id) REFERENCES concepts(id)
+                        FOREIGN KEY(category_id) REFERENCES categories(id),
+                        FOREIGN KEY(concept_id) REFERENCES concepts(id),
+                        FOREIGN KEY(subconcept_id) REFERENCES subconcepts(id)
                     );
                 `);
 
@@ -105,11 +114,16 @@ const createTables = async () => {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER NOT NULL,
                         budget_id INTEGER NOT NULL,
+                        category_id INTEGER NOT NULL,
+                        category_id INTEGER NOT NULL,
                         account_name TEXT NOT NULL,
                         amount REAL NOT NULL,
                         date TEXT NOT NULL,
                         FOREIGN KEY(user_id) REFERENCES users(id),
-                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                        FOREIGN KEY(budget_id) REFERENCES budgets(id),
+                        FOREIGN KEY(category_id) REFERENCES categories(id),
+                        FOREIGN KEY(concept_id) REFERENCES concepts(id),
+                        FOREIGN KEY(subconcept_id) REFERENCES subconcepts(id)
                     );
                 `);
 
@@ -119,11 +133,17 @@ const createTables = async () => {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER NOT NULL,
                         budget_id INTEGER NOT NULL,
+                        category_id INTEGER NOT NULL,
+                        concept_id INTEGER NULL,
+                        subconcept_id INTEGER NULL,
                         investment_name TEXT NOT NULL,
                         amount REAL NOT NULL,
                         date TEXT NOT NULL,
                         FOREIGN KEY(user_id) REFERENCES users(id),
-                        FOREIGN KEY(budget_id) REFERENCES budgets(id)
+                        FOREIGN KEY(budget_id) REFERENCES budgets(id),
+                        FOREIGN KEY(category_id) REFERENCES categories(id),
+                        FOREIGN KEY(concept_id) REFERENCES concepts(id),
+                        FOREIGN KEY(subconcept_id) REFERENCES subconcepts(id)
                     );
                 `);
 

@@ -19,6 +19,11 @@ const TableYear = ({
     const conceptRefs = useRef([]);
     const tdRefs = useRef([]);
 
+    useEffect(() => {
+        console.log("Initial Data:", initialData);
+        
+    }, []);
+
     const months = [
         "Jan",
         "Feb",

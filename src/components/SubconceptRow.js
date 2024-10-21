@@ -65,7 +65,7 @@ const SubconceptRow = ({
                         ref={conceptRef}
                         className="pl-6 whitespace-nowrap inline-block px-2"
                     >
-                        {subData.concept}
+                        {subData.name}
                     </div>
                 </div>
             </td>

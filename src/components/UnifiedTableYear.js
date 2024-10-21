@@ -1,8 +1,9 @@
 // UnifiedTableYear.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TableHeader from "./TableHeader";
 import Section from "./Section";
 import ConceptModal from "./ConceptModal";
+const { incomeRepo, conceptRepo } = require("../database/dbAccessLayer");
 
 const UnifiedTableYear = ({
     sections,
@@ -95,22 +96,33 @@ const UnifiedTableYear = ({
         setEditingCell(null);
     };
 
-    const handleAddConcept = (sectionIndex, rowIndex = null) => {
+    const handleAddConcept = (sectionIndex, rowIndex = null, itemId = null) => {
         setActiveSection(sectionIndex);
         if (rowIndex !== null) {
             // Editing existing concept
             const existingConceptData = data[sectionIndex].data[rowIndex];
-            setModalData({ ...existingConceptData, sectionIndex, rowIndex });
+            setModalData({
+                ...existingConceptData,
+                sectionIndex,
+                rowIndex,
+                itemId,
+            });
             setIsEditing(true);
         } else {
             // Adding new concept
-            setModalData(null);
+            const existingConceptData = data[sectionIndex].data[rowIndex];
+            setModalData({
+                ...existingConceptData,
+                sectionIndex,
+                rowIndex,
+                itemId,
+            });
             setIsEditing(false);
         }
         setShowModal(true);
     };
 
-    const handleAddConceptData = ({
+    const handleAddConceptData = async ({
         conceptName,
         subconcepts,
         isEditing,
@@ -118,7 +130,7 @@ const UnifiedTableYear = ({
     }) => {
         // Construct the new concept with empty month data
         const emptyMonthData = months.reduce(
-            (acc, month) => ({ ...acc, [month]: "" }),
+            (acc, month) => ({ ...acc, [month]: 50 }),
             {}
         );
 
@@ -180,12 +192,51 @@ const UnifiedTableYear = ({
                 // Else, do not reset amounts since there were no subconcepts before and none now
             }
         } else {
+            console.log("Adding new concept");
+            
+            console.log("Subconcepts:", subconcepts);
+            
+            
+            console.log("existingConceptData:", existingConceptData);
+            console.log("conceptName:", conceptName);
+            
+            // Check if concept exists in the database
+            const conceptExists = await conceptRepo.getAllByField(
+                "name", conceptName,
+            );
+            console.log("ConceptExists frontend:", conceptExists);
+            console.log("conceptname:", conceptName);
+            console.log("subconcepts", subconcepts);
+            
+            let conceptId = null;
+            if (conceptExists.length === 0) {
+                // Concept does not exist, add it to the database
+                conceptId = await conceptRepo.add({name: conceptName, subconcepts: subconcepts.map((subName) => ({
+                    name: subName,
+                }))});
+            }
+
+            // Get the concept based on the id from the database
+            const concept = await conceptRepo.getByIdWithSubconcepts(conceptExists.length === 0 ? conceptId.id : conceptExists[0].id);
+            console.log("concept:", concept);
+            // Append empty month data to each subconcept
+            const subconceptsWithoutName = concept.subconcepts.map((subconcept) => {
+                return {...subconcept, ...emptyMonthData};
+            });
+
+            await incomeRepo.add({
+                concept_id: conceptExists.length === 0 ? conceptId.id : conceptExists[0].id,
+                category_id: existingConceptData.itemId,
+                ...emptyMonthData,
+                subconcepts: subconceptsWithoutName,
+            });
+
             // Add new concept
             const newConcept = {
                 concept: conceptName,
                 ...emptyMonthData,
                 subconcepts: subconcepts.map((subName) => ({
-                    concept: subName,
+                    name: subName,
                     ...emptyMonthData,
                 })),
             };
@@ -209,6 +260,10 @@ const UnifiedTableYear = ({
             [key]: !prevState[key],
         }));
     };
+
+    useEffect(() => {
+        console.log("Sections:", sections);
+    }, []);
 
     return (
         <section

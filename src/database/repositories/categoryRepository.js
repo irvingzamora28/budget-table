@@ -1,9 +1,15 @@
 // src/database/repositories/categoryRepository.js
 
-class ConceptRepository {
+class CategorytRepository {
     constructor(db) {
         this.db = db;
         this.tableName = "categories";
+        this.conceptsTable = "concepts";
+        this.subconceptsTable = "subconcepts";
+        this.incomeTable = "income";
+        this.expensesTable = "expenses";
+        this.savingsTable = "savings";
+        this.investmentsTable = "investments";
     }
 
     async add(category) {
@@ -31,6 +37,89 @@ class ConceptRepository {
         const query = { [field]: value };
         return await this.db.getAll(this.tableName, query);
     }
+
+    // Method to get all income related to categories
+    async getFinancialsByCategories() {
+        // Get all categories
+        const categories = await this.getAll();
+
+        // Define a mapping of category types to their respective tables
+        const typeTableMap = {
+            INCOME: this.incomeTable,
+            EXPENSE: this.expensesTable,
+            SAVING: this.savingsTable,
+            INVESTMENT: this.investmentsTable,
+        };
+
+        // Get all financial entries related to each category using getAll with a query
+        const financialPromises = categories.map(async (category) => {
+            const categoryType = category.type;
+            const tableToQuery = typeTableMap[categoryType];
+
+            // Initialize the financial properties
+            category.income = [];
+            category.expenses = [];
+            category.savings = [];
+            category.investments = [];
+
+            // Query the relevant table if it exists
+            if (tableToQuery) {
+                console.log(tableToQuery);
+                const financialEntries = await this.db.getAll(tableToQuery, {
+                    category_id: category.id,
+                });
+                console.log("financialEntries", financialEntries);
+
+                // For each income entry, fetch its related concept
+                const financialEntriesWithConcepts = await Promise.all(
+                    financialEntries.map(async (financialEntry) => {
+                        const concept = await this.db.getById(
+                            this.conceptsTable,
+                            financialEntry.concept_id
+                        );
+                        // Loop through the subconcepts, fetch their names, and add it to each subconcept
+                        const subconcepts = await Promise.all(
+                            financialEntry.subconcepts.map(async (subconceptData) => {
+                                const subconcept = await this.db.getById(
+                                    this.subconceptsTable,
+                                    subconceptData.id)
+                                    return {
+                                    name: subconcept.name,
+                                    ...subconceptData,
+                                    };
+                                    }));
+
+                        return {
+                            ...financialEntry,
+                            concept: concept.name, // Add the concept to the income record
+                            subconcepts: subconcepts, // Add the subconcepts to the income record
+                        };
+                    })
+                );
+                console.log(
+                    "financialEntriesWithConcepts",
+                    financialEntriesWithConcepts
+                );
+
+                // Assign entries based on the uppercase category type
+                if (categoryType === "INCOME") {
+                    category.income = financialEntriesWithConcepts;
+                } else if (categoryType === "EXPENSE") {
+                    category.expenses = financialEntriesWithConcepts;
+                } else if (categoryType === "SAVING") {
+                    category.savings = financialEntriesWithConcepts;
+                } else if (categoryType === "INVESTMENT") {
+                    category.investments = financialEntriesWithConcepts;
+                }
+            }
+
+            return {
+                category,
+            };
+        });
+
+        return Promise.all(financialPromises);
+    }
 }
 
-module.exports = ConceptRepository;
+module.exports = CategorytRepository;

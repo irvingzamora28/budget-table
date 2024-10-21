@@ -151,11 +151,11 @@ class IndexedDBDatabase {
 
         // Filter results based on query
         if (Object.keys(query).length > 0) {
-            results = results.filter((item) =>
-                Object.entries(query).every(
+            results = results.filter((item) => {
+                return Object.entries(query).every(
                     ([key, value]) => item[key] === value
-                )
-            );
+                );
+            });
         }
 
         return results;
@@ -195,6 +195,19 @@ class IndexedDBDatabase {
         await Promise.all(idsToDelete.map((id) => store.delete(id)));
         await tx.done;
         return { ids: idsToDelete };
+    }
+
+    async getAllWith(tableName, foreignTable, foreignKey, valueField, query = {}) {
+        const mainRecords = await this.getAll(tableName, query); // Assuming 'income' is the primary table
+        
+        for (const record of mainRecords) {
+            console.log("foreignTable", foreignTable, "foreignKey", foreignKey, "valueField", valueField);
+            
+            const relatedRecords = await this.getAll(foreignTable, { [foreignKey]: record[valueField] });
+            record.relatedData = relatedRecords; // You can rename 'relatedData' as needed
+        }
+        
+        return mainRecords;
     }
 }
 
