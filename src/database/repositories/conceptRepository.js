@@ -65,15 +65,35 @@ class ConceptRepository {
         const { subconcepts, ...conceptData } = concept;
         await this.db.update(this.tableName, id, conceptData);
         if (subconcepts && subconcepts.length > 0) {
-            // Remove existing subconcepts
-            await this.db.deleteByQuery(this.tableNameSubconcept, { concept_id: id });
-            // Add new subconcepts
+            // Get the ids of the variable subconcepts
+            const incomingSubconceptIds = subconcepts.filter(subconcept => subconcept.id).map(subconcept => subconcept.id);
+            const beforeSubUpdateConcept = await this.getByIdWithSubconcepts(id);
+            const beforeSubUpdateSubconceptIds = beforeSubUpdateConcept.subconcepts.map(subconcept => subconcept.id);
+            
+
             for (const subconcept of subconcepts) {
-                await this.db.add(this.tableNameSubconcept, {
-                    ...subconcept,
-                    concept_id: id,
-                });
+                // If the subconcept has id, it's an update, otherwise it's an add
+                if (subconcept.id) {
+                    // Update the subconcept
+                    await this.db.update(this.tableNameSubconcept, subconcept.id, {
+                        ...subconcept,
+                        concept_id: id,
+                    });
+                }
+                else {
+                    // Add the subconcept
+                    await this.db.add(this.tableNameSubconcept, {
+                        ...subconcept,
+                        concept_id: id,
+                    });
+                }
             }
+            // Remove the ids from afterSubUpdateSubconceptIds that are in the incomingSubconceptIds
+            const subconceptsToRemove = beforeSubUpdateSubconceptIds.filter(subconceptId => !incomingSubconceptIds.includes(subconceptId));
+            for (const subconceptId of subconceptsToRemove) {
+                await this.db.delete(this.tableNameSubconcept, subconceptId);
+            }
+            
         }
     }
 

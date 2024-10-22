@@ -139,110 +139,111 @@ const UnifiedTableYear = ({
         if (isEditing && existingConceptData) {
             // Update existing concept
             const { sectionIndex, rowIndex } = existingConceptData;
-            const concept = newData[sectionIndex].data[rowIndex];
-            concept.concept = conceptName;
+            const item = newData[sectionIndex].data[rowIndex];
+            item.concept = conceptName;
 
-            // Determine if the concept had subconcepts before
-            const hadSubconceptsBefore =
-                concept.subconcepts && concept.subconcepts.length > 0;
+            // Update subconcepts
+            const existingSubconcepts = item.subconcepts || [];
 
-            // Determine if the concept has subconcepts now
-            const hasSubconceptsNow = subconcepts.length > 0;
+            item.subconcepts = subconcepts.map((subconcept, index) => {
+                const existingSub = existingSubconcepts[index] || {};
+                return {
+                    ...subconcept,
+                    // Preserve existing month data or start with empty if none
+                    ...existingSub,
+                    ...emptyMonthData,
+                };
+            });
 
-            if (hasSubconceptsNow) {
-                // Update subconcepts
-                const existingSubconcepts = concept.subconcepts || [];
-                concept.subconcepts = subconcepts.map((subName, index) => {
-                    // Try to find existing subconcept
-                    const existingSub = existingSubconcepts[index];
-                    return {
-                        concept: subName,
-                        // Preserve existing month data if available
-                        ...(existingSub || emptyMonthData),
-                    };
-                });
-
-                // **Recalculate the concept's amounts based on new subconcepts**
-                months.forEach((month) => {
-                    const totalForMonth = concept.subconcepts.reduce(
-                        (total, sub) => total + (parseFloat(sub[month]) || 0),
-                        0
-                    );
-                    concept[month] = totalForMonth
-                        ? totalForMonth.toFixed(2)
-                        : "";
-                });
-
-                // **Reset concept's amounts if subconcepts were added to a concept without subconcepts**
-                if (!hadSubconceptsBefore) {
-                    months.forEach((month) => {
-                        concept[month] = "";
-                    });
-                }
-            } else {
-                // Remove subconcepts if none are provided
-                concept.subconcepts = [];
-
-                // **Reset concept's amounts if all subconcepts were removed**
-                if (hadSubconceptsBefore) {
-                    months.forEach((month) => {
-                        concept[month] = "";
-                    });
-                }
-                // Else, do not reset amounts since there were no subconcepts before and none now
+            // Remove any extra subconcepts that are no longer provided
+            if (subconcepts.length < existingSubconcepts.length) {
+                item.subconcepts = item.subconcepts.slice(
+                    0,
+                    subconcepts.length
+                );
             }
+
+            // Recalculate monthly amounts based on updated subconcepts
+            months.forEach((month) => {
+                const totalForMonth = item.subconcepts.reduce(
+                    (total, sub) => total + (parseFloat(sub[month]) || 0),
+                    0
+                );
+                item[month] = totalForMonth ? totalForMonth.toFixed(2) : "";
+            });
+
+            // Update the concept in the database but for concepts only pass the concept name and concept_id
+            await conceptRepo.update(item.concept_id, {
+                name: conceptName,
+                subconcepts: subconcepts,
+            });
+            const concept = await conceptRepo.getByIdWithSubconcepts(
+                item.concept_id
+            );
+            // Iterate over the item's subconcepts If the subconcept doesnt have the property "Jan", add the emptyMonthData
+            item.subconcepts = concept.subconcepts.map((subconcept) => {
+                if (!subconcept.Jan) {
+                    return {
+                        ...subconcept,
+                        ...emptyMonthData,
+                    };
+                }
+                return subconcept;
+            });
+            await incomeRepo.update(item.id, item);
         } else {
-            console.log("Adding new concept");
-            
-            console.log("Subconcepts:", subconcepts);
-            
-            
-            console.log("existingConceptData:", existingConceptData);
-            console.log("conceptName:", conceptName);
-            
             // Check if concept exists in the database
             const conceptExists = await conceptRepo.getAllByField(
-                "name", conceptName,
+                "name",
+                conceptName
             );
-            console.log("ConceptExists frontend:", conceptExists);
-            console.log("conceptname:", conceptName);
-            console.log("subconcepts", subconcepts);
-            
+
             let conceptId = null;
             if (conceptExists.length === 0) {
                 // Concept does not exist, add it to the database
-                conceptId = await conceptRepo.add({name: conceptName, subconcepts: subconcepts.map((subName) => ({
-                    name: subName,
-                }))});
+
+                conceptId = await conceptRepo.add({
+                    name: conceptName,
+                    subconcepts: subconcepts,
+                });
             }
 
             // Get the concept based on the id from the database
-            const concept = await conceptRepo.getByIdWithSubconcepts(conceptExists.length === 0 ? conceptId.id : conceptExists[0].id);
-            console.log("concept:", concept);
+            const concept = await conceptRepo.getByIdWithSubconcepts(
+                conceptExists.length === 0 ? conceptId.id : conceptExists[0].id
+            );
+
             // Append empty month data to each subconcept
-            const subconceptsWithoutName = concept.subconcepts.map((subconcept) => {
-                return {...subconcept, ...emptyMonthData};
-            });
+            const subconceptsWithoutName = concept.subconcepts.map(
+                (subconcept) => ({
+                    ...subconcept,
+                    ...emptyMonthData,
+                })
+            );
 
             await incomeRepo.add({
-                concept_id: conceptExists.length === 0 ? conceptId.id : conceptExists[0].id,
+                concept_id:
+                    conceptExists.length === 0
+                        ? conceptId.id
+                        : conceptExists[0].id,
                 category_id: existingConceptData.itemId,
                 ...emptyMonthData,
                 subconcepts: subconceptsWithoutName,
             });
 
-            // Add new concept
+            // Add new concept to newData
             const newConcept = {
                 concept: conceptName,
                 ...emptyMonthData,
-                subconcepts: subconcepts.map((subName) => ({
-                    name: subName,
+                subconcepts: subconcepts.map((concept) => ({
+                    name: concept.name,
                     ...emptyMonthData,
                 })),
             };
             newData[activeSection].data.push(newConcept);
         }
 
+        // Update state
         setData(newData);
         setShowModal(false);
         setModalData(null);

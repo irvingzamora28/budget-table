@@ -23,7 +23,7 @@ const ConceptModal = ({
             setNewConceptName(existingConceptData.concept);
             setSubconcepts(
                 existingConceptData.subconcepts
-                    ? existingConceptData.subconcepts.map((sub) => sub.concept)
+                    ? existingConceptData.subconcepts.map((sub) => sub)
                     : []
             );
         } else {
@@ -59,7 +59,7 @@ const ConceptModal = ({
 
     const handleAddSubconcept = () => {
         if (subconceptName.trim()) {
-            setSubconcepts([...subconcepts, subconceptName.trim()]);
+            setSubconcepts([...subconcepts, {name: subconceptName.trim()}]);
             setSubconceptName("");
             subconceptInputRef.current.focus(); // Focus back to the input field
         }
@@ -158,7 +158,7 @@ const ConceptModal = ({
                             <tbody>
                                 {subconcepts.map((sub, index) => (
                                     <tr key={index} className="border-t">
-                                        <td className="border p-2">{sub}</td>
+                                        <td className="border p-2">{sub.name}</td>
                                         <td className="border p-2 text-center">
                                             <button
                                                 onClick={() =>
