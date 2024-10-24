@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import TableHeader from "./TableHeader";
 import Section from "./Section";
 import ConceptModal from "./ConceptModal";
-const { incomeRepo, conceptRepo } = require("../database/dbAccessLayer");
+const { incomeRepo, expenseRepo, conceptRepo } = require("../database/dbAccessLayer");
 
 const UnifiedTableYear = ({
     sections,
@@ -96,7 +96,7 @@ const UnifiedTableYear = ({
         setEditingCell(null);
     };
 
-    const handleAddConcept = (sectionIndex, rowIndex = null, itemId = null) => {
+    const handleAddConcept = (sectionIndex, rowIndex = null, itemId = null, itemType = null) => {
         setActiveSection(sectionIndex);
         if (rowIndex !== null) {
             // Editing existing concept
@@ -106,6 +106,7 @@ const UnifiedTableYear = ({
                 sectionIndex,
                 rowIndex,
                 itemId,
+                itemType,
             });
             setIsEditing(true);
         } else {
@@ -116,6 +117,7 @@ const UnifiedTableYear = ({
                 sectionIndex,
                 rowIndex,
                 itemId,
+                itemType,
             });
             setIsEditing(false);
         }
@@ -133,8 +135,12 @@ const UnifiedTableYear = ({
             (acc, month) => ({ ...acc, [month]: 50 }),
             {}
         );
-
+        console.log(data);
+        console.log(existingConceptData);
+        
         const newData = [...data];
+        console.log(newData);
+        
 
         if (isEditing && existingConceptData) {
             // Update existing concept
@@ -220,16 +226,30 @@ const UnifiedTableYear = ({
                     ...emptyMonthData,
                 })
             );
-
-            await incomeRepo.add({
-                concept_id:
-                    conceptExists.length === 0
-                        ? conceptId.id
-                        : conceptExists[0].id,
-                category_id: existingConceptData.itemId,
-                ...emptyMonthData,
-                subconcepts: subconceptsWithoutName,
-            });
+            console.log(existingConceptData.itemType);
+            
+            if(existingConceptData.itemType === "INCOME"){
+                await incomeRepo.add({
+                    concept_id:
+                        conceptExists.length === 0
+                            ? conceptId.id
+                            : conceptExists[0].id,
+                    category_id: existingConceptData.itemId,
+                    ...emptyMonthData,
+                    subconcepts: subconceptsWithoutName,
+                });
+            }
+            else if(existingConceptData.itemType === "EXPENSE"){
+                await expenseRepo.add({
+                    concept_id:
+                        conceptExists.length === 0
+                            ? conceptId.id
+                            : conceptExists[0].id,
+                    category_id: existingConceptData.itemId,
+                    ...emptyMonthData,
+                    subconcepts: subconceptsWithoutName,
+                });
+            }
 
             // Add new concept to newData
             const newConcept = {

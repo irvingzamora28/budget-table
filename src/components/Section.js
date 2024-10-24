@@ -72,6 +72,7 @@ const Section = ({
             {/* Add Concept Row */}
             <AddConceptRow
                 itemId={sectionData.id}
+                itemType={sectionData.type}
                 sectionIndex={sectionIndex}
                 months={months}
                 condensed={condensed}

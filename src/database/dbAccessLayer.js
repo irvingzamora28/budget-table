@@ -5,6 +5,7 @@ const ConceptRepository = require('./repositories/conceptRepository');
 const CategoryRepository = require('./repositories/categoryRepository');
 const SubconceptRepository = require('./repositories/subconceptRepository');
 const IncomeRepository = require('./repositories/incomeRepository');
+const ExpenseRepository = require('./repositories/expenseRepository');
 
 let db;
 if (typeof window !== 'undefined' && window.indexedDB) {
@@ -21,6 +22,7 @@ const subconceptRepo = new SubconceptRepository(db);
 const conceptRepo = new ConceptRepository(db);
 const categoryRepo = new CategoryRepository(db);
 const incomeRepo = new IncomeRepository(db);
+const expenseRepo = new ExpenseRepository(db);
 module.exports = {
     userRepo: userRepo,
     tagRepo: tagRepo,
@@ -28,4 +30,5 @@ module.exports = {
     subconceptRepo: subconceptRepo,
     categoryRepo: categoryRepo,
     incomeRepo: incomeRepo,
+    expenseRepo: expenseRepo,
 };

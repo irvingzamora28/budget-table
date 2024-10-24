@@ -4,6 +4,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 
 const AddConceptRow = ({
     itemId,
+    itemType,
     sectionIndex,
     months,
     condensed,
@@ -17,7 +18,7 @@ const AddConceptRow = ({
                 className={`${paddingClass} ${
                     condensed ? "py-0" : "py-2"
                 } font-semibold relative cursor-pointer border-x`}
-                onClick={() => onAddConcept(sectionIndex, null, itemId)}
+                onClick={() => onAddConcept(sectionIndex, null, itemId, itemType)}
                 colSpan={months.length + 1}
             >
                 <div className="flex items-center justify-center text-blue-500 hover:text-blue-600">

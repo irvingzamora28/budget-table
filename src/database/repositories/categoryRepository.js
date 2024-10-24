@@ -60,12 +60,13 @@ class CategorytRepository {
             SAVING: this.savingsTable,
             INVESTMENT: this.investmentsTable,
         };
-
+        console.log("categories", categories);
+        
         // Get all financial entries related to each category using getAll with a query
         const financialPromises = categories.map(async (category) => {
             const categoryType = category.type;
             const tableToQuery = typeTableMap[categoryType];
-
+            
             // Initialize the financial properties
             category.income = [];
             category.expenses = [];
@@ -77,6 +78,10 @@ class CategorytRepository {
                 const financialEntries = await this.db.getAll(tableToQuery, {
                     category_id: category.id,
                 });
+                console.log("tableToQuery", tableToQuery, "categoryType", categoryType);
+
+                console.log("financialEntries", financialEntries);
+                
 
                 // For each financial entry, fetch its related concept and subconcepts
                 const financialEntriesWithConcepts = await Promise.all(
@@ -108,7 +113,10 @@ class CategorytRepository {
                         };
                     })
                 );
-
+                console.log(
+                    "financialEntriesWithConcepts",
+                    financialEntriesWithConcepts
+                );
                 // Assign entries based on the uppercase category type
                 if (categoryType === "INCOME") {
                     category.income = financialEntriesWithConcepts;

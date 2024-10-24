@@ -33,6 +33,8 @@ const Dashboard = () => {
             try {
                 const allCategories =
                     await categoryRepo.getFinancialsByCategories();
+                    console.log("allCategories", allCategories);
+                    
                 setCategories(allCategories); // Populate categories once fetched
             } catch (error) {
                 console.error("Error fetching categories:", error);
@@ -48,12 +50,8 @@ const Dashboard = () => {
         id: category.category.id,
         title: category.category.name,
         type: category.category.type,
-        data:
-            category.category.income ||
-            category.category.expenses ||
-            category.category.savings ||
-            category.category.investments ||
-            [],
+        data: [category.category.income, category.category.expenses, category.category.savings, category.category.investments]
+            .find(arr => arr.length > 0) || [],
     }));
 
     // Define the tabs you want to show, including their icons and labels
