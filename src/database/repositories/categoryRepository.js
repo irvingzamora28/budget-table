@@ -43,6 +43,16 @@ class CategorytRepository {
         // Get all categories
         const categories = await this.getAll();
 
+        // Define the order of category types
+        const categoryOrder = ["INCOME", "EXPENSE", "SAVING", "INVESTMENT"];
+
+        // Sort categories by type based on the defined order
+        categories.sort((a, b) => {
+            return (
+                categoryOrder.indexOf(a.type) - categoryOrder.indexOf(b.type)
+            );
+        });
+
         // Define a mapping of category types to their respective tables
         const typeTableMap = {
             INCOME: this.incomeTable,
@@ -64,41 +74,39 @@ class CategorytRepository {
 
             // Query the relevant table if it exists
             if (tableToQuery) {
-                console.log(tableToQuery);
                 const financialEntries = await this.db.getAll(tableToQuery, {
                     category_id: category.id,
                 });
-                console.log("financialEntries", financialEntries);
 
-                // For each income entry, fetch its related concept
+                // For each financial entry, fetch its related concept and subconcepts
                 const financialEntriesWithConcepts = await Promise.all(
                     financialEntries.map(async (financialEntry) => {
                         const concept = await this.db.getById(
                             this.conceptsTable,
                             financialEntry.concept_id
                         );
-                        // Loop through the subconcepts, fetch their names, and add it to each subconcept
+
                         const subconcepts = await Promise.all(
-                            financialEntry.subconcepts.map(async (subconceptData) => {
-                                const subconcept = await this.db.getById(
-                                    this.subconceptsTable,
-                                    subconceptData.id)
+                            financialEntry.subconcepts.map(
+                                async (subconceptData) => {
+                                    const subconcept = await this.db.getById(
+                                        this.subconceptsTable,
+                                        subconceptData.id
+                                    );
                                     return {
-                                    name: subconcept.name,
-                                    ...subconceptData,
+                                        name: subconcept.name,
+                                        ...subconceptData,
                                     };
-                                    }));
+                                }
+                            )
+                        );
 
                         return {
                             ...financialEntry,
-                            concept: concept.name, // Add the concept to the income record
-                            subconcepts: subconcepts, // Add the subconcepts to the income record
+                            concept: concept.name, // Add the concept to the financial entry
+                            subconcepts, // Add the subconcepts to the financial entry
                         };
                     })
-                );
-                console.log(
-                    "financialEntriesWithConcepts",
-                    financialEntriesWithConcepts
                 );
 
                 // Assign entries based on the uppercase category type
