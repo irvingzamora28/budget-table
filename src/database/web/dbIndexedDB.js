@@ -116,6 +116,8 @@ class IndexedDBDatabase {
         const db = await this.dbPromise;
         const tx = db.transaction(storeName, "readwrite");
         const store = tx.objectStore(storeName);
+        // Append a created_at timestamp to the item
+        item.created_at = new Date().toISOString();
         const id = await store.add(item);
         await tx.done;
         return { id };
@@ -165,6 +167,8 @@ class IndexedDBDatabase {
         const db = await this.dbPromise;
         const tx = db.transaction(storeName, "readwrite");
         const store = tx.objectStore(storeName);
+        // Append an updated_at timestamp to the item
+        item.updated_at = new Date().toISOString();
         await store.put({ ...item, id });
         await tx.done;
         return { id };

@@ -15,6 +15,7 @@ class SQLiteDatabase {
     }
 
     async add(tableName, item) {
+        item.created_at = new Date().toISOString();
         const keys = Object.keys(item);
         const values = Object.values(item);
         const sql = `INSERT INTO ${tableName} (${keys.join(
@@ -76,6 +77,7 @@ class SQLiteDatabase {
     }
 
     async update(tableName, id, item) {
+        item.updated_at = new Date().toISOString();
         const keys = Object.keys(item);
         const values = Object.values(item);
         const sql = `UPDATE ${tableName} SET ${keys
