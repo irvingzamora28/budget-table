@@ -136,6 +136,7 @@ const Dashboard = () => {
                             .filter((section) => section.type === "INCOME")
                             .map((section) => (
                                 <TableYear
+                                    key={section.id}
                                     title={section.title}
                                     year="2024"
                                     initialData={section.data || []}
@@ -159,6 +160,7 @@ const Dashboard = () => {
                                     )
                                     .map((section) => (
                                         <TableYear
+                                            key={section.id}
                                             title={section.title}
                                             year="2024"
                                             initialData={section.data || []}
@@ -182,6 +184,7 @@ const Dashboard = () => {
                             .filter((section) => section.type === "SAVING")
                             .map((section) => (
                                 <TableYear
+                                    key={section.id}
                                     title={section.title}
                                     year="2024"
                                     initialData={section.data || []}
@@ -196,6 +199,7 @@ const Dashboard = () => {
                             .filter((section) => section.type === "INVESTMENT")
                             .map((section) => (
                                 <TableYear
+                                    key={section.id}
                                     title={section.title}
                                     year="2024"
                                     initialData={section.data || []}
