@@ -57,14 +57,26 @@ const createTables = async () => {
                     CREATE TABLE IF NOT EXISTS budgets (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER NOT NULL,
-                        start_date TEXT,
-                        end_date TEXT,
-                        month_year TEXT,
+                        category_id INTEGER NOT NULL,
+                        concept_id INTEGER NULL,
+                        subconcepts JSON NOT NULL,
+                        Jan REAL,
+                        Feb REAL,
+                        Mar REAL,
+                        Apr REAL,
+                        May REAL,
+                        Jun REAL,
+                        Jul REAL,
+                        Aug REAL,
+                        Sep REAL,
+                        Oct REAL,
+                        Nov REAL,
+                        Dec REAL,
                         year INTEGER,
-                        total_income REAL,
-                        total_expenses REAL,
-                        total_savings REAL,
-                        FOREIGN KEY(user_id) REFERENCES users(id)
+                        budget_type TEXT NOT NULL,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        FOREIGN KEY(category_id) REFERENCES categories(id),
+                        FOREIGN KEY(concept_id) REFERENCES concepts(id)
                     );
                 `);
 
