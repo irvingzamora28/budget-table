@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import TableHeader from "./TableHeader";
 import Section from "./Section";
 import ConceptModal from "./ConceptModal";
-const { incomeRepo, expenseRepo, conceptRepo } = require("../database/dbAccessLayer");
+const { incomeRepo, expenseRepo, conceptRepo, budgetRepo } = require("../database/dbAccessLayer");
 
 const UnifiedTableYear = ({
     sections,
@@ -96,7 +96,7 @@ const UnifiedTableYear = ({
         setEditingCell(null);
     };
 
-    const handleAddConcept = (sectionIndex, rowIndex = null, itemId = null, itemType = null) => {
+    const onAddConcept = (sectionIndex, rowIndex = null, itemId = null, itemType = null) => {
         setActiveSection(sectionIndex);
         if (rowIndex !== null) {
             // Editing existing concept
@@ -111,7 +111,7 @@ const UnifiedTableYear = ({
             setIsEditing(true);
         } else {
             // Adding new concept
-            const existingConceptData = data[sectionIndex].data[rowIndex];
+            const existingConceptData = data[sectionIndex].data[rowIndex]; // This should be null for new concepts
             setModalData({
                 ...existingConceptData,
                 sectionIndex,
@@ -135,9 +135,6 @@ const UnifiedTableYear = ({
             (acc, month) => ({ ...acc, [month]: 50 }),
             {}
         );
-        console.log(data);
-        console.log(existingConceptData);
-        
         const newData = [...data];
         console.log(newData);
         
@@ -196,7 +193,8 @@ const UnifiedTableYear = ({
                 }
                 return subconcept;
             });
-            await incomeRepo.update(item.id, item);
+            item.budget_type = existingConceptData.budget_type;
+            await budgetRepo.update(item.id, item);
         } else {
             // Check if concept exists in the database
             const conceptExists = await conceptRepo.getAllByField(
@@ -226,31 +224,17 @@ const UnifiedTableYear = ({
                     ...emptyMonthData,
                 })
             );
-            console.log(existingConceptData.itemType);
+            await budgetRepo.add({
+                budget_type: existingConceptData.itemType,
+                concept_id:
+                    conceptExists.length === 0
+                        ? conceptId.id
+                        : conceptExists[0].id,
+                category_id: existingConceptData.itemId,
+                ...emptyMonthData,
+                subconcepts: subconceptsWithoutName,
+            });
             
-            if(existingConceptData.itemType === "INCOME"){
-                await incomeRepo.add({
-                    concept_id:
-                        conceptExists.length === 0
-                            ? conceptId.id
-                            : conceptExists[0].id,
-                    category_id: existingConceptData.itemId,
-                    ...emptyMonthData,
-                    subconcepts: subconceptsWithoutName,
-                });
-            }
-            else if(existingConceptData.itemType === "EXPENSE"){
-                await expenseRepo.add({
-                    concept_id:
-                        conceptExists.length === 0
-                            ? conceptId.id
-                            : conceptExists[0].id,
-                    category_id: existingConceptData.itemId,
-                    ...emptyMonthData,
-                    subconcepts: subconceptsWithoutName,
-                });
-            }
-
             // Add new concept to newData
             const newConcept = {
                 concept: conceptName,
@@ -270,8 +254,8 @@ const UnifiedTableYear = ({
         setIsEditing(false);
     };
 
-    const onEditConcept = (sectionIndex, rowIndex) => {
-        handleAddConcept(sectionIndex, rowIndex);
+    const onEditConcept = (sectionIndex, rowIndex, itemId, itemType) => {
+        onAddConcept(sectionIndex, rowIndex, itemId, itemType);
     };
 
     const toggleConceptExpansion = (sectionIndex, rowIndex) => {
@@ -317,7 +301,7 @@ const UnifiedTableYear = ({
                                 onFocus={handleFocus}
                                 onBlur={handleBlur}
                                 editingCell={editingCell}
-                                onAddConcept={handleAddConcept}
+                                onAddConcept={onAddConcept}
                                 onEditConcept={onEditConcept}
                                 expandedConcepts={expandedConcepts}
                                 toggleConceptExpansion={toggleConceptExpansion}

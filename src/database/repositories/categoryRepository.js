@@ -4,6 +4,7 @@ class CategorytRepository {
     constructor(db) {
         this.db = db;
         this.tableName = "categories";
+        this.budgetsTable = "budgets";
         this.conceptsTable = "concepts";
         this.subconceptsTable = "subconcepts";
         this.incomeTable = "income";
@@ -42,100 +43,81 @@ class CategorytRepository {
     async getFinancialsByCategories() {
         // Get all categories
         const categories = await this.getAll();
-
+    
         // Define the order of category types
         const categoryOrder = ["INCOME", "EXPENSE", "SAVING", "INVESTMENT"];
-
+    
         // Sort categories by type based on the defined order
         categories.sort((a, b) => {
-            return (
-                categoryOrder.indexOf(a.type) - categoryOrder.indexOf(b.type)
-            );
+            return categoryOrder.indexOf(a.type) - categoryOrder.indexOf(b.type);
         });
-
-        // Define a mapping of category types to their respective tables
-        const typeTableMap = {
-            INCOME: this.incomeTable,
-            EXPENSE: this.expensesTable,
-            SAVING: this.savingsTable,
-            INVESTMENT: this.investmentsTable,
-        };
-        console.log("categories", categories);
-        
+    
         // Get all financial entries related to each category using getAll with a query
         const financialPromises = categories.map(async (category) => {
             const categoryType = category.type;
-            const tableToQuery = typeTableMap[categoryType];
-            
+    
             // Initialize the financial properties
             category.income = [];
             category.expenses = [];
             category.savings = [];
             category.investments = [];
-
-            // Query the relevant table if it exists
-            if (tableToQuery) {
-                const financialEntries = await this.db.getAll(tableToQuery, {
-                    category_id: category.id,
-                });
-                console.log("tableToQuery", tableToQuery, "categoryType", categoryType);
-
-                console.log("financialEntries", financialEntries);
-                
-
-                // For each financial entry, fetch its related concept and subconcepts
-                const financialEntriesWithConcepts = await Promise.all(
-                    financialEntries.map(async (financialEntry) => {
-                        const concept = await this.db.getById(
-                            this.conceptsTable,
-                            financialEntry.concept_id
-                        );
-
-                        const subconcepts = await Promise.all(
-                            financialEntry.subconcepts.map(
-                                async (subconceptData) => {
-                                    const subconcept = await this.db.getById(
-                                        this.subconceptsTable,
-                                        subconceptData.id
-                                    );
-                                    return {
-                                        name: subconcept.name,
-                                        ...subconceptData,
-                                    };
-                                }
-                            )
-                        );
-
-                        return {
-                            ...financialEntry,
-                            concept: concept.name, // Add the concept to the financial entry
-                            subconcepts, // Add the subconcepts to the financial entry
-                        };
-                    })
-                );
-                console.log(
-                    "financialEntriesWithConcepts",
-                    financialEntriesWithConcepts
-                );
-                // Assign entries based on the uppercase category type
-                if (categoryType === "INCOME") {
-                    category.income = financialEntriesWithConcepts;
-                } else if (categoryType === "EXPENSE") {
-                    category.expenses = financialEntriesWithConcepts;
-                } else if (categoryType === "SAVING") {
-                    category.savings = financialEntriesWithConcepts;
-                } else if (categoryType === "INVESTMENT") {
-                    category.investments = financialEntriesWithConcepts;
-                }
+    
+            // Query the budgetsTable for the current category based on its type
+            const financialEntries = await this.db.getAll(this.budgetsTable, {
+                category_id: category.id,
+                budget_type: categoryType,
+            });
+    
+            console.log("financialEntries", financialEntries);
+    
+            // For each financial entry, fetch its related concept and subconcepts
+            const financialEntriesWithConcepts = await Promise.all(
+                financialEntries.map(async (financialEntry) => {
+                    const concept = await this.db.getById(
+                        this.conceptsTable,
+                        financialEntry.concept_id
+                    );
+    
+                    const subconcepts = await Promise.all(
+                        financialEntry.subconcepts.map(async (subconceptData) => {
+                            const subconcept = await this.db.getById(
+                                this.subconceptsTable,
+                                subconceptData.id
+                            );
+                            return {
+                                name: subconcept.name,
+                                ...subconceptData,
+                            };
+                        })
+                    );
+    
+                    return {
+                        ...financialEntry,
+                        concept: concept.name, // Add the concept to the financial entry
+                        subconcepts, // Add the subconcepts to the financial entry
+                    };
+                })
+            );
+    
+            // Assign entries to the appropriate category field
+            if (categoryType === "INCOME") {
+                category.income = financialEntriesWithConcepts;
+            } else if (categoryType === "EXPENSE") {
+                category.expenses = financialEntriesWithConcepts;
+            } else if (categoryType === "SAVING") {
+                category.savings = financialEntriesWithConcepts;
+            } else if (categoryType === "INVESTMENT") {
+                category.investments = financialEntriesWithConcepts;
             }
-
+    
             return {
                 category,
             };
         });
-
+    
         return Promise.all(financialPromises);
     }
+    
 }
 
 module.exports = CategorytRepository;
