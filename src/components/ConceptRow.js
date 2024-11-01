@@ -54,13 +54,11 @@ const ConceptRow = ({
             conceptRef.current.style.width = previousWidth;
             conceptRef.current.style.overflow = "hidden";
 
-
             // If the text overflows the 80% (which is the part of the text in the cell (Icon is the other 20%)), start the animation
-            if (isHovered && textWidth > (maxWidth*0.8)) {
+            if (isHovered && textWidth > maxWidth * 0.8) {
                 const animationDuration = textWidth / 50;
                 conceptRef.current.style.animation = `scrollText ${animationDuration}s linear infinite`;
             } else {
-               
                 conceptRef.current.style.animation = "none";
             }
         }
@@ -195,7 +193,15 @@ const ConceptRow = ({
                                     type="text"
                                     value={displayValue}
                                     onChange={(e) =>
-                                        onEdit(e, sectionIndex, rowIndex, month)
+                                        onEdit(
+                                            e,
+                                            sectionIndex,
+                                            rowIndex,
+                                            month,
+                                            conceptData.id, // Pass the concept's budget ID
+                                            false, // Not a subconcept
+                                            null
+                                        )
                                     }
                                     onFocus={() => onFocus(cellKey)}
                                     onBlur={onBlur}
@@ -227,6 +233,7 @@ const ConceptRow = ({
                 conceptData.subconcepts.map((sub, subIndex) => (
                     <SubconceptRow
                         key={`${key}-sub-${subIndex}`}
+                        conceptData={conceptData}
                         subData={sub}
                         sectionIndex={sectionIndex}
                         rowIndex={rowIndex}

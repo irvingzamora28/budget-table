@@ -3,7 +3,12 @@ import React, { useEffect, useState } from "react";
 import TableHeader from "./TableHeader";
 import Section from "./Section";
 import ConceptModal from "./ConceptModal";
-const { incomeRepo, expenseRepo, conceptRepo, budgetRepo } = require("../database/dbAccessLayer");
+const {
+    incomeRepo,
+    expenseRepo,
+    conceptRepo,
+    budgetRepo,
+} = require("../database/dbAccessLayer");
 
 const UnifiedTableYear = ({
     sections,
@@ -40,22 +45,28 @@ const UnifiedTableYear = ({
     const paddingClassTitle = condensed ? "px-4" : "px-6";
 
     // Handle editing of cells
-    const handleEdit = (
+    // UnifiedTableYear.js
+    const handleEdit = async (
         e,
         sectionIndex,
         rowIndex,
         month,
+        budgetId,
         isSubconcept = false,
         subconceptIndex = null
     ) => {
         const value = e.target.value.replace(/[^0-9.]/g, "");
         if (/^\d*\.?\d*$/.test(value)) {
             const newData = [...data];
+            const budget = newData[sectionIndex].data[rowIndex];
+
             if (isSubconcept) {
                 // Update the subconcept value
-                newData[sectionIndex].data[rowIndex].subconcepts[
-                    subconceptIndex
-                ][month] = value;
+                const subconcept =
+                    newData[sectionIndex].data[rowIndex].subconcepts[
+                        subconceptIndex
+                    ];
+                subconcept[month] = value;
 
                 // Recalculate the concept's total for the month by summing the subconcepts
                 const updatedTotalForMonth = newData[sectionIndex].data[
@@ -68,20 +79,16 @@ const UnifiedTableYear = ({
                 // Update the concept's value with the recalculated total
                 newData[sectionIndex].data[rowIndex][month] =
                     updatedTotalForMonth ? updatedTotalForMonth.toFixed(2) : "";
+                
             } else {
-                // Check if the concept has subconcepts
-                const hasSubconcepts =
-                    newData[sectionIndex].data[rowIndex].subconcepts &&
-                    newData[sectionIndex].data[rowIndex].subconcepts.length > 0;
-
-                if (!hasSubconcepts) {
-                    // Update the concept value directly
-                    newData[sectionIndex].data[rowIndex][month] = value;
-                } else {
-                    // Prevent editing if concept has subconcepts
-                    return;
-                }
+                // Update the concept value directly
+                budget[month] = value;
             }
+            // Update the database for the budget by passing the entire object
+            await budgetRepo.update(budget.id, {
+                ...budget,
+            });
+
             setData(newData);
         }
     };
@@ -96,7 +103,12 @@ const UnifiedTableYear = ({
         setEditingCell(null);
     };
 
-    const onAddConcept = (sectionIndex, rowIndex = null, itemId = null, itemType = null) => {
+    const onAddConcept = (
+        sectionIndex,
+        rowIndex = null,
+        itemId = null,
+        itemType = null
+    ) => {
         setActiveSection(sectionIndex);
         if (rowIndex !== null) {
             // Editing existing concept
@@ -136,8 +148,6 @@ const UnifiedTableYear = ({
             {}
         );
         const newData = [...data];
-        console.log(newData);
-        
 
         if (isEditing && existingConceptData) {
             // Update existing concept
@@ -234,7 +244,7 @@ const UnifiedTableYear = ({
                 ...emptyMonthData,
                 subconcepts: subconceptsWithoutName,
             });
-            
+
             // Add new concept to newData
             const newConcept = {
                 concept: conceptName,
@@ -266,9 +276,6 @@ const UnifiedTableYear = ({
         }));
     };
 
-    useEffect(() => {
-        console.log("Sections:", sections);
-    }, []);
 
     return (
         <section

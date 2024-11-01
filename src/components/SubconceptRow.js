@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 const SubconceptRow = ({
+    conceptData,
     subData,
     sectionIndex,
     rowIndex,
@@ -15,7 +16,10 @@ const SubconceptRow = ({
     currency,
 }) => {
     const key = `${sectionIndex}-${rowIndex}-sub-${subIndex}`;
-
+    useEffect(()=> {
+        console.log("SubconceptRow", subData);
+        
+    }, []);
     // State and refs for scrolling text
     const [isHovered, setIsHovered] = useState(false);
     const conceptRef = useRef(null);
@@ -104,7 +108,8 @@ const SubconceptRow = ({
                                     sectionIndex,
                                     rowIndex,
                                     month,
-                                    true,
+                                    conceptData.id, // Pass the subconcept's budget ID
+                                    true, // Is a subconcept
                                     subIndex
                                 )
                             }
