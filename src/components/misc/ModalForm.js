@@ -224,7 +224,7 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
         });
     };
 
-    const renderField = (field) => {
+    const renderField = (field, index) => {
         return (
             <div key={field.name} className="mb-4">
                 <label htmlFor={field.name} className="block text-sm font-medium mb-2">
@@ -236,6 +236,7 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
                         id={field.name}
                         name={field.name}
                         value={formData[field.name] || ""}
+                        autoFocus={index == 0 ? true : false}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         className={`w-full border p-2 rounded ${
@@ -248,6 +249,7 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
                         id={field.name}
                         name={field.name}
                         value={formData[field.name] || ""}
+                        autoFocus={index == 0 ? true : false}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         className={`w-full border p-2 rounded ${
@@ -260,6 +262,7 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
                         id={field.name}
                         name={field.name}
                         value={formData[field.name] || ""}
+                        autoFocus={index == 0 ? true : false}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         className={`w-full border p-2 rounded ${
@@ -281,6 +284,7 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
                                     type="radio"
                                     id={`${field.name}-${option.value}`}
                                     name={field.name}
+                                    autoFocus={index == 0 ? true: false}
                                     value={option.value}
                                     checked={formData[field.name] === option.value}
                                     onChange={handleChange}
@@ -299,6 +303,7 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
                         type="color"
                         id={field.name}
                         name={field.name}
+                        autoFocus={index == 0 ? true: false}
                         value={formData[field.name] || "#000000"}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -312,6 +317,7 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
                         type="file"
                         id={field.name}
                         name={field.name}
+                        autoFocus={index == 0 ? true: false}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         className={`w-full border p-2 rounded ${
@@ -511,8 +517,8 @@ const ModalForm = ({ fields, isOpen, onClose, onSave, initialData }) => {
                     {isEditMode ? "Edit Item" : "Create Item"}
                 </h3>
                 <form onSubmit={handleSubmit}>
-                    {fields.map((field) =>
-                        field.type === "array" ? renderNestedFields(field) : renderField(field)
+                    {fields.map((field, index) =>
+                        field.type === "array" ? renderNestedFields(field) : renderField(field, index)
                     )}
                     <div className="flex justify-end space-x-4 mt-4">
                         <button
