@@ -4,7 +4,7 @@ import Actions from "./Actions";
 
 const ItemTable = ({ items, onUpdate, onDelete }) => {
     // Define keys to always exclude from rendering
-    const alwaysExcludedKeys = ["name", "id", "image", "status", "color"];
+    const alwaysExcludedKeys = ["name", "id", "image", "created_at"];
 
     // Determine the headers based on the last item's keys,
     // excluding alwaysExcludedKeys and any keys with nested values
@@ -59,11 +59,15 @@ const ItemTable = ({ items, onUpdate, onDelete }) => {
                                 {item.name}
                             </td>
                             {/* Render additional cells dynamically, excluding alwaysExcludedKeys and nested keys */}
-                            {headers.map((key) => (
-                                <td key={key} className="py-4 px-6">
-                                    {item[key]}
-                                </td>
-                            ))}
+                            {headers.map(
+                                (key) =>
+                                    key !== "status" &&
+                                    key !== "color" && (
+                                        <td key={key} className="py-4 px-6">
+                                            {item[key]}
+                                        </td>
+                                    )
+                            )}
                             {/* Render StatusBadge if status exists */}
                             {item.status && (
                                 <td className="py-4 px-6">
