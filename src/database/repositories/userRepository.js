@@ -1,33 +1,14 @@
 // src/database/repositories/userRepository.js
 
-class UserRepository {
+const BaseRepository = require('./baseRepository');
+
+class UserRepository extends BaseRepository {
     constructor(db) {
-        this.db = db;
-        this.tableName = "users";
-    }
-
-    async add(user) {
-        return await this.db.add(this.tableName, user);
-    }
-
-    async getById(id) {
-        return await this.db.getById(this.tableName, id);
+        super(db, 'users');
     }
 
     async getByEmail(email) {
         return await this.db.get(this.tableName, { email });
-    }
-
-    async getAll() {
-        return await this.db.getAll(this.tableName);
-    }
-
-    async update(id, user) {
-        return await this.db.update(this.tableName, id, user);
-    }
-
-    async delete(id) {
-        return await this.db.delete(this.tableName, id);
     }
 
     async getUserWithRelatedData(userId) {

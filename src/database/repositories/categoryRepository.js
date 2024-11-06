@@ -1,9 +1,10 @@
 // src/database/repositories/categoryRepository.js
 
-class CategorytRepository {
+const BaseRepository = require('./baseRepository');
+
+class CategoryRepository extends BaseRepository {
     constructor(db) {
-        this.db = db;
-        this.tableName = "categories";
+        super(db, 'categories');
         this.budgetsTable = "budgets";
         this.conceptsTable = "concepts";
         this.subconceptsTable = "subconcepts";
@@ -13,33 +14,6 @@ class CategorytRepository {
         this.investmentsTable = "investments";
     }
 
-    async add(category) {
-        return await this.db.add(this.tableName, category);
-    }
-
-    async getById(id) {
-        return await this.db.getById(this.tableName, id);
-    }
-
-    async getAll() {
-        return await this.db.getAll(this.tableName);
-    }
-
-    async update(id, category) {
-        return await this.db.update(this.tableName, id, category);
-    }
-
-    async delete(id) {
-        return await this.db.delete(this.tableName, id);
-    }
-
-    // Method to get item by any field and value
-    async getAllByField(field, value) {
-        const query = { [field]: value };
-        return await this.db.getAll(this.tableName, query);
-    }
-
-    // Method to get all income related to categories
     async getFinancialsByCategories() {
         // Get all categories
         const categories = await this.getAll();
@@ -120,4 +94,4 @@ class CategorytRepository {
     
 }
 
-module.exports = CategorytRepository;
+module.exports = CategoryRepository;

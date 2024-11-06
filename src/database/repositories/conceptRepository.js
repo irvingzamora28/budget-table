@@ -1,10 +1,11 @@
 // src/database/repositories/conceptRepository.js
 
-class ConceptRepository {
+const BaseRepository = require('./baseRepository');
+
+class ConceptRepository extends BaseRepository {
     constructor(db) {
-        this.db = db;
-        this.tableName = "concepts";
-        this.tableNameSubconcept = "subconcepts";
+        super(db, 'concepts');
+        this.subconceptsTable = 'subconcepts';
     }
 
     async add(concept) {
@@ -31,10 +32,6 @@ class ConceptRepository {
         return { id: conceptId };
     }
 
-    async getById(id) {
-        return await this.db.getById(this.tableName, id);
-    }
-
     async getByIdWithSubconcepts(id) {
         const concept = await this.db.getById(this.tableName, id);
         const subconcepts = await this.db.getAll(this.tableNameSubconcept, {
@@ -42,10 +39,6 @@ class ConceptRepository {
         });
         concept.subconcepts = subconcepts;
         return concept;
-    }
-
-    async getAll() {
-        return await this.db.getAll(this.tableName);
     }
 
     // Get all concepts with their subconcepts
@@ -97,15 +90,6 @@ class ConceptRepository {
         }
     }
 
-    async delete(id) {
-        return await this.db.delete(this.tableName, id);
-    }
-
-    // Method to get items by any field and value
-    async getAllByField(field, value) {
-        const query = { [field]: value };
-        return await this.db.getAll(this.tableName, query);
-    }
 }
 
 module.exports = ConceptRepository;
