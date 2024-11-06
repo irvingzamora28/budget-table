@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { FaTimes, FaPlus } from "react-icons/fa";
-import { expenseRepo, categoryRepo, conceptRepo } from "../database/dbAccessLayer"; // Import all necessary repositories
-import AddExpenseModal from "./AddExpenseModal"; // Import the modal
+import { expenseRepo, categoryRepo, conceptRepo } from "../database/dbAccessLayer"; // Adjust the path as necessary
+import AddExpenseModal from "./AddExpenseModal"; // Adjust the path as necessary
 
 const ExpenseDetailTable = ({
-    month,
+    month = "2024-11",
     userId, // Assuming you need to filter by user
     budgetId, // Assuming you need to filter by budget
     onCloseExpenseDetailTable,
@@ -26,16 +26,14 @@ const ExpenseDetailTable = ({
                 setLoading(true);
                 setError(null);
 
-                // Fetch expenses filtered by month, userId, and budgetId
+                // Adjusted Query
                 const query = {
-                    date: {
-                        $like: `${month}%`, // Fetch expenses where date starts with the given month
-                    },
+                    date: `${month}%`, // Directly use the LIKE pattern
                     user_id: userId,
                     budget_id: budgetId,
                 };
 
-                const fetchedExpenses = await expenseRepo.getAll(query);
+                const fetchedExpenses = await expenseRepo.getAll();
 
                 // Fetch all categories to map category_id to category name
                 const fetchedCategories = await categoryRepo.getAll();
@@ -83,7 +81,7 @@ const ExpenseDetailTable = ({
     };
 
     return (
-        <div className={`relative bg-white shadow-md rounded-lg p-4 min-h-48 ${condensed ? "mb-6" : "my-6"}`}>
+        <div className={`relative bg-white shadow-md rounded-lg p-4 ${condensed ? "mb-6" : "my-6"} pb-16`}>
             {/* Header Section */}
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">
@@ -109,39 +107,41 @@ const ExpenseDetailTable = ({
                     {expenses.length === 0 ? (
                         <p>No expenses found for this period.</p>
                     ) : (
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b">
-                                    <th className="text-left py-2">Category</th>
-                                    <th className="text-left py-2">Concept</th>
-                                    <th className="text-left py-2">Detail</th>
-                                    <th className="text-right py-2">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {expenses.map((expense) => (
-                                    <tr
-                                        key={expense.id}
-                                        className="border-b last:border-b-0"
-                                    >
-                                        <td className="py-2">
-                                            {categories[expense.category_id] ||
-                                                "Unknown"}
-                                        </td>
-                                        <td className="py-2">
-                                            {conceptsMap[expense.concept_id] ||
-                                                "N/A"}
-                                        </td>
-                                        <td className="py-2">
-                                            {expense.detail || "N/A"}
-                                        </td>
-                                        <td className="py-2 text-right">
-                                            ${expense.amount.toFixed(2)}
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="border-b">
+                                        <th className="text-left py-2">Category</th>
+                                        <th className="text-left py-2">Concept</th>
+                                        <th className="text-left py-2">Detail</th>
+                                        <th className="text-right py-2">Amount</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {expenses.map((expense) => (
+                                        <tr
+                                            key={expense.id}
+                                            className="border-b last:border-b-0"
+                                        >
+                                            <td className="py-2">
+                                                {categories[expense.category_id] ||
+                                                    "Unknown"}
+                                            </td>
+                                            <td className="py-2">
+                                                {conceptsMap[expense.concept_id] ||
+                                                    "N/A"}
+                                            </td>
+                                            <td className="py-2">
+                                                {expense.detail || "N/A"}
+                                            </td>
+                                            <td className="py-2 text-right">
+                                                ${expense.amount.toFixed(2)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     )}
                 </>
             )}
@@ -149,8 +149,9 @@ const ExpenseDetailTable = ({
             {/* Floating Action Button (FAB) */}
             <button
                 onClick={() => setShowAddExpenseModal(true)}
-                className="absolute bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center"
+                className="absolute bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-transform duration-200 transform hover:scale-110 flex items-center justify-center"
                 title="Add Expense"
+                aria-label="Add Expense"
             >
                 <FaPlus size={16} />
             </button>
