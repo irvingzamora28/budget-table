@@ -84,8 +84,8 @@ const Dashboard = () => {
                         <div className="flex flex-col lg:flex-row">
                             <div
                                 className={`w-full ${
-                                    selectedMonth ? "lg:w-[70%]" : ""
-                                } pr-0 lg:pr-4 order-2 lg:order-1`}
+                                    selectedMonth ? "lg:w-[70%] pr-0 lg:pr-4 " : ""
+                                } order-2 lg:order-1`}
                             >
                                 <UnifiedTableYear
                                     sections={sections}
@@ -211,7 +211,7 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 pb-16">
+        <div className="mx-auto px-4 pb-16">
             {/* Tab Navigation */}
             <TabNavigation
                 tabs={tabs}

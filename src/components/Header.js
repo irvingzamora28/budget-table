@@ -39,7 +39,7 @@ const Header = () => {
 
     return (
         <header className="bg-white shadow-sm py-4">
-            <nav className="container mx-auto flex justify-between items-center px-8">
+            <nav className="mx-auto flex justify-between items-center px-8">
                 {/* Logo and Title */}
                 <div className="flex items-center space-x-2">
                     <Link to="/">
