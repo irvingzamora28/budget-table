@@ -137,9 +137,19 @@ class IndexedDBDatabase {
         // Filter results based on query
         if (Object.keys(query).length > 0) {
             results = results.filter((item) =>
-                Object.entries(query).every(
-                    ([key, value]) => item[key] === value
-                )
+                Object.entries(query).every(([key, value]) => {
+                    if (typeof value === "object" && value !== null) {
+                        // Handle operators
+                        if (value.$like) {
+                            return item[key].startsWith(
+                                value.$like.replace("%", "")
+                            );
+                        }
+                        // Add more operators as needed
+                        return true; // Default to true if operator is unknown
+                    }
+                    return item[key] === value;
+                })
             );
         }
         return results.length > 0 ? results[0] : null;
@@ -154,9 +164,19 @@ class IndexedDBDatabase {
         // Filter results based on query
         if (Object.keys(query).length > 0) {
             results = results.filter((item) => {
-                return Object.entries(query).every(
-                    ([key, value]) => item[key] === value
-                );
+                return Object.entries(query).every(([key, value]) => {
+                    if (typeof value === "object" && value !== null) {
+                        // Handle operators
+                        if (value.$like) {
+                            return item[key].startsWith(
+                                value.$like.replace("%", "")
+                            );
+                        }
+                        // Add more operators as needed
+                        return true; // Default to true if operator is unknown
+                    }
+                    return item[key] === value;
+                });
             });
         }
 
@@ -201,16 +221,31 @@ class IndexedDBDatabase {
         return { ids: idsToDelete };
     }
 
-    async getAllWith(tableName, foreignTable, foreignKey, valueField, query = {}) {
+    async getAllWith(
+        tableName,
+        foreignTable,
+        foreignKey,
+        valueField,
+        query = {}
+    ) {
         const mainRecords = await this.getAll(tableName, query); // Assuming 'income' is the primary table
-        
+
         for (const record of mainRecords) {
-            console.log("foreignTable", foreignTable, "foreignKey", foreignKey, "valueField", valueField);
-            
-            const relatedRecords = await this.getAll(foreignTable, { [foreignKey]: record[valueField] });
+            console.log(
+                "foreignTable",
+                foreignTable,
+                "foreignKey",
+                foreignKey,
+                "valueField",
+                valueField
+            );
+
+            const relatedRecords = await this.getAll(foreignTable, {
+                [foreignKey]: record[valueField],
+            });
             record.relatedData = relatedRecords; // You can rename 'relatedData' as needed
         }
-        
+
         return mainRecords;
     }
 }

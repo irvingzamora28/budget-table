@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { FaPlus, FaTimes } from "react-icons/fa";
-import { conceptRepo, expenseRepo } from "../database/dbAccessLayer";
+import { conceptRepo, expenseRepo, categoryRepo } from "../database/dbAccessLayer";
 
 const AddExpenseModal = ({
     showModal,
@@ -13,6 +13,8 @@ const AddExpenseModal = ({
 }) => {
     const [concepts, setConcepts] = useState([]);
     const [selectedConceptId, setSelectedConceptId] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState("");
     const [date, setDate] = useState("");
     const [amount, setAmount] = useState("");
     const [detail, setDetail] = useState("");
@@ -20,18 +22,8 @@ const AddExpenseModal = ({
     const [error, setError] = useState(null);
 
     const conceptSelectRef = useRef(null);
+    const categorySelectRef = useRef(null);
     const dateInputRef = useRef(null);
-
-    // Fetch concepts and set today's date when the modal is opened
-    useEffect(() => {
-        if (showModal) {
-            fetchConcepts();
-            setDate(getTodayDate()); // Set today's date
-        } else {
-            // Reset form when modal is closed
-            resetForm();
-        }
-    }, [showModal]);
 
     // Function to get today's date in YYYY-MM-DD format
     const getTodayDate = () => {
@@ -41,6 +33,20 @@ const AddExpenseModal = ({
         const day = String(today.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
+
+    // Fetch concepts and categories, set today's date when the modal is opened
+    useEffect(() => {
+        if (showModal) {
+            fetchConcepts();
+            fetchCategories();
+            setDate(getTodayDate()); // Set today's date
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+        } else {
+            // Reset form when modal is closed
+            resetForm();
+            document.body.style.overflow = 'auto'; // Restore background scroll
+        }
+    }, [showModal]);
 
     const fetchConcepts = async () => {
         try {
@@ -55,11 +61,29 @@ const AddExpenseModal = ({
         }
     };
 
+    const fetchCategories = async () => {
+        try {
+            const fetchedCategories = await categoryRepo.getAll();
+            setCategories(fetchedCategories);
+            if (fetchedCategories.length > 0) {
+                setSelectedCategoryId(fetchedCategories[0].id);
+            }
+        } catch (err) {
+            console.error("Failed to fetch categories:", err);
+            setError("Failed to load categories.");
+        }
+    };
+
     const resetForm = () => {
         if (concepts.length > 0) {
             setSelectedConceptId(concepts[0].id);
         } else {
             setSelectedConceptId("");
+        }
+        if (categories.length > 0) {
+            setSelectedCategoryId(categories[0].id);
+        } else {
+            setSelectedCategoryId("");
         }
         setDate(getTodayDate());
         setAmount("");
@@ -69,7 +93,7 @@ const AddExpenseModal = ({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!selectedConceptId || !date || !amount || !detail) {
+        if (!selectedConceptId || !selectedCategoryId || !date || !amount || !detail) {
             setError("Please fill in all fields.");
             return;
         }
@@ -81,7 +105,7 @@ const AddExpenseModal = ({
             const newExpense = {
                 user_id: userId,
                 budget_id: budgetId,
-                category_id: 1, // Set to a default category_id, adjust as needed
+                category_id: selectedCategoryId, // Use selectedCategoryId
                 concept_id: selectedConceptId,
                 subconcept_id: null, // Ignored for now
                 amount: parseFloat(amount),
@@ -165,6 +189,26 @@ const AddExpenseModal = ({
                             ))}
                         </select>
                     </div>
+                    {/* Category Selection */}
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Category</label>
+                        <select
+                            value={selectedCategoryId}
+                            onChange={(e) => setSelectedCategoryId(e.target.value)}
+                            className="w-full p-2 border border-gray-300 rounded-md"
+                            ref={categorySelectRef}
+                            required
+                        >
+                            <option value="" disabled>
+                                Select a category
+                            </option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     {/* Date Input */}
                     <div className="mb-4">
                         <label className="block text-gray-700 mb-2">Date</label>
@@ -222,8 +266,6 @@ const AddExpenseModal = ({
                 </form>
             </div>
         </div>
-    );
-
-};
+    )};
 
 export default AddExpenseModal;

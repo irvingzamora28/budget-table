@@ -6,7 +6,7 @@ import { expenseRepo, categoryRepo, conceptRepo } from "../database/dbAccessLaye
 import AddExpenseModal from "./AddExpenseModal"; // Adjust the path as necessary
 
 const ExpenseDetailTable = ({
-    month = "2024-11",
+    month,
     userId, // Assuming you need to filter by user
     budgetId, // Assuming you need to filter by budget
     onCloseExpenseDetailTable,
@@ -28,12 +28,12 @@ const ExpenseDetailTable = ({
 
                 // Adjusted Query
                 const query = {
-                    date: `${month}%`, // Directly use the LIKE pattern
+                    date: { $like: `${month}%` },
                     user_id: userId,
                     budget_id: budgetId,
                 };
 
-                const fetchedExpenses = await expenseRepo.getAll();
+                const fetchedExpenses = await expenseRepo.getAll(query);
 
                 // Fetch all categories to map category_id to category name
                 const fetchedCategories = await categoryRepo.getAll();
@@ -68,10 +68,16 @@ const ExpenseDetailTable = ({
         try {
             const fetchedExpense = await expenseRepo.getById(addedExpense.id);
             if (fetchedExpense) {
-                setExpenses((prevExpenses) => [...prevExpenses, fetchedExpense]);
+                // Check if the expense's date matches the selected month
+                if (fetchedExpense.date.startsWith(month)) {
+                    setExpenses((prevExpenses) => [...prevExpenses, fetchedExpense]);
+                } else {
+                    console.log(
+                        `Expense with ID ${fetchedExpense.id} does not match the selected month (${month}). Not appending.`
+                    );
+                }
             } else {
                 // If not able to fetch, optionally re-fetch all expenses
-                // Or handle as needed
                 console.warn("Added expense not found");
             }
         } catch (err) {

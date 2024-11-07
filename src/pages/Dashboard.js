@@ -19,8 +19,25 @@ const Dashboard = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true); // New loading state
 
+    const monthMap = {
+        Jan: "01",
+        Feb: "02",
+        Mar: "03",
+        Apr: "04",
+        May: "05",
+        Jun: "06",
+        Jul: "07",
+        Aug: "08",
+        Sep: "09",
+        Oct: "10",
+        Nov: "11",
+        Dec: "12",
+    };
+
     const handleMonthClick = (month) => {
-        setSelectedMonth(month);
+        const monthNumber = monthMap[month];
+        const formattedMonth = `2024-${monthNumber}`; // Assuming the year is 2024
+        setSelectedMonth(formattedMonth);
     };
 
     const handleCloseExpenseDetailTable = () => {
@@ -33,8 +50,8 @@ const Dashboard = () => {
             try {
                 const allCategories =
                     await categoryRepo.getFinancialsByCategories();
-                    console.log("allCategories", allCategories);
-                    
+                console.log("allCategories", allCategories);
+
                 setCategories(allCategories); // Populate categories once fetched
             } catch (error) {
                 console.error("Error fetching categories:", error);
@@ -50,8 +67,13 @@ const Dashboard = () => {
         id: category.category.id,
         title: category.category.name,
         type: category.category.type,
-        data: [category.category.income, category.category.expenses, category.category.savings, category.category.investments]
-            .find(arr => arr.length > 0) || [],
+        data:
+            [
+                category.category.income,
+                category.category.expenses,
+                category.category.savings,
+                category.category.investments,
+            ].find((arr) => arr.length > 0) || [],
     }));
 
     // Define the tabs you want to show, including their icons and labels
@@ -84,7 +106,9 @@ const Dashboard = () => {
                         <div className="flex flex-col lg:flex-row">
                             <div
                                 className={`w-full ${
-                                    selectedMonth ? "lg:w-[70%] pr-0 lg:pr-4 " : ""
+                                    selectedMonth
+                                        ? "lg:w-[70%] pr-0 lg:pr-4 "
+                                        : ""
                                 } order-2 lg:order-1`}
                             >
                                 <UnifiedTableYear
