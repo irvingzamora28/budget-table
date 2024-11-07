@@ -4,8 +4,6 @@ import TableHeader from "./TableHeader";
 import Section from "./Section";
 import ConceptModal from "./ConceptModal";
 const {
-    incomeRepo,
-    expenseRepo,
     conceptRepo,
     budgetRepo,
 } = require("../database/dbAccessLayer");
