@@ -63,7 +63,7 @@ const AddExpenseModal = ({
 
     const fetchCategories = async () => {
         try {
-            const fetchedCategories = await categoryRepo.getAll();
+            const fetchedCategories = await categoryRepo.getAll({type: "EXPENSE"});
             setCategories(fetchedCategories);
             if (fetchedCategories.length > 0) {
                 setSelectedCategoryId(fetchedCategories[0].id);
@@ -191,7 +191,7 @@ const AddExpenseModal = ({
                     </div>
                     {/* Category Selection */}
                     <div className="mb-4">
-                        <label className="block text-gray-700 mb-2">Category</label>
+                        <label className="block text-gray-700 mb-2">Type of expense</label>
                         <select
                             value={selectedCategoryId}
                             onChange={(e) => setSelectedCategoryId(e.target.value)}
@@ -200,7 +200,7 @@ const AddExpenseModal = ({
                             required
                         >
                             <option value="" disabled>
-                                Select a category
+                                Select a type of expense
                             </option>
                             {categories.map((category) => (
                                 <option key={category.id} value={category.id}>
