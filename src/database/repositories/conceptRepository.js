@@ -22,7 +22,7 @@ class ConceptRepository extends BaseRepository {
         if (subconcepts && subconcepts.length > 0) {
             for (const subconcept of subconcepts) {
                 // Directly insert into subconcepts table
-                await this.db.add(this.tableNameSubconcept, {
+                await this.db.add(this.subconceptsTable, {
                     ...subconcept,
                     concept_id: conceptId, // Link subconcept to concept
                 });
@@ -34,7 +34,7 @@ class ConceptRepository extends BaseRepository {
 
     async getByIdWithSubconcepts(id) {
         const concept = await this.db.getById(this.tableName, id);
-        const subconcepts = await this.db.getAll(this.tableNameSubconcept, {
+        const subconcepts = await this.db.getAll(this.subconceptsTable, {
             concept_id: id,
         });
         concept.subconcepts = subconcepts;
@@ -45,7 +45,7 @@ class ConceptRepository extends BaseRepository {
     async getAllWithSubconcepts() {
         const concepts = await this.db.getAll(this.tableName);
         for (const concept of concepts) {
-            const subconcepts = await this.db.getAll(this.tableNameSubconcept, {
+            const subconcepts = await this.db.getAll(this.subconceptsTable, {
                 concept_id: concept.id,
             });
             concept.subconcepts = subconcepts;
@@ -68,14 +68,14 @@ class ConceptRepository extends BaseRepository {
                 // If the subconcept has id, it's an update, otherwise it's an add
                 if (subconcept.id) {
                     // Update the subconcept
-                    await this.db.update(this.tableNameSubconcept, subconcept.id, {
+                    await this.db.update(this.subconceptsTable, subconcept.id, {
                         ...subconcept,
                         concept_id: id,
                     });
                 }
                 else {
                     // Add the subconcept
-                    await this.db.add(this.tableNameSubconcept, {
+                    await this.db.add(this.subconceptsTable, {
                         ...subconcept,
                         concept_id: id,
                     });
@@ -84,7 +84,7 @@ class ConceptRepository extends BaseRepository {
             // Remove the ids from afterSubUpdateSubconceptIds that are in the incomingSubconceptIds
             const subconceptsToRemove = beforeSubUpdateSubconceptIds.filter(subconceptId => !incomingSubconceptIds.includes(subconceptId));
             for (const subconceptId of subconceptsToRemove) {
-                await this.db.delete(this.tableNameSubconcept, subconceptId);
+                await this.db.delete(this.subconceptsTable, subconceptId);
             }
             
         }
