@@ -1,5 +1,3 @@
-// src/components/ExpenseDetailTable.js
-
 import React, { useState, useEffect } from "react";
 import { FaTimes, FaPlus } from "react-icons/fa";
 import { expenseRepo, categoryRepo, conceptRepo } from "../database/dbAccessLayer"; // Adjust the path as necessary
@@ -18,6 +16,9 @@ const ExpenseDetailTable = ({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+
+    // Calculate total expenses
+    const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
     // Fetch expenses, categories, and concepts on component mount or when dependencies change
     useEffect(() => {
@@ -90,9 +91,16 @@ const ExpenseDetailTable = ({
         <div className={`relative bg-white shadow-md rounded-lg p-4 ${condensed ? "mb-6" : "my-6"} pb-16`}>
             {/* Header Section */}
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">
-                    Expense Details - {month}
-                </h3>
+                <div>
+                    <h3 className="text-lg font-semibold">
+                        Expense Details - {month}
+                    </h3>
+                    {!loading && !error && (
+                        <p className="text-gray-600 mt-1">
+                            Total: <span className="font-semibold">${totalExpenses.toFixed(2)}</span>
+                        </p>
+                    )}
+                </div>
                 {/* Close Expense Detail Table */}
                 <button
                     onClick={onCloseExpenseDetailTable}
@@ -145,6 +153,14 @@ const ExpenseDetailTable = ({
                                             </td>
                                         </tr>
                                     ))}
+                                    <tr className="border-t-2 font-semibold">
+                                        <td colSpan="3" className="py-2 text-right">
+                                            Total:
+                                        </td>
+                                        <td className="py-2 text-right">
+                                            ${totalExpenses.toFixed(2)}
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -171,6 +187,7 @@ const ExpenseDetailTable = ({
                 budgetId={budgetId}
             />
         </div>
-    )};
+    );
+};
 
 export default ExpenseDetailTable;
