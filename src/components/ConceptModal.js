@@ -12,6 +12,7 @@ const ConceptModal = ({
     const [newConceptName, setNewConceptName] = useState("");
     const [subconceptName, setSubconceptName] = useState("");
     const [subconcepts, setSubconcepts] = useState([]);
+    const [quantity, setQuantity] = useState("");
 
     // Refs for the input fields
     const subconceptInputRef = useRef(null);
@@ -59,7 +60,7 @@ const ConceptModal = ({
 
     const handleAddSubconcept = () => {
         if (subconceptName.trim()) {
-            setSubconcepts([...subconcepts, {name: subconceptName.trim()}]);
+            setSubconcepts([...subconcepts, { name: subconceptName.trim() }]);
             setSubconceptName("");
             subconceptInputRef.current.focus(); // Focus back to the input field
         }
@@ -76,10 +77,12 @@ const ConceptModal = ({
                 subconcepts,
                 isEditing,
                 existingConceptData,
+                quantity: parseFloat(quantity) || 0,
             });
             // Reset the modal state
             setNewConceptName("");
             setSubconceptName("");
+            setQuantity("");
             setSubconcepts([]);
             setShowModal(false);
         }
@@ -94,11 +97,21 @@ const ConceptModal = ({
                 className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 md:w-1/3 z-50"
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
             >
+                {/* Modal Header */}
                 <h3 className="text-xl font-semibold mb-4">
                     {isEditing ? "Edit Concept" : "Add New Concept"}
                 </h3>
+
+                {/* Concept Name Input */}
+                <label
+                    className="block text-gray-700 font-medium mb-2"
+                    htmlFor="conceptName"
+                >
+                    Concept Name
+                </label>
                 <input
                     type="text"
+                    id="conceptName"
                     value={newConceptName}
                     onChange={(e) => setNewConceptName(e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded-md mb-4"
@@ -107,7 +120,6 @@ const ConceptModal = ({
                     ref={conceptInputRef}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            // Move focus to the subconcept input
                             subconceptInputRef.current.focus();
                         } else if (e.key === "Escape") {
                             setShowModal(false);
@@ -115,70 +127,90 @@ const ConceptModal = ({
                     }}
                 />
 
+                {/* Quantity for All Months */}
+                <label
+                    className="block text-gray-700 font-medium mr-2 mb-2"
+                    htmlFor="quantity"
+                >
+                    Default value
+                </label>
+                <input
+                    type="number"
+                    id="quantity"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    className="p-2 border border-gray-300 rounded-md w-24 mb-4"
+                    placeholder="0"
+                    min="0"
+                />
+
                 {/* Subconcepts Section */}
-                <div className="mb-4">
-                    <h4 className="text-lg font-medium mb-2">
-                        Subconcepts (Optional)
-                    </h4>
-                    <div className="flex mb-2">
-                        <input
-                            type="text"
-                            value={subconceptName}
-                            onChange={(e) => setSubconceptName(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter subconcept name"
-                            ref={subconceptInputRef} // Attach ref here
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    e.preventDefault(); // Prevent form submission
-                                    handleAddSubconcept();
-                                } else if (e.key === "Escape") {
-                                    setShowModal(false);
-                                }
-                            }}
-                        />
-                        <button
-                            onClick={handleAddSubconcept}
-                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 ml-2"
-                            disabled={!subconceptName.trim()}
-                        >
-                            <FaPlus />
-                        </button>
-                    </div>
-                    {subconcepts.length > 0 && (
-                        <table className="w-full table-auto border-collapse">
-                            <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="border p-2 text-left">
-                                        Subconcept Name
-                                    </th>
-                                    <th className="border p-2">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {subconcepts.map((sub, index) => (
-                                    <tr key={index} className="border-t">
-                                        <td className="border p-2">{sub.name}</td>
-                                        <td className="border p-2 text-center">
-                                            <button
-                                                onClick={() =>
-                                                    handleRemoveSubconcept(
-                                                        index
-                                                    )
-                                                }
-                                                className="text-red-500 hover:text-red-700"
-                                            >
-                                                <FaTrash size={18} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
+                <h4 className="text-lg font-medium mb-2">
+                    Subconcepts (Optional)
+                </h4>
+                <div className="flex mb-4">
+                    <input
+                        type="text"
+                        value={subconceptName}
+                        onChange={(e) => setSubconceptName(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                        placeholder="Enter subconcept name"
+                        ref={subconceptInputRef}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleAddSubconcept();
+                            } else if (e.key === "Escape") {
+                                setShowModal(false);
+                            }
+                        }}
+                    />
+                    <button
+                        onClick={handleAddSubconcept}
+                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 ml-2"
+                        disabled={!subconceptName.trim()}
+                        title="Add subconcept"
+                    >
+                        <FaPlus />
+                    </button>
                 </div>
 
-                <div className="flex justify-end">
+                {/* Subconcepts List */}
+                {subconcepts.length > 0 && (
+                    <table className="w-full table-auto border-collapse mb-4">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="border p-2 text-left">
+                                    Subconcept Name
+                                </th>
+                                <th className="border p-2 text-center">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {subconcepts.map((sub, index) => (
+                                <tr key={index} className="border-t">
+                                    <td className="border p-2">{sub.name}</td>
+                                    <td className="border p-2 text-center">
+                                        <button
+                                            onClick={() =>
+                                                handleRemoveSubconcept(index)
+                                            }
+                                            className="text-red-500 hover:text-red-700"
+                                            title="Remove subconcept"
+                                        >
+                                            <FaTrash size={18} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+
+                {/* Modal Actions */}
+                <div className="flex justify-end mt-4">
                     <button
                         onClick={handleAddOrUpdateConcept}
                         className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mr-2"

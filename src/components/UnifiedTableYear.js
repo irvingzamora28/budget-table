@@ -145,10 +145,11 @@ const UnifiedTableYear = ({
         subconcepts,
         isEditing,
         existingConceptData,
+        quantity = 0,
     }) => {
         // Construct the new concept with empty month data
         const emptyMonthData = months.reduce(
-            (acc, month) => ({ ...acc, [month]: 0 }),
+            (acc, month) => ({ ...acc, [month]: quantity }),
             {}
         );
         const newData = [...data];
