@@ -3,10 +3,8 @@ import React, { useEffect, useState } from "react";
 import TableHeader from "./TableHeader";
 import Section from "./Section";
 import ConceptModal from "./ConceptModal";
-const {
-    conceptRepo,
-    budgetRepo,
-} = require("../database/dbAccessLayer");
+import MonthlyTotalsRow from "./MonthlyTotalsRow";
+const { conceptRepo, budgetRepo } = require("../database/dbAccessLayer");
 
 const UnifiedTableYear = ({
     sections,
@@ -23,6 +21,7 @@ const UnifiedTableYear = ({
     const [expandedConcepts, setExpandedConcepts] = useState({});
     const [modalData, setModalData] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [monthlyTotals, setMonthlyTotals] = useState({});
 
     const months = [
         "Jan",
@@ -42,8 +41,29 @@ const UnifiedTableYear = ({
     const paddingClass = condensed ? "px-2" : "px-4";
     const paddingClassTitle = condensed ? "px-4" : "px-6";
 
+    useEffect(() => {
+        const calculateMonthlyTotals = () => {
+            const totals = {};
+            months.forEach((month) => {
+                totals[month] = 0;
+            });
+
+            data.forEach((section) => {
+                section.data.forEach((concept) => {
+                    months.forEach((month) => {
+                        const value = parseFloat(concept[month]) || 0;
+                        totals[month] += value;
+                    });
+                });
+            });
+
+            return totals;
+        };
+
+        setMonthlyTotals(calculateMonthlyTotals());
+    }, [data]); // Re-run the effect whenever `data` changes
+
     // Handle editing of cells
-    // UnifiedTableYear.js
     const handleEdit = async (
         event,
         sectionIndex,
@@ -81,13 +101,12 @@ const UnifiedTableYear = ({
                 // Update the concept's value with the recalculated total
                 newData[sectionIndex].data[rowIndex][month] =
                     updatedTotalForMonth ? updatedTotalForMonth.toFixed(2) : "";
-                
             } else {
                 // Update the concept value directly
                 budget[month] = value;
             }
             console.log("Updated budget:", budget);
-            
+
             // Update the database for the budget by passing the entire object
             await budgetRepo.update(budget.id, {
                 ...budget,
@@ -153,14 +172,14 @@ const UnifiedTableYear = ({
             {}
         );
         const newData = [...data];
-    
+
         // Helper function to get or create a concept and return its ID
         const getOrCreateConceptId = async () => {
             const conceptExists = await conceptRepo.getAllByField(
                 "name",
                 conceptName
             );
-    
+
             if (conceptExists.length === 0) {
                 // Concept does not exist, add it to the database
                 const conceptId = await conceptRepo.add({
@@ -172,14 +191,14 @@ const UnifiedTableYear = ({
                 return conceptExists[0].id;
             }
         };
-    
+
         // Helper function to prepare subconcepts with empty month data
         const prepareSubconcepts = (subconceptsList) =>
             subconceptsList.map((subconcept) => ({
                 ...subconcept,
                 ...emptyMonthData,
             }));
-    
+
         // Helper function to calculate monthly amounts based on subconcepts
         const calculateMonthlyAmounts = (item) => {
             months.forEach((month) => {
@@ -190,7 +209,7 @@ const UnifiedTableYear = ({
                 item[month] = totalForMonth ? totalForMonth.toFixed(2) : "";
             });
         };
-    
+
         // Helper function to update concept in the database
         const updateConceptInDatabase = async (conceptId, item) => {
             await conceptRepo.update(conceptId, {
@@ -201,10 +220,10 @@ const UnifiedTableYear = ({
             // Update item subconcepts with data from database
             item.subconcepts = prepareSubconcepts(concept.subconcepts);
         };
-    
+
         // Get or create concept ID
         const conceptId = await getOrCreateConceptId();
-    
+
         if (isEditing && existingConceptData) {
             // Update existing concept
             const { sectionIndex, rowIndex } = existingConceptData;
@@ -212,13 +231,13 @@ const UnifiedTableYear = ({
             item.concept = conceptName;
             item.concept_id = conceptId;
             item.budget_type = existingConceptData.budget_type;
-    
+
             // Update subconcepts
             item.subconcepts = prepareSubconcepts(subconcepts);
-    
+
             // Recalculate monthly amounts based on updated subconcepts
             calculateMonthlyAmounts(item);
-    
+
             // Update the concept and budget in the database
             await updateConceptInDatabase(conceptId, item);
             await budgetRepo.update(item.id, item);
@@ -232,20 +251,19 @@ const UnifiedTableYear = ({
                 ...emptyMonthData,
                 subconcepts: prepareSubconcepts(subconcepts),
             };
-    
+
             // Add to budgetRepo
             const budget_id = await budgetRepo.add({
                 ...newConcept,
             });
-    
-    
+
             // Append the budget_id to the newConcept
             newConcept.id = budget_id.id;
-    
+
             // Add new concept to newData
             newData[activeSection].data.push(newConcept);
         }
-    
+
         // Update state
         setData(newData);
         setShowModal(false);
@@ -264,7 +282,6 @@ const UnifiedTableYear = ({
             [key]: !prevState[key],
         }));
     };
-
 
     return (
         <section
@@ -306,6 +323,12 @@ const UnifiedTableYear = ({
                             />
                         ))}
                     </tbody>
+                    <tfoot>
+                        <MonthlyTotalsRow
+                            monthlyTotals={monthlyTotals}
+                            currency={currency}
+                        />
+                    </tfoot>
                 </table>
             </div>
 
