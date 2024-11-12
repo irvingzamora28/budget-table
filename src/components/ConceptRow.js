@@ -192,18 +192,19 @@ const ConceptRow = ({
                                 <input
                                     type="text"
                                     value={displayValue}
-                                    onChange={(e) =>
+                                    onChange={(event) =>
                                         onEdit(
-                                            e,
+                                            event,
                                             sectionIndex,
                                             rowIndex,
                                             month,
                                             conceptData.id, // Pass the concept's budget ID
                                             false, // Not a subconcept
-                                            null
+                                            null,
+                                            cellKey // Pass the cell key
                                         )
                                     }
-                                    onFocus={() => onFocus(cellKey)}
+                                    onFocus={(event) => onFocus(event)}
                                     onBlur={onBlur}
                                     className={`w-full bg-transparent text-right outline-none ${
                                         condensed ? "text-sm" : ""

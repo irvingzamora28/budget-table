@@ -45,15 +45,19 @@ const UnifiedTableYear = ({
     // Handle editing of cells
     // UnifiedTableYear.js
     const handleEdit = async (
-        e,
+        event,
         sectionIndex,
         rowIndex,
         month,
         budgetId,
         isSubconcept = false,
-        subconceptIndex = null
+        subconceptIndex = null,
+        cellKey = null
     ) => {
-        const value = e.target.value.replace(/[^0-9.]/g, "");
+        if (editingCell !== cellKey) {
+            setEditingCell(cellKey); // Set editingCell when starting to edit
+        }
+        const value = event.target.value.replace(/[^0-9.]/g, "");
         if (/^\d*\.?\d*$/.test(value)) {
             const newData = [...data];
             const budget = newData[sectionIndex].data[rowIndex];
@@ -94,8 +98,8 @@ const UnifiedTableYear = ({
     };
 
     // Handle cell focus
-    const handleFocus = (cellKey) => {
-        setEditingCell(cellKey);
+    const handleFocus = (event) => {
+        event.target.select();
     };
 
     // Handle cell blur

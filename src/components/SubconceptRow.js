@@ -110,10 +110,11 @@ const SubconceptRow = ({
                                     month,
                                     conceptData.id, // Pass the subconcept's budget ID
                                     true, // Is a subconcept
-                                    subIndex
+                                    subIndex,
+                                    cellKey
                                 )
                             }
-                            onFocus={() => onFocus(cellKey)}
+                            onFocus={(event) => onFocus(event)}
                             onBlur={onBlur}
                             className={`w-full bg-transparent text-right outline-none ${
                                 condensed ? "text-sm" : ""
