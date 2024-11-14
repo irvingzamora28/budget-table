@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import CrudComponent from "../misc/CrudComponent";
 import { conceptRepo, categoryRepo } from "../../database/dbAccessLayer";
 import conceptSchema from "../../schemas/conceptSchema";
+import { useAuth } from "../../context/AuthContext";
 
 const ConceptSettings = () => {
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
+    const { user } = useAuth();
 
     // Fetch all concepts and categories on component mount
     useEffect(() => {
@@ -26,6 +28,7 @@ const ConceptSettings = () => {
     // Create function to add a new item
     const onCreate = async (newItem) => {
         try {
+            newItem.user_id = user.id;
             const addedId = await conceptRepo.add(newItem);
             const addedConcept = { ...newItem, id: addedId.id };
             setItems((prevItems) => [...prevItems, addedConcept]);

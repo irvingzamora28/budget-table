@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import CrudComponent from "../misc/CrudComponent";
 import { tagRepo } from "../../database/dbAccessLayer"; // Import tagRepo from your data access layer
 import tagSchema from "../../schemas/tagSchema";
+import { useAuth } from "../../context/AuthContext";
 
 const TagSettings = () => {
     const [items, setItems] = useState([]);
+    const { user } = useAuth();
 
     // Fetch all tags on component mount
     useEffect(() => {
@@ -24,7 +26,7 @@ const TagSettings = () => {
     const onCreate = async (newItem) => {
         try {
             console.log("Creating tag:", newItem);
-
+            newItem.user_id = user.id;
             const addedId = await tagRepo.add(newItem);
             const addedTag = { ...newItem, id: addedId.id };
             setItems((prevItems) => [...prevItems, addedTag]); // Update state with new tag

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import CrudComponent from "../misc/CrudComponent";
 import { categoryRepo } from "../../database/dbAccessLayer"; // Import categoryRepo from your data access layer
 import categorySchema from "../../schemas/categorySchema";
+import { useAuth } from "../../context/AuthContext";
 
 const CategorySettings = () => {
     const [items, setItems] = useState([]);
+    const { user } = useAuth();
 
     // Fetch all categories on component mount
     useEffect(() => {
@@ -24,7 +26,7 @@ const CategorySettings = () => {
     const onCreate = async (newItem) => {
         try {
             console.log("Creating category:", newItem);
-
+            newItem.user_id = user.id;
             const addedId = await categoryRepo.add(newItem);
             const addedCategory = { ...newItem, id: addedId.id };
             setItems((prevItems) => [...prevItems, addedCategory]); // Update state with new category
