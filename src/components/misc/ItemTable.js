@@ -4,7 +4,7 @@ import Actions from "./Actions";
 
 const ItemTable = ({ items, onUpdate, onDelete }) => {
     // Define keys to always exclude from rendering
-    const alwaysExcludedKeys = ["name", "id", "image", "created_at"];
+    const alwaysExcludedKeys = ["name", "id", "image", "created_at", "updated_at"];
 
     // Determine the headers based on the last item's keys,
     // excluding alwaysExcludedKeys and any keys with nested values
