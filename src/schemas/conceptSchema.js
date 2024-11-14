@@ -23,7 +23,7 @@ const conceptSchema = [
         name: "category_id",
         label: "Category",
         type: "select",
-        defaultValue: "",
+        defaultValue: null,
         validation: {
             required: true,
         },

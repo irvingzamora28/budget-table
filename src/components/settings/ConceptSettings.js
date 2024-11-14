@@ -71,6 +71,7 @@ const ConceptSettings = () => {
                     field.name === "category_id"
                         ? {
                               ...field,
+                              defaultValue: categories.length > 0 ? categories[0].id : null,
                               options: categories.map((category) => ({
                                   value: category.id,
                                   label: category.name,
