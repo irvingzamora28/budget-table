@@ -1,33 +1,34 @@
 import React, { useState, useEffect } from "react";
 import CrudComponent from "../misc/CrudComponent";
-import { conceptRepo } from "../../database/dbAccessLayer"; // Import conceptRepo from your data access layer
+import { conceptRepo, categoryRepo } from "../../database/dbAccessLayer";
 import conceptSchema from "../../schemas/conceptSchema";
 
 const ConceptSettings = () => {
     const [items, setItems] = useState([]);
+    const [categories, setCategories] = useState([]);
 
-    // Fetch all concepts on component mount
+    // Fetch all concepts and categories on component mount
     useEffect(() => {
-        const fetchConcepts = async () => {
+        const fetchData = async () => {
             try {
                 const allConcepts = await conceptRepo.getAllWithSubconcepts();
-                setItems(allConcepts); // Set the concepts retrieved from the repository
+                const allCategories = await categoryRepo.getAll();
+                setItems(allConcepts);
+                setCategories(allCategories);
             } catch (error) {
-                console.error("Failed to fetch concepts:", error);
+                console.error("Failed to fetch data:", error);
             }
         };
 
-        fetchConcepts(); // Invoke the function to fetch concepts
-    }, []); // Empty dependency array to run on mount
+        fetchData();
+    }, []);
 
     // Create function to add a new item
     const onCreate = async (newItem) => {
         try {
-            console.log("Creating concept:", newItem);
-
             const addedId = await conceptRepo.add(newItem);
             const addedConcept = { ...newItem, id: addedId.id };
-            setItems((prevItems) => [...prevItems, addedConcept]); // Update state with new concept
+            setItems((prevItems) => [...prevItems, addedConcept]);
         } catch (error) {
             console.error("Failed to create concept:", error);
         }
@@ -36,7 +37,7 @@ const ConceptSettings = () => {
     // Update function to modify an existing item
     const onUpdate = async (id, updatedData) => {
         try {
-            await conceptRepo.update(id, updatedData); // Update the concept in the database
+            await conceptRepo.update(id, updatedData);
             setItems((prevItems) =>
                 prevItems.map((item) =>
                     item.id === id ? { ...item, ...updatedData } : item
@@ -50,8 +51,8 @@ const ConceptSettings = () => {
     // Delete function to remove an item
     const onDelete = async (id) => {
         try {
-            await conceptRepo.delete(id); // Delete the concept from the database
-            setItems((prevItems) => prevItems.filter((item) => item.id !== id)); // Update state to remove the concept
+            await conceptRepo.delete(id);
+            setItems((prevItems) => prevItems.filter((item) => item.id !== id));
         } catch (error) {
             console.error("Failed to delete concept:", error);
         }
@@ -62,8 +63,18 @@ const ConceptSettings = () => {
             <h2 className="text-2xl font-bold mb-4">Concept Settings</h2>
             <CrudComponent
                 title="Concept Settings"
-                items={items} // Pass the fetched items to CrudComponent
-                fieldStructure={conceptSchema} // Pass the schema from the schemas folder
+                items={items}
+                fieldStructure={conceptSchema.map((field) =>
+                    field.name === "category_id"
+                        ? {
+                              ...field,
+                              options: categories.map((category) => ({
+                                  value: category.id,
+                                  label: category.name,
+                              })),
+                          }
+                        : field
+                )}
                 onCreate={onCreate}
                 onUpdate={onUpdate}
                 onDelete={onDelete}

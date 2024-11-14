@@ -20,6 +20,17 @@ const conceptSchema = [
         },
     },
     {
+        name: "category_id",
+        label: "Category",
+        type: "select",
+        defaultValue: "",
+        validation: {
+            required: true,
+        },
+        // The options for the category field will be provided dynamically
+        // from the getAllCategories method in the conceptRepo
+    },
+    {
         name: "subconcepts",
         label: "Subconcepts",
         type: "array",
