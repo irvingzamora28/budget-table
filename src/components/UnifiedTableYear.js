@@ -166,105 +166,136 @@ const UnifiedTableYear = ({
         existingConceptData,
         quantity = 0,
     }) => {
-        // Construct the new concept with empty month data
         const emptyMonthData = months.reduce(
             (acc, month) => ({ ...acc, [month]: quantity }),
             {}
         );
         const newData = [...data];
 
-        // Helper function to get or create a concept and return its ID
-        const getOrCreateConceptId = async () => {
-            const conceptExists = await conceptRepo.getAllByField(
-                "name",
-                conceptName
-            );
-
-            if (conceptExists.length === 0) {
-                // Concept does not exist, add it to the database
-                const conceptId = await conceptRepo.add({
-                    name: conceptName,
-                    subconcepts: subconcepts,
-                });
-                return conceptId.id;
-            } else {
-                return conceptExists[0].id;
-            }
-        };
-
-        // Helper function to prepare subconcepts with empty month data
-        const prepareSubconcepts = (subconceptsList) =>
-            subconceptsList.map((subconcept) => ({
-                ...subconcept,
-                ...emptyMonthData,
-            }));
-
-        // Helper function to calculate monthly amounts based on subconcepts
-        const calculateMonthlyAmounts = (item) => {
-            months.forEach((month) => {
-                const totalForMonth = item.subconcepts.reduce(
-                    (total, sub) => total + (parseFloat(sub[month]) || 0),
-                    0
+        const prepareSubconcepts = (
+            updatedSubconcepts,
+            existingSubconcepts = []
+        ) => {
+            return updatedSubconcepts.map((updatedSubconcept) => {
+                const existingSubconcept = existingSubconcepts.find(
+                    (sub) => sub.id === updatedSubconcept.id
                 );
-                item[month] = totalForMonth ? totalForMonth.toFixed(2) : "";
+                console.log("updatedSubconcept:", updatedSubconcept);
+                
+                if (existingSubconcept) {
+                    return {
+                        ...updatedSubconcept,
+                        ...months.reduce((acc, month) => {
+                            acc[month] = existingSubconcept[month] || 0;
+                            return acc;
+                        }, {}),
+                    };
+                } else {
+                    return {
+                        ...updatedSubconcept,
+                        ...emptyMonthData,
+                    };
+                }
             });
         };
 
-        // Helper function to update concept in the database
-        const updateConceptInDatabase = async (conceptId, item) => {
-            await conceptRepo.update(conceptId, {
-                name: item.concept,
-                subconcepts: item.subconcepts,
-            });
-            const concept = await conceptRepo.getByIdWithSubconcepts(conceptId);
-            // Update item subconcepts with data from database
-            item.subconcepts = prepareSubconcepts(concept.subconcepts);
-        };
-
-        // Get or create concept ID
-        const conceptId = await getOrCreateConceptId();
-
+        // Check if we are editing an existing concept or creating a new one
         if (isEditing && existingConceptData) {
-            // Update existing concept
+            console.log("existingConceptData:", existingConceptData);
+            console.log("subconcepts:", subconcepts);
+            console.log("isEditing:", isEditing);
+            
+            
             const { sectionIndex, rowIndex } = existingConceptData;
             const item = newData[sectionIndex].data[rowIndex];
-            item.concept = conceptName;
-            item.concept_id = conceptId;
-            item.budget_type = existingConceptData.budget_type;
 
-            // Update subconcepts
-            item.subconcepts = prepareSubconcepts(subconcepts);
+            // Fetch and update the concept
+            const updatedConcept = {
+                name: conceptName,
+                category_id: existingConceptData.category_id,
+                subconcepts: subconcepts,
+            };
+            await conceptRepo.update(
+                existingConceptData.concept_id,
+                updatedConcept
+            );
 
-            // Recalculate monthly amounts based on updated subconcepts
-            calculateMonthlyAmounts(item);
+            // Fetch the updated concept with its subconcepts
+            const concept = await conceptRepo.getByIdWithSubconcepts(
+                existingConceptData.concept_id
+            );
 
-            // Update the concept and budget in the database
-            await updateConceptInDatabase(conceptId, item);
-            await budgetRepo.update(item.id, item);
-        } else {
-            // Create new concept item
-            const newConcept = {
-                budget_type: existingConceptData.itemType,
-                concept_id: conceptId,
-                concept: conceptName,
-                category_id: existingConceptData.itemId,
-                ...emptyMonthData,
-                subconcepts: prepareSubconcepts(subconcepts),
+            // Find the existing budget
+            const existingBudget = await budgetRepo.getAll({
+                concept_id: concept.id,
+            });
+            const budget = existingBudget.length > 0 ? existingBudget[0] : null;
+
+            // Prepare updated budget data
+            const updatedBudgetData = {
+                ...(budget || {}),
+                budget_type: existingConceptData.budget_type,
+                concept_id: concept.id,
+                concept: concept.name,
+                category_id: concept.category_id,
+                subconcepts: prepareSubconcepts(
+                    concept.subconcepts,
+                    budget ? budget.subconcepts : []
+                ),
             };
 
-            // Add to budgetRepo
-            const budget_id = await budgetRepo.add({
-                ...newConcept,
+            // Update the budget
+            if (budget) {
+                await budgetRepo.update(budget.id, updatedBudgetData);
+            } else {
+                const newBudget = await budgetRepo.add(updatedBudgetData);
+                item.id = newBudget.id;
+            }
+
+            // Update the state
+            item.concept = conceptName;
+            item.subconcepts = updatedBudgetData.subconcepts;
+            months.forEach((month) => {
+                item[month] = updatedBudgetData[month];
             });
+        } else {
+            // Create a new concept
+            const newConcept = {
+                name: conceptName,
+                category_id: existingConceptData.itemId,
+                subconcepts: subconcepts,
+            };
+            const addedConcept = await conceptRepo.add(newConcept);
 
-            // Append the budget_id to the newConcept
-            newConcept.id = budget_id.id;
+            // Fetch the added concept with its subconcepts
+            const concept = await conceptRepo.getByIdWithSubconcepts(
+                addedConcept.id
+            );
 
-            // Add new concept to newData
-            newData[activeSection].data.push(newConcept);
+            // Prepare the budget data
+            const budgetData = {
+                budget_type: existingConceptData.itemType || "INCOME",
+                concept_id: concept.id,
+                category_id: concept.category_id,
+                concept: concept.name,
+                ...emptyMonthData,
+                subconcepts: prepareSubconcepts(concept.subconcepts),
+            };
+
+            // Create the budget
+            const addedBudget = await budgetRepo.add(budgetData);
+
+            // Add the new concept and budget to the state
+            const newConceptData = {
+                ...concept,
+                id: addedBudget.id,
+                ...emptyMonthData,
+                subconcepts: budgetData.subconcepts,
+            };
+            newConceptData.concept = conceptName;
+            newData[activeSection].data.push(newConceptData);
         }
 
-        // Update state
         setData(newData);
         setShowModal(false);
         setModalData(null);
