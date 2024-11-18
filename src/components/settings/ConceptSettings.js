@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import CrudComponent from "../misc/CrudComponent";
-import {
-    conceptRepo,
-    categoryRepo,
-    budgetRepo,
-} from "../../database/dbAccessLayer";
+import { categoryRepo, conceptRepo } from "../../database/dbAccessLayer";
 import conceptSchema from "../../schemas/conceptSchema";
 import { useAuth } from "../../context/AuthContext";
+import ConceptService from "../../services/ConceptService";
+import BudgetService from "../../services/BudgetService";
 
 const ConceptSettings = () => {
     const [items, setItems] = useState([]);
@@ -28,49 +26,12 @@ const ConceptSettings = () => {
         "Dec",
     ];
 
-    // Helper function to create empty month data
-    const createEmptyMonthData = (quantity = 0) => {
-        return months.reduce(
-            (acc, month) => ({ ...acc, [month]: quantity }),
-            {}
-        );
-    };
-
-    // Helper function to merge existing monthly data with updated subconcepts
-    const prepareSubconcepts = (
-        updatedSubconcepts,
-        existingBudgetSubconcepts
-    ) => {
-        return updatedSubconcepts.map((updatedSubconcept) => {
-            // Find the corresponding subconcept in the existing budget by ID
-            const existingSubconcept = existingBudgetSubconcepts.find(
-                (sub) => sub.id === updatedSubconcept.id
-            );
-
-            if (existingSubconcept) {
-                // Merge existing monthly data with updated subconcept details
-                return {
-                    ...updatedSubconcept,
-                    ...months.reduce((acc, month) => {
-                        acc[month] = existingSubconcept[month] || 0;
-                        return acc;
-                    }, {}),
-                };
-            } else {
-                // Initialize monthly data for new subconcepts
-                return {
-                    ...updatedSubconcept,
-                    ...createEmptyMonthData(0),
-                };
-            }
-        });
-    };
-
     // Fetch all concepts and categories on component mount
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const allConcepts = await conceptRepo.getAllWithSubconcepts();
+                const allConcepts =
+                    await conceptRepo.getAllWithSubconcepts();
                 const allCategories = await categoryRepo.getAll();
                 setItems(allConcepts);
                 setCategories(allCategories);
@@ -99,35 +60,34 @@ const ConceptSettings = () => {
             }
             const budget_type = category.type;
 
-            // Add the concept
-            const addedConceptResult = await conceptRepo.add(newItem);
-            const conceptId = addedConceptResult.id;
-
-            // Get the concept with its subconcepts
-            const concept = await conceptRepo.getByIdWithSubconcepts(conceptId);
-
-            // Prepare the budget data
-            const budgetData = {
-                budget_type,
-                concept_id: conceptId,
+            // Create the concept
+            const newConcept = await ConceptService.createConcept({
+                name: newItem.name,
+                description: newItem.description,
                 category_id: newItem.category_id,
-                concept: concept.name,
-                ...createEmptyMonthData(),
-                subconcepts: prepareSubconcepts(concept.subconcepts, []), // New concept, so no existing data
-            };
+                subconcepts: newItem.subconcepts || [],
+            });
 
             // Create the budget
-            const addedBudgetResult = await budgetRepo.add(budgetData);
+            const budget = await BudgetService.createBudget(
+                {
+                    concept_id: newConcept.id,
+                    category_id: newConcept.category_id,
+                    concept: newConcept.name,
+                    budget_type,
+                    subconcepts: newConcept.subconcepts,
+                },
+                months
+            );
 
-            // Update state with the new concept
+            // Add the new concept and budget to state
             const addedConcept = {
-                ...concept,
-                budget_id: addedBudgetResult.id,
+                ...newConcept,
+                budget_id: budget.id,
             };
             setItems((prevItems) => [...prevItems, addedConcept]);
         } catch (error) {
             console.error("Failed to create concept and budget:", error);
-            throw error;
         }
     };
 
@@ -138,10 +98,11 @@ const ConceptSettings = () => {
             updatedData.category_id = Number(updatedData.category_id);
 
             // Update the concept
-            await conceptRepo.update(id, updatedData);
-
-            // Get the updated concept with its subconcepts
-            const updatedConcept = await conceptRepo.getByIdWithSubconcepts(id);
+            const updatedConcept = await ConceptService.updateConcept(id, {
+                name: updatedData.name,
+                category_id: updatedData.category_id,
+                subconcepts: updatedData.subconcepts || [],
+            });
 
             // Fetch the updated category to get the new budget_type
             const category = categories.find(
@@ -153,29 +114,25 @@ const ConceptSettings = () => {
             }
             const budget_type = category.type;
 
-            // Find the existing budget for this concept
-            const existingBudget = await budgetRepo.getAll({ concept_id: id });
+            // Find the existing budget
+            const existingBudget = await BudgetService.getBudgetByConceptId(id);
 
-            if (existingBudget && existingBudget.length > 0) {
-                const budget = existingBudget[0];
-
-                // Prepare updated budget data, merging existing monthly data for subconcepts
-                const updatedBudgetData = {
-                    ...budget,
-                    budget_type,
-                    concept: updatedConcept.name,
-                    category_id: updatedConcept.category_id,
-                    subconcepts: prepareSubconcepts(
-                        updatedConcept.subconcepts,
-                        budget.subconcepts || []
-                    ),
-                };
-
+            if (existingBudget) {
                 // Update the budget
-                await budgetRepo.update(budget.id, updatedBudgetData);
+                await BudgetService.updateBudget(
+                    existingBudget.id,
+                    {
+                        concept_id: updatedConcept.id,
+                        category_id: updatedConcept.category_id,
+                        concept: updatedConcept.name,
+                        budget_type,
+                        subconcepts: updatedConcept.subconcepts,
+                    },
+                    months
+                );
             }
 
-            // Update the state
+            // Update state
             setItems((prevItems) =>
                 prevItems.map((item) =>
                     item.id === id ? updatedConcept : item
@@ -183,7 +140,6 @@ const ConceptSettings = () => {
             );
         } catch (error) {
             console.error("Failed to update concept and budget:", error);
-            throw error;
         }
     };
 
