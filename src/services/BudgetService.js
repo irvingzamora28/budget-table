@@ -92,6 +92,13 @@ class BudgetService {
 
         return updatedBudget;
     }
+
+    async deleteBudgetByConceptId(conceptId) {
+        const existingBudget = await budgetRepo.getAll({ concept_id: conceptId });
+        if (existingBudget && existingBudget.length > 0) {
+            await budgetRepo.delete(existingBudget[0].id);
+        }
+    }
 }
 
 module.exports = new BudgetService();

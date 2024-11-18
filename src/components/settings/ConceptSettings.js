@@ -30,8 +30,7 @@ const ConceptSettings = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const allConcepts =
-                    await conceptRepo.getAllWithSubconcepts();
+                const allConcepts = await conceptRepo.getAllWithSubconcepts();
                 const allCategories = await categoryRepo.getAll();
                 setItems(allConcepts);
                 setCategories(allCategories);
@@ -146,18 +145,16 @@ const ConceptSettings = () => {
     // Delete function to remove an item
     const onDelete = async (id) => {
         try {
-            // Find and delete associated budget first
-            const existingBudget = await budgetRepo.getAll({ concept_id: id });
-            if (existingBudget && existingBudget.length > 0) {
-                await budgetRepo.delete(existingBudget[0].id);
-            }
+            // Delete the associated budget
+            await BudgetService.deleteBudgetByConceptId(id);
 
             // Delete the concept
-            await conceptRepo.delete(id);
+            await ConceptService.deleteConcept(id);
+
+            // Update state to remove the deleted concept
             setItems((prevItems) => prevItems.filter((item) => item.id !== id));
         } catch (error) {
             console.error("Failed to delete concept and budget:", error);
-            throw error;
         }
     };
 
