@@ -25,7 +25,7 @@ const SectionTotalRow = ({
     };
 
     return (
-        <tr className="bg-gray-100 font-semibold border-x border-y-gray-200">
+        <tr className="bg-gray-100 font-semibold border-x border-y-gray-200 h-7">
             <td
                 className={`${paddingClassTitle} ${
                     condensed ? "py-0" : "py-2"

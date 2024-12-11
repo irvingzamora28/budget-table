@@ -49,7 +49,7 @@ const SubconceptRow = ({
 
     return (
         <tr
-            className={`border-t border-b border-x border-gray-100 hover:bg-gray-${
+            className={`border-t border-b border-x border-gray-100 h-7 hover:bg-gray-${
                 condensed ? "200" : "50"
             }`}
         >

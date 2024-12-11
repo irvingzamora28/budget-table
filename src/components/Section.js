@@ -24,7 +24,7 @@ const Section = ({
     return (
         <>
             {/* Section Title */}
-            <tr className="bg-orange-200 border-x border-y-orange-200">
+            <tr className="bg-orange-200 border-x border-y-orange-200 h-7">
                 <td
                     // colSpan={months.length + 2}
                     className={`${paddingClassTitle} py-0 font-semibold text-slate-700 max-w-40 sticky left-0 text-nowrap`}
