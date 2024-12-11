@@ -13,7 +13,7 @@ const UnifiedTableYear = ({
     condensed = false,
     onMonthClick,
     showHeader = true,
-    currency = "$",
+    currency = "€",
 }) => {
     const [data, setData] = useState(sections);
     const [showModal, setShowModal] = useState(false);
