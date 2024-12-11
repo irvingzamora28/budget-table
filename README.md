@@ -18,3 +18,12 @@ Ensure you have the following installed:
 
    ```bash
    yarn start
+
+# //TODO - 
+Make all the rows the same size (28px)
+Remove the "Add concept" button
+Remove KPIs
+Add Euro symbol to the budget table
+Add only the expenses and savings
+Add en "edit" button to add a new concept and also edit the name of the category
+Change date format to dd/mm/yyyy
