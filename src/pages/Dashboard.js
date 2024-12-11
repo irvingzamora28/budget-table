@@ -133,7 +133,7 @@ const Dashboard = () => {
                         </div>
 
                         {/* Card Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
+                        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
                             <CardStat
                                 title="Expenses"
                                 value="500"
@@ -148,7 +148,7 @@ const Dashboard = () => {
                                 showProgressBar={false}
                                 topRightText="September"
                             />
-                        </div>
+                        </div> */}
                     </>
                 );
             case "income":
