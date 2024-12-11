@@ -70,7 +70,7 @@ const Section = ({
             />
 
             {/* Add Concept Row */}
-            <AddConceptRow
+            {/* <AddConceptRow
                 itemId={sectionData.id}
                 itemType={sectionData.type}
                 sectionIndex={sectionIndex}
@@ -78,7 +78,7 @@ const Section = ({
                 condensed={condensed}
                 paddingClass={paddingClass}
                 onAddConcept={onAddConcept}
-            />
+            /> */}
         </>
     );
 };
