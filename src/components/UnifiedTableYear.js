@@ -52,8 +52,10 @@ const UnifiedTableYear = ({
             data.forEach((section) => {
                 section.data.forEach((concept) => {
                     months.forEach((month) => {
-                        const value = parseFloat(concept[month]) || 0;
-                        totals[month] += value;
+                        if (concept.budget_type === 'EXPENSE' || concept.budget_type === 'SAVINGS') {
+                            const value = parseFloat(concept[month]) || 0;
+                            totals[month] += value;
+                        }
                     });
                 });
             });
