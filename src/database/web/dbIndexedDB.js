@@ -187,9 +187,13 @@ class IndexedDBDatabase {
         const db = await this.dbPromise;
         const tx = db.transaction(storeName, "readwrite");
         const store = tx.objectStore(storeName);
+        const existingItem = await store.get(id);
+        if (!existingItem) {
+            throw new Error(`Item with id ${id} not found in ${storeName}`);
+        }
         // Append an updated_at timestamp to the item
-        item.updated_at = new Date().toISOString();
-        await store.put({ ...item, id });
+        const updatedItem = { ...existingItem, ...item, updated_at: new Date().toISOString() };
+        await store.put(updatedItem);
         await tx.done;
         return { id };
     }
