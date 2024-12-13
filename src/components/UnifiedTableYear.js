@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import TableHeader from "./TableHeader";
 import Section from "./Section";
 import ConceptModal from "./ConceptModal";
+import CategoryModal from "./CategoryModal";
 import MonthlyTotalsRow from "./MonthlyTotalsRow";
 const ConceptService = require("../services/ConceptService");
 const BudgetService = require("../services/BudgetService");
+const CategoryService = require("../services/CategoryService"); // Import CategoryService
 
 const UnifiedTableYear = ({
     sections,
@@ -23,6 +25,8 @@ const UnifiedTableYear = ({
     const [modalData, setModalData] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [monthlyTotals, setMonthlyTotals] = useState({});
+    const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [activeCategory, setActiveCategory] = useState(null);
 
     const months = [
         "Jan",
@@ -278,6 +282,26 @@ const UnifiedTableYear = ({
         }));
     };
 
+    const handleEditCategory = (sectionIndex) => {
+        setActiveCategory(data[sectionIndex]);
+        setShowCategoryModal(true);
+    };
+
+    const handleSaveCategoryTitle = async (newTitle) => {
+        try {
+            await CategoryService.updateCategoryTitle(activeCategory.id, newTitle);
+            const updatedData = data.map((section) =>
+                section.id === activeCategory.id
+                    ? { ...section, title: newTitle }
+                    : section
+            );
+            setData(updatedData);
+            setShowCategoryModal(false);
+        } catch (error) {
+            console.error("Error saving category title:", error);
+        }
+    };
+
     return (
         <section
             className={`bg-white shadow-md ${
@@ -315,6 +339,7 @@ const UnifiedTableYear = ({
                                 toggleConceptExpansion={toggleConceptExpansion}
                                 handleAddConcept={handleAddConceptData}
                                 currency={currency}
+                                onEditCategory={() => handleEditCategory(sectionIndex)} // Pass the handler
                             />
                         ))}
                     </tbody>
@@ -341,6 +366,16 @@ const UnifiedTableYear = ({
                     handleAddConcept={handleAddConceptData}
                     existingConceptData={modalData}
                     isEditing={isEditing}
+                />
+            )}
+
+            {/* Category Modal */}
+            {showCategoryModal && (
+                <CategoryModal
+                    showModal={showCategoryModal}
+                    setShowModal={setShowCategoryModal}
+                    category={activeCategory}
+                    onSave={handleSaveCategoryTitle}
                 />
             )}
         </section>

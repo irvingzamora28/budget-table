@@ -20,11 +20,17 @@ const Section = ({
     expandedConcepts,
     toggleConceptExpansion,
     currency,
+    onEditCategory,
 }) => {
     // State and refs for scrolling text
     const [isHovered, setIsHovered] = useState(false);
     const sectionRef = useRef(null);
     const outerContainerRef = useRef(null);
+
+    const handleIconClick = (e) => {
+        e.stopPropagation();
+        onEditCategory();
+    };
 
     useEffect(() => {
         if (sectionRef.current && outerContainerRef.current) {
@@ -90,10 +96,7 @@ const Section = ({
                         <FaPencilAlt
                             className="ml-2 text-gray-500 hover:text-gray-700 cursor-pointer"
                             title="Edit Category"
-                            onClick={(e) => {
-                                e.stopPropagation(); // Prevent triggering row click
-                                // Add your edit category logic here
-                            }}
+                            onClick={handleIconClick}
                         />
                     </div>
                 </td>
