@@ -18,13 +18,14 @@ class BudgetService {
                 (sub) => sub.id === updatedSubconcept.id
             );
 
+            // If the subconcept already exists, update it with incomming data
             if (existingSubconcept) {
                 return {
                     ...updatedSubconcept,
                     concept_id: existingSubconcept.concept_id, // Ensure concept_id is retained
                     id: existingSubconcept.id, // Ensure id is retained
                     ...months.reduce((acc, month) => {
-                        acc[month] = existingSubconcept[month] || 0;
+                        acc[month] = updatedSubconcept[month] || 0;
                         return acc;
                     }, {}),
                 };
@@ -87,6 +88,8 @@ class BudgetService {
                 months
             ),
         };
+        console.log("updatedBudget", updatedBudget);
+        
 
         await budgetRepo.update(budgetId, updatedBudget);
 
