@@ -1,4 +1,4 @@
-const { categoryRepo, conceptRepo, budgetRepo } = require("../database/dbAccessLayer");
+const { categoryRepo, conceptRepo, budgetRepo, subconceptRepo } = require("../database/dbAccessLayer");
 const ConceptService = require("./ConceptService");
 const BudgetService = require("./BudgetService");
 
@@ -63,6 +63,28 @@ class CategoryService {
             await ConceptService.deleteConcept(conceptId);
         } catch (error) {
             console.error("Error deleting concept from category:", error);
+            throw error;
+        }
+    }
+
+    async addSubconceptToConcept(conceptId, subconceptName) {
+        try {
+            const newSubconcept = await subconceptRepo.add({ name: subconceptName, concept_id: conceptId });
+            const updatedConcept = await conceptRepo.getByIdWithSubconcepts(conceptId);
+            return updatedConcept;
+        } catch (error) {
+            console.error("Error adding subconcept to concept:", error);
+            throw error;
+        }
+    }
+
+    async deleteSubconceptFromConcept(conceptId, subconceptId) {
+        try {
+            await subconceptRepo.delete(subconceptId);
+            const updatedConcept = await conceptRepo.getByIdWithSubconcepts(conceptId);
+            return updatedConcept;
+        } catch (error) {
+            console.error("Error deleting subconcept from concept:", error);
             throw error;
         }
     }
