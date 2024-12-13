@@ -283,7 +283,15 @@ const UnifiedTableYear = ({
     };
 
     const handleEditCategory = (sectionIndex) => {
-        setActiveCategory(data[sectionIndex]);
+        const category = data[sectionIndex];
+        console.log("Category data:", category);
+        
+        const concepts = category.data.map(concept => ({
+            id: concept.concept_id,
+            name: concept.concept,
+            budget: concept
+        }));
+        setActiveCategory({ ...category, concepts });
         setShowCategoryModal(true);
     };
 

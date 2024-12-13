@@ -1,16 +1,49 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import CategoryService from "../services/CategoryService";
 
 const CategoryModal = ({ showModal, setShowModal, category, onSave }) => {
     const [categoryTitle, setCategoryTitle] = useState(category.title);
+    const [conceptName, setConceptName] = useState("");
+    const [concepts, setConcepts] = useState(category.concepts || []);
+
+    useEffect(() => {
+        console.log("CategoryModal mounted");
+        console.log("category", category);
+        
+    }, []);
+        
 
     const handleTitleChange = (e) => {
         setCategoryTitle(e.target.value);
     };
 
+    const handleConceptNameChange = (e) => {
+        setConceptName(e.target.value);
+    };
+
     const handleSave = () => {
         onSave(categoryTitle);
         setShowModal(false);
+    };
+
+    const handleAddConcept = async () => {
+        if (conceptName.trim() === "") return;
+        try {
+            const { newConcept, newBudget } = await CategoryService.addConceptToCategory(category.id, conceptName, category.type);
+            setConcepts([...concepts, { ...newConcept, budget: newBudget }]);
+            setConceptName("");
+        } catch (error) {
+            console.error("Error adding concept:", error);
+        }
+    };
+
+    const handleDeleteConcept = async (conceptId) => {
+        try {
+            await CategoryService.deleteConceptFromCategory(conceptId);
+            setConcepts(concepts.filter(concept => concept.id !== conceptId));
+        } catch (error) {
+            console.error("Error deleting concept:", error);
+        }
     };
 
     return (
@@ -27,9 +60,38 @@ const CategoryModal = ({ showModal, setShowModal, category, onSave }) => {
                         type="text"
                         value={categoryTitle}
                         onChange={handleTitleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
+                        className="w-full p-2 border border-gray-300 rounded mb-4"
                     />
-                    <div className="mt-4 flex justify-end">
+                    <h3 className="text-lg font-semibold mb-2">Concepts</h3>
+                    <ul className="mb-4">
+                        {concepts.map(concept => (
+                            <li key={concept.id} className="flex justify-between items-center mb-2">
+                                <span>{concept.name}</span>
+                                <button
+                                    onClick={() => handleDeleteConcept(concept.id)}
+                                    className="text-red-500 hover:text-red-700"
+                                >
+                                    Delete
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="flex mb-4">
+                        <input
+                            type="text"
+                            value={conceptName}
+                            onChange={handleConceptNameChange}
+                            className="w-full p-2 border border-gray-300 rounded mr-2"
+                            placeholder="New concept name"
+                        />
+                        <button
+                            onClick={handleAddConcept}
+                            className="bg-green-500 text-white px-4 py-2 rounded"
+                        >
+                            Add
+                        </button>
+                    </div>
+                    <div className="flex justify-end">
                         <button
                             onClick={handleSave}
                             className="bg-blue-500 text-white px-4 py-2 rounded"
