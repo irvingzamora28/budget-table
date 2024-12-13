@@ -71,6 +71,12 @@ class CategoryService {
         try {
             const newSubconcept = await subconceptRepo.add({ name: subconceptName, concept_id: conceptId });
             const updatedConcept = await conceptRepo.getByIdWithSubconcepts(conceptId);
+
+            // Update the budget with the new subconcept
+            const budget = await budgetRepo.getByConceptAndCategoryId(conceptId, updatedConcept.category_id);
+            budget.subconcepts.push(newSubconcept);
+            await budgetRepo.update(budget.id, budget);
+
             return updatedConcept;
         } catch (error) {
             console.error("Error adding subconcept to concept:", error);
@@ -82,6 +88,12 @@ class CategoryService {
         try {
             await subconceptRepo.delete(subconceptId);
             const updatedConcept = await conceptRepo.getByIdWithSubconcepts(conceptId);
+
+            // Update the budget by removing the deleted subconcept
+            const budget = await budgetRepo.getByConceptAndCategoryId(conceptId, updatedConcept.category_id);
+            budget.subconcepts = budget.subconcepts.filter(sub => sub.id !== subconceptId);
+            await budgetRepo.update(budget.id, budget);
+
             return updatedConcept;
         } catch (error) {
             console.error("Error deleting subconcept from concept:", error);
