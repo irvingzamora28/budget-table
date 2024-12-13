@@ -48,6 +48,8 @@ const CategoryModal = ({ showModal, setShowModal, category, onSave, onAddConcept
         if (subconceptName.trim() === "") return;
         try {
             const updatedConcept = await CategoryService.addSubconceptToConcept(conceptId, subconceptName);
+            console.log("Updated concept:", updatedConcept);
+            
             setConcepts(concepts.map(concept => 
                 concept.id === conceptId ? updatedConcept : concept
             ));
@@ -83,7 +85,12 @@ const CategoryModal = ({ showModal, setShowModal, category, onSave, onAddConcept
     };
 
     const handleSave = () => {
-        onSave(categoryTitle);
+        // Before we pass the updated concept, we need to change the "name" property to "concept"
+        const updatedConcepts = concepts.map(concept => {
+            const { name, ...rest } = concept;
+            return { concept: name, ...rest };
+        });
+        onSave(categoryTitle, updatedConcepts); // Pass the updated concepts
         setShowModal(false);
     };
 

@@ -68,6 +68,8 @@ const UnifiedTableYear = ({
         };
 
         setMonthlyTotals(calculateMonthlyTotals());
+        console.log("Data changed:", data);
+        
     }, [data]); // Re-run the effect whenever `data` changes
 
     // Handle editing of cells
@@ -296,12 +298,14 @@ const UnifiedTableYear = ({
         setShowCategoryModal(true);
     };
 
-    const handleSaveCategoryTitle = async (newTitle) => {
+    const handleSaveCategoryTitle = async (newTitle, updatedConcepts) => {
         try {
+            console.log("Data before update:", data);
+            
             await CategoryService.updateCategoryTitle(activeCategory.id, newTitle);
             const updatedData = data.map((section) =>
                 section.id === activeCategory.id
-                    ? { ...section, title: newTitle }
+                    ? { ...section, title: newTitle, data: updatedConcepts }
                     : section
             );
             setData(updatedData);

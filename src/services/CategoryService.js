@@ -126,8 +126,9 @@ class CategoryService {
             const budget = await budgetRepo.getByConceptAndCategoryId(conceptId, updatedConcept.category_id);
             budget.subconcepts.push(formattedSubconcept);
             await budgetRepo.update(budget.id, budget);
-
-            return updatedConcept;
+            const formattedConcept = budget;
+            formattedConcept.name = updatedConcept.name;
+            return formattedConcept;
         } catch (error) {
             console.error("Error adding subconcept to concept:", error);
             throw error;
