@@ -315,7 +315,7 @@ const UnifiedTableYear = ({
             if (section.id === activeCategory.id) {
                 return {
                     ...section,
-                    data: [...section.data, { ...newConcept, ...newBudget }]
+                    data: [...section.data, { ...newConcept, ...newBudget, subconcepts: newBudget.subconcepts }]
                 };
             }
             return section;

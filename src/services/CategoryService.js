@@ -36,6 +36,25 @@ class CategoryService {
                 category_id: categoryId,
                 subconcepts: subconcepts,
             });
+
+            // Ensure subconcepts have all necessary properties
+            const formattedSubconcepts = subconcepts.map(subconcept => ({
+                ...subconcept,
+                concept_id: newConcept.id,
+                Jan: "0",
+                Feb: "0",
+                Mar: "0",
+                Apr: "0",
+                May: "0",
+                Jun: "0",
+                Jul: "0",
+                Aug: "0",
+                Sep: "0",
+                Oct: "0",
+                Nov: "0",
+                Dec: "0",
+            }));
+
             // Create the budget
             const newBudget = await BudgetService.createBudget(
                 {
@@ -43,7 +62,19 @@ class CategoryService {
                     category_id: newConcept.category_id,
                     concept: newConcept.name,
                     budget_type: budgetType,
-                    subconcepts: newConcept.subconcepts,
+                    Jan: "0",
+                    Feb: "0",
+                    Mar: "0",
+                    Apr: "0",
+                    May: "0",
+                    Jun: "0",
+                    Jul: "0",
+                    Aug: "0",
+                    Sep: "0",
+                    Oct: "0",
+                    Nov: "0",
+                    Dec: "0",
+                    subconcepts: formattedSubconcepts,
                 },
                 months
             );
@@ -72,9 +103,28 @@ class CategoryService {
             const newSubconcept = await subconceptRepo.add({ name: subconceptName, concept_id: conceptId });
             const updatedConcept = await conceptRepo.getByIdWithSubconcepts(conceptId);
 
+            // Ensure the new subconcept has all necessary properties
+            const formattedSubconcept = {
+                ...newSubconcept,
+                concept_id: conceptId,
+                name: subconceptName,
+                Jan: "0",
+                Feb: "0",
+                Mar: "0",
+                Apr: "0",
+                May: "0",
+                Jun: "0",
+                Jul: "0",
+                Aug: "0",
+                Sep: "0",
+                Oct: "0",
+                Nov: "0",
+                Dec: "0",
+            };
+
             // Update the budget with the new subconcept
             const budget = await budgetRepo.getByConceptAndCategoryId(conceptId, updatedConcept.category_id);
-            budget.subconcepts.push(newSubconcept);
+            budget.subconcepts.push(formattedSubconcept);
             await budgetRepo.update(budget.id, budget);
 
             return updatedConcept;
