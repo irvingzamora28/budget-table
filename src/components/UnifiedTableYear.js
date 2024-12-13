@@ -289,6 +289,7 @@ const UnifiedTableYear = ({
         const concepts = category.data.map(concept => ({
             id: concept.concept_id,
             name: concept.concept,
+            subconcepts: concept.subconcepts || [], // Ensure subconcepts are included
             budget: concept
         }));
         setActiveCategory({ ...category, concepts });

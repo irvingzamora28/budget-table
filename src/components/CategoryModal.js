@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
     FaChevronRight, 
     FaChevronDown, 
@@ -14,6 +14,11 @@ const CategoryModal = ({ showModal, setShowModal, category, onSave, onAddConcept
     const [concepts, setConcepts] = useState(category.concepts || []);
     const [expandedConcepts, setExpandedConcepts] = useState({});
     const [activeSubconceptInput, setActiveSubconceptInput] = useState(null);
+
+    useEffect(() => {
+        console.log("Category changed:", category);
+        setConcepts(category.concepts || []);
+    }, [category]);
 
     const toggleConceptExpansion = (conceptId) => {
         setExpandedConcepts(prev => ({
