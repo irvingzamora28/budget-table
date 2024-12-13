@@ -310,6 +310,19 @@ const UnifiedTableYear = ({
         }
     };
 
+    const handleAddConceptToCategory = (newConcept, newBudget) => {
+        const updatedData = data.map((section) => {
+            if (section.id === activeCategory.id) {
+                return {
+                    ...section,
+                    data: [...section.data, { ...newConcept, ...newBudget }]
+                };
+            }
+            return section;
+        });
+        setData(updatedData);
+    };
+
     return (
         <section
             className={`bg-white shadow-md ${
@@ -384,6 +397,7 @@ const UnifiedTableYear = ({
                     setShowModal={setShowCategoryModal}
                     category={activeCategory}
                     onSave={handleSaveCategoryTitle}
+                    onAddConceptToCategory={handleAddConceptToCategory} // Pass the handler
                 />
             )}
         </section>

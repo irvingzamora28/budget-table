@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CategoryService from "../services/CategoryService";
 
-const CategoryModal = ({ showModal, setShowModal, category, onSave }) => {
+const CategoryModal = ({ showModal, setShowModal, category, onSave, onAddConceptToCategory }) => {
     const [categoryTitle, setCategoryTitle] = useState(category.title);
     const [conceptName, setConceptName] = useState("");
     const [concepts, setConcepts] = useState(category.concepts || []);
@@ -9,9 +9,7 @@ const CategoryModal = ({ showModal, setShowModal, category, onSave }) => {
     useEffect(() => {
         console.log("CategoryModal mounted");
         console.log("category", category);
-        
     }, []);
-        
 
     const handleTitleChange = (e) => {
         setCategoryTitle(e.target.value);
@@ -32,6 +30,7 @@ const CategoryModal = ({ showModal, setShowModal, category, onSave }) => {
             const { newConcept, newBudget } = await CategoryService.addConceptToCategory(category.id, conceptName, category.type);
             setConcepts([...concepts, { ...newConcept, budget: newBudget }]);
             setConceptName("");
+            onAddConceptToCategory(newConcept, newBudget);
         } catch (error) {
             console.error("Error adding concept:", error);
         }
