@@ -88,7 +88,7 @@ const CategoryModal = ({ showModal, setShowModal, category, onSave, onAddConcept
         // Before we pass the updated concept, we need to change the "name" property to "concept"
         const updatedConcepts = concepts.map(concept => {
             const { name, ...rest } = concept;
-            return { concept: name, ...rest };
+            return { concept: name, ...rest.budget };
         });
         onSave(categoryTitle, updatedConcepts); // Pass the updated concepts
         setShowModal(false);
